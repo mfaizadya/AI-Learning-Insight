@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    // note: deprecated and will stop functioning in TypeScript 7.0.
+    // "baseUrl": ".", 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
