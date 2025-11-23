@@ -1,0 +1,42 @@
+import React from "react";
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="ml-64 w-[calc(100%-16rem)] border-t border-gray-200 bg-[#F5F5F5]/50 backdrop-blur-sm py-6 mt-auto">
+      <div className="px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        {/* left */}
+        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-xs text-gray-500 font-medium">
+          <p>
+            &copy; {currentYear}{" "}
+            <span className="text-gray-700 font-bold">AI Learning Insight</span>
+            .
+          </p>
+          <span className="hidden md:block w-1 h-1 bg-gray-300 rounded-full"></span>
+          <p className="flex items-center gap-1">DC-08 Use Case</p>
+        </div>
+
+        {/* right */}
+        <div className="flex items-center gap-6 text-xs text-gray-500 font-medium">
+          <a
+            href="#"
+            className="hover:text-[#5d4b85] transition-colors duration-200"
+          >
+            Privacy Policy
+          </a>
+          <a
+            href="#"
+            className="hover:text-[#5d4b85] transition-colors duration-200"
+          >
+            Terms of Service
+          </a>
+
+          <span className="px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 border border-gray-300">
+            v1.0.0
+          </span>
+        </div>
+      </div>
+    </footer>
+  );
+}

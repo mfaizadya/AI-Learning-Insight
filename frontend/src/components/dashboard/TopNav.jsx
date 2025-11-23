@@ -1,10 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router";
 import { User, LogOut, Settings } from "lucide-react";
 
 const TopNav = () => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      // cleanup listener when unmount
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
 
   const getPageTitle = (pathname) => {
     if (pathname.includes("/dashboard/pretest")) return "Pretest";
@@ -16,9 +34,16 @@ const TopNav = () => {
   const pageTitle = getPageTitle(location.pathname);
 
   return (
-    <nav className="w-full px-8 py-6 flex justify-between items-center bg-transparent sticky top-0 z-20">
-      {/* island/floating nav */}
-      <div className="w-full flex justify-between items-center bg-white py-4 rounded-3xl px-6">
+    <nav className="w-full px-8 py-6 flex justify-between items-center bg-gradient-to-b from-[#F5F5F5] to-transparent sticky top-0 z-40 transition-all duration-300">
+      {/* island/floating nav style */}
+      <div
+        id="nav-floating-island"
+        className={`w-full flex justify-between items-center py-4 rounded-3xl px-6 ${
+          isScrolled
+            ? "bg-white/60 backdrop-blur-md"
+            : "bg-white border border-gray-100"
+        }`}
+      >
         <section aria-label="Breadcrumb">
           <h1 className="bg-white px-6 py-2 rounded-full shadow-sm text-gray-800 font-bold text-sm border border-gray-100 transition-all">
             {pageTitle}

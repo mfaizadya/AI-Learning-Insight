@@ -2,23 +2,27 @@ import React from "react";
 import { Outlet } from "react-router";
 import SidebarNav from "../components/dashboard/SidebarNav";
 import TopNav from "../components/dashboard/TopNav";
+import Footer from "./Footer";
 
 const DashboardLayout = () => {
   return (
-    <div className="min-h-screen bg-[#F5F5F5] font-sans flex overflow-hidden">
-      {/* aside */}
-      <SidebarNav />
-      {/* main */}
-      <main
-        className="flex-1 flex flex-col relative overflow-y-auto focus:outline-none"
-        id="main-content"
-      >
-        <TopNav />
-        <div className="px-8 pb-8 flex-1">
-          <Outlet />
-        </div>
+    <>
+      <main className="min-h-screen max-h-full bg-[#F5F5F5] font-sans flex">
+        {/* aside */}
+        <SidebarNav />
+        {/* section main/content */}
+        <section
+          className="ml-64 h-full flex flex-col relative focus:outline-none mb-10"
+          id="main-content"
+        >
+          <TopNav />
+          <div className="px-8 pb-8 flex-1">
+            <Outlet />
+          </div>
+        </section>
       </main>
-    </div>
+      <Footer />
+    </>
   );
 };
 

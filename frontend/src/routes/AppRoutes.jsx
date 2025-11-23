@@ -4,10 +4,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 // import ProtectedRoutes from "./ProtectedRoutes";
 // import PublicRoutes from "./PublicRoutes";
 import DashboardLayout from "../layouts/DashboardLayout";
-import Pretest from "@/pages/Pretest";
+import Pretest from "@/pages/PretestPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import QuizPage from "@/pages/pretest/QuizPage";
 
 export default function AppRoutes() {
   return (
@@ -23,6 +24,8 @@ export default function AppRoutes() {
             element={<Navigate to="/dashboard/pretest" replace />}
           />
           <Route path="dashboard/pretest" element={<Pretest />} />
+          {/* (!) for the next, a parameter or slug will be added for a unique quiz ID for each session. */}
+          <Route path="dashboard/pretest/quiz" element={<QuizPage />} />
           {/* other/next */}
           {/* <Route path="dashboard/account" element={<AccountPage />} /> */}
         </Route>

@@ -29,11 +29,11 @@ const SidebarNav = () => {
 
   return (
     <aside
-      className="w-64 flex-shrink-0 flex flex-col relative"
+      className="fixed top-0 left-0 w-64 h-screen flex flex-col z-50 shadow-xl"
       aria-label="Sidebar Utama"
     >
       {/* profile */}
-      <section className="h-[240px] bg-[#EDE8FA] flex flex-col items-center justify-center pt-6 pb-12">
+      <section className="h-[240px] bg-[#EDE8FA] flex flex-col items-center justify-center pt-6 pb-12 shrink-0">
         <figure className="relative mb-3">
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-sm bg-green-200">
             <img

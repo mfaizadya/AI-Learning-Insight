@@ -51,11 +51,9 @@
  
 @layer base {
   * {
-    /* Mengganti @apply border-border dengan CSS standar */
     border-color: hsl(var(--border));
   }
   body {
-    /* Mengganti @apply bg-background text-foreground dengan CSS standar */
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
