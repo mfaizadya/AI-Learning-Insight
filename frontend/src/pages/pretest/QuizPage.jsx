@@ -91,7 +91,7 @@ export default function QuizPage() {
                       w-full text-left py-4 px-6 rounded-2xl font-semibold text-sm transition-all duration-200 outline-none border-2
                       ${
                         isSelected
-                          ? "bg-[#EEF2FF] text-[#4A3B80] border-[#4A3B80] shadow-md"
+                          ? "bg-[#EEF2FF] text-[#4A3B80] border-[#4A3B80]"
                           : "bg-[#EEF2FF] text-gray-700 border-transparent hover:bg-[#EEF2FF] hover:text-[#4A3B80]"
                       }
                     `}
@@ -102,7 +102,7 @@ export default function QuizPage() {
               })}
             </div>
             {/* next prev nav */}
-            <div className="mt-auto flex justify-between items-center pt-4 border-t border-gray-100/50">
+            <div className="mt-auto flex justify-between items-center pt-4">
               {/* btn's */}
               <button
                 onClick={handlePrev}
