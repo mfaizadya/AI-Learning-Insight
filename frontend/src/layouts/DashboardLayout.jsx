@@ -7,16 +7,16 @@ import Footer from "./Footer";
 const DashboardLayout = () => {
   return (
     <>
-      <main className="min-h-screen max-h-full bg-[#F5F5F5] font-sans flex">
+      <main className="min-h-screen max-h-full bg-[#F5F5F5] font-sans relative">
         {/* aside */}
         <SidebarNav />
         {/* section main/content */}
         <section
-          className="ml-64 h-full flex flex-col relative focus:outline-none mb-10"
+          className="ml-64 h-full flex flex-col relative focus:outline-none"
           id="main-content"
         >
           <TopNav />
-          <div className="px-8 pb-8 flex-1">
+          <div className="px-8 pb-8 flex-1 w-full">
             <Outlet />
           </div>
         </section>

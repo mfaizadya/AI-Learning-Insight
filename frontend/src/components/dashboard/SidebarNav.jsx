@@ -29,7 +29,7 @@ const SidebarNav = () => {
 
   return (
     <aside
-      className="fixed top-0 left-0 w-64 h-screen flex flex-col z-50 shadow-xl"
+      className="fixed top-0 left-0 w-64 h-screen flex flex-col z-50 shadow-md"
       aria-label="Sidebar Utama"
     >
       {/* profile */}

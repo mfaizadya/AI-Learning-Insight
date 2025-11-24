@@ -24,7 +24,9 @@ const TopNav = () => {
     };
   });
 
+  // path naming
   const getPageTitle = (pathname) => {
+    if (pathname.includes("/dashboard/pretest/quiz")) return "Quiz";
     if (pathname.includes("/dashboard/pretest")) return "Pretest";
     if (pathname.includes("/dashboard/account")) return "Akun Saya";
     if (pathname === "/dashboard") return "Dashboard";
@@ -45,7 +47,7 @@ const TopNav = () => {
         }`}
       >
         <section aria-label="Breadcrumb">
-          <h1 className="bg-white px-6 py-2 rounded-full shadow-sm text-gray-800 font-bold text-sm border border-gray-100 transition-all">
+          <h1 className="px-6 py-2 rounded-full shadow-sm bg-[#EEF2FF] text-[#4A3B80] font-bold text-sm border border-gray-100 transition-all">
             {pageTitle}
           </h1>
         </section>
