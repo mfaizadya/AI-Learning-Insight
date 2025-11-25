@@ -3,7 +3,7 @@ export default {
   darkMode: ["class"],
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // <-- Pastikan baris ini persis begini
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     container: {

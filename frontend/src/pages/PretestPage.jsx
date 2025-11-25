@@ -1,14 +1,13 @@
 import React from "react";
 import { Filter, ArrowUpRight, ClipboardCheck, Info } from "lucide-react";
 import { Link } from "react-router";
+import ContentDrawer from "@/components/reusable/ContentDrawer";
 
 const Pretest = () => {
   return (
-    <section
-      className="bg-white mt-3 rounded-[30px] p-8 shadow-sm min-h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-8"
-      aria-label="Halaman Pretest"
-    >
-      <div className="flex-1 flex flex-col gap-6">
+    <ContentDrawer>
+      {/* content / left side*/}
+      <section className="flex-1 flex flex-col gap-6">
         <article className="bg-white border border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col">
           <div className="p-6 flex flex-col h-full">
             {/* header */}
@@ -21,7 +20,7 @@ const Pretest = () => {
               </p>
             </header>
             {/* menus */}
-            <section className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6">
               <div aria-label="Pilihan Informasi" className="flex gap-4">
                 <Link
                   to="/dashboard/info/lorem"
@@ -68,9 +67,10 @@ const Pretest = () => {
                   </div>
                 </Link>
               </div>
-              <footer className="mt-auto">
+              {/* start quiz btn */}
+              <div className="mt-auto">
                 <Link
-                  to="/dashboard/pretest/start"
+                  to="/dashboard/pretest/start-quiz"
                   className="w-full bg-[#3F3370] hover:bg-[#2e2555] text-white rounded-2xl p-6 flex items-center gap-6 transition-all shadow-lg shadow-purple-900/20 group"
                 >
                   <div
@@ -92,19 +92,19 @@ const Pretest = () => {
                     </span>
                   </div>
                 </Link>
-              </footer>
-            </section>
+              </div>
+            </div>
           </div>
         </article>
-      </div>
+      </section>
       {/* right side */}
-      <aside
+      <section
         className="w-full lg:w-[380px] flex-shrink-0"
         aria-label="Riwayat Pretest"
       >
         <div className="bg-[#4A3B80] rounded-3xl overflow-hidden border border-gray-100 shadow-sm h-full flex flex-col">
           {/* header */}
-          <header className="bg-[#4A3B80] p-6 flex justify-between items-center text-white rounded-t-3xl">
+          <header className="p-6 flex justify-between items-center text-white rounded-t-3xl">
             <h3 className="font-semibold text-lg">Riwayat Pretest</h3>
             <button
               aria-label="Filter Riwayat"
@@ -114,9 +114,9 @@ const Pretest = () => {
             </button>
           </header>
           {/* tests history list */}
-          <div className="p-4 bg-white flex-1 overflow-y-auto max-h-[500px] rounded-t-2xl">
+          <div className="minimal-scroll p-5 bg-white flex-1 overflow-y-auto max-h-[500px] rounded-t-[1.2rem] rounded-b-none">
             <ul className="flex flex-col gap-3">
-              {[1, 2, 3, 4, 5].map((item) => (
+              {[1, 2, 3, 4, 5, 6, 7].map((item) => (
                 <li key={item}>
                   <Link
                     to={`/dashboard/pretest/result/${item}`}
@@ -142,8 +142,8 @@ const Pretest = () => {
             </ul>
           </div>
         </div>
-      </aside>
-    </section>
+      </section>
+    </ContentDrawer>
   );
 };
 
