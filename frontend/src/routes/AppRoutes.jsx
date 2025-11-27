@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Pretest from "@/pages/PretestPage";
 import LoginPage from "@/pages/LoginPage";
+import DashboardPage from "@/pages/DashboardPage";
 import RegisterPage from "@/pages/RegisterPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import QuizPage from "@/pages/pretest/QuizPage";
@@ -17,12 +18,9 @@ export default function AppRoutes() {
         {/* uncomment when the auth logic/service has been implement */}
         {/* <Route element={<ProtectedRoutes />}> */}
         <Route path="/" element={<DashboardLayout />}>
-          {/* (temporary while the dashboard page has not been implemented) */}
-          <Route index element={<Navigate to="/dashboard/pretest" replace />} />
-          <Route
-            path="dashboard"
-            element={<Navigate to="/dashboard/pretest" replace />}
-          />
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route index element={<DashboardPage />} />
           <Route path="dashboard/pretest" element={<Pretest />} />
           {/* (!) for the next, a parameter or slug will be added for a unique quiz ID for each session. (maybe)*/}
           <Route path="dashboard/pretest/start-quiz" element={<QuizPage />} />
