@@ -35,9 +35,9 @@ const SidebarNav = () => {
       {/* profile */}
       <section className="h-[240px] bg-[#EDE8FA] flex flex-col items-center justify-center pt-6 pb-12 shrink-0">
         <figure className="relative mb-3">
-          <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-sm bg-green-200">
+          <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-sm bg-white">
             <img
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+              src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
               alt="Foto Profil User"
               className="w-full h-full object-cover"
             />
@@ -66,7 +66,7 @@ const SidebarNav = () => {
                   <Link
                     to={item.href}
                     className={`
-                  flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 w-full group
+                  flex items-center gap-5 px-4 py-3 rounded-xl transition-all duration-200 w-full group
                   ${
                     isActive
                       ? "bg-[#6D5DA6] bg-opacity-50 text-white shadow-inner"
@@ -85,7 +85,7 @@ const SidebarNav = () => {
                       {item.icon}
                     </span>
 
-                    <span className="font-medium text-sm tracking-wide">
+                    <span className="font-medium text-[0.95rem] tracking-wide">
                       {item.label}
                     </span>
                   </Link>

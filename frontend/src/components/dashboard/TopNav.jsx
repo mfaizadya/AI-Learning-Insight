@@ -60,10 +60,15 @@ const TopNav = () => {
             aria-expanded={isDropdownOpen}
           >
             <div
-              className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 group-hover:bg-purple-200 transition-colors"
+              className="w-8 h-8 bg-gray-100 overflow-hidden rounded-full flex items-center justify-center text-purple-700 group-hover:bg-gray-200 transition-colors"
               aria-hidden="true"
             >
-              <User size={16} />
+              <img
+                src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+                alt="Foto Profil User"
+                className="w-full h-full object-cover"
+              />
+              {/* <User size={16} /> */}
             </div>
             <span className="text-sm text-gray-600 font-medium">
               user@gmail.com
@@ -83,8 +88,16 @@ const TopNav = () => {
           >
             {/* usr infos */}
             <div className="flex items-center gap-3 p-3 border-b border-gray-100 mb-2 bg-gray-50/50 rounded-t-lg">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700">
-                <User size={16} />
+              <div
+                className="w-8 h-8 bg-gray-100 overflow-hidden rounded-full flex items-center justify-center text-purple-700 group-hover:bg-gray-200 transition-colors"
+                aria-hidden="true"
+              >
+                <img
+                  src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+                  alt="Foto Profil User"
+                  className="w-full h-full object-cover"
+                />
+                {/* <User size={16} /> */}
               </div>
               <div className="overflow-hidden">
                 <p className="text-sm font-bold text-gray-800 truncate">
