@@ -25,12 +25,12 @@ export default function Footer() {
           >
             Privacy Policy
           </a>
-          <a
+          {/* <a
             href="#"
             className="hover:text-[#5d4b85] transition-colors duration-200"
           >
             Terms of Service
-          </a>
+          </a> */}
 
           <span className="px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 border border-gray-300">
             v1.0.0
