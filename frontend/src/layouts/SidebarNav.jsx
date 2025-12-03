@@ -1,10 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router";
 import { LayoutGrid, ClipboardList, User } from "lucide-react";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 const SidebarNav = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { data, isLoading, error } = useDashboardData();
+
+  console.log(data);
 
   const menuItems = [
     {
@@ -33,7 +37,7 @@ const SidebarNav = () => {
       aria-label="Sidebar Utama"
     >
       {/* profile */}
-      <section className="h-[240px] bg-[#EDE8FA] flex flex-col items-center justify-center pt-6 pb-12 shrink-0">
+      <section className="h-[240px] bg-secondary flex flex-col items-center justify-center pt-6 pb-12 shrink-0">
         <figure className="relative mb-3">
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-sm bg-white">
             <img
@@ -43,16 +47,20 @@ const SidebarNav = () => {
             />
           </div>
           <div
-            className="absolute bottom-0 right-0 bg-yellow-400 p-1 rounded-full border-2 border-white"
+            className="absolute bottom-0 right-0 bg-green-400 p-1 rounded-full border-2 border-white"
             aria-hidden="true"
           >
             <div className="w-2 h-2 bg-black rounded-full"></div>
           </div>
         </figure>
-        <h2 className="text-[#4A3B80] font-bold text-lg">Hai, User!</h2>
+        {isLoading ? (
+          <h2 className="text-[#4A3B80] font-bold text-lg">...</h2>
+        ) : (
+          <h2 className="text-[#4A3B80] font-bold text-lg">{data.user.username}</h2>
+        )}
       </section>
       {/*  */}
-      <div className="flex-1 bg-[#3F3370] rounded-tr-3xl -mt-10 pt-8 px-4 z-10">
+      <div className="flex-1 bg-primary rounded-tr-3xl -mt-10 pt-8 px-4 z-10">
         {/* <SidebarNav /> */}
         <nav aria-label="Navigasi Utama Sidebar">
           <ul className="flex flex-col gap-2">

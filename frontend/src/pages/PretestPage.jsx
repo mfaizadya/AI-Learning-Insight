@@ -8,20 +8,21 @@ const Pretest = () => {
     <ContentDrawer>
       {/* content / left side*/}
       <section className="flex-1 flex flex-col gap-6">
-        <article className="bg-white border border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col">
+        <article className="bg-white rounded-3xl p-1 shadow-sm flex flex-col">
           <div className="p-6 flex flex-col h-full">
             {/* header */}
             <header className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Ketahui Pola Belajarmu!
               </h2>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-md">
-                Dengan mengisi serangkaian pertanyaan untuk mendapatkan Insight
+              <p className="text-gray-500 text-base leading-relaxed max-w-md">
+                Isi serangkaian pertanyaan-pertanyaan yang kami sediakan untuk membantu anda mendapatkan Insight Gaya belajar anda secara tepat!
               </p>
             </header>
             {/* menus */}
             <div className="flex flex-col gap-6">
-              <div aria-label="Pilihan Informasi" className="flex gap-4">
+              <div aria-label="Pilihan Informasi" className="flex gap-6">
+                {/*  */}
                 <Link
                   to="/dashboard/info/lorem"
                   className="flex-1 border-2 border-[#A090E0]/30 bg-[#FDFDFF] rounded-2xl p-5 flex flex-col gap-3 hover:border-[#A090E0] transition-colors group"
@@ -30,10 +31,10 @@ const Pretest = () => {
                     <Info size={20} aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#4A3B80] group-hover:text-[#3F3370]">
+                    <h3 className="font-bold text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
                       Lorem
                     </h3>
-                    <div className="flex items-center text-[#8A8A8A] text-xs mt-1">
+                    <div className="flex items-center text-[#8A8A8A] text-base mt-1">
                       ipsum dolor{" "}
                       <span
                         className="ml-1 text-xs transition-transform group-hover:translate-x-1"
@@ -44,6 +45,7 @@ const Pretest = () => {
                     </div>
                   </div>
                 </Link>
+                {/*  */}
                 <Link
                   to="/dashboard/info/jenis-soal"
                   className="flex-1 border-2 border-[#A090E0]/30 bg-[#FDFDFF] rounded-2xl p-5 flex flex-col gap-3 hover:border-[#A090E0] transition-colors group"
@@ -52,10 +54,10 @@ const Pretest = () => {
                     <Info size={20} aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#4A3B80] group-hover:text-[#3F3370]">
+                    <h3 className="font-bold text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
                       Lihat
                     </h3>
-                    <div className="flex items-center text-[#8A8A8A] text-xs mt-1">
+                    <div className="flex items-center text-[#8A8A8A] text-base mt-1">
                       Jenis-jenis soal{" "}
                       <span
                         className="ml-1 text-xs transition-transform group-hover:translate-x-1"
@@ -66,12 +68,13 @@ const Pretest = () => {
                     </div>
                   </div>
                 </Link>
+                {/*  */}
               </div>
               {/* start quiz btn */}
               <div className="mt-auto">
                 <Link
                   to="/dashboard/pretest/start-quiz"
-                  className="w-full bg-[#3F3370] hover:bg-[#2e2555] text-white rounded-2xl p-6 flex items-center gap-6 transition-all shadow-lg shadow-purple-900/20 group"
+                  className="w-full bg-primary hover:bg-[#2e2555] text-white rounded-2xl p-6 flex items-center gap-6 transition-all shadow-lg shadow-purple-900/20 group"
                 >
                   <div
                     className="w-14 h-16 border-2 border-white/30 rounded-xl flex items-center justify-center ml-2"
