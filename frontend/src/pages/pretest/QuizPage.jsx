@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import ContentDrawer from "@/components/reusable/ContentDrawer";
+import { Card } from "@/components/ui/card"; // Import Card dari shadcn/ui
 
 export default function QuizPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
 
+  // dummy question
   const questionsData = Array.from({ length: 16 }, (_, i) => ({
     id: i + 1,
     questionText: `Soal ${i + 1}`,
@@ -41,7 +43,6 @@ export default function QuizPage() {
       setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
-  //
 
   // handle submit
   const handleSubmit = () => {
@@ -58,6 +59,28 @@ export default function QuizPage() {
   const handleJumpToQuestion = (index) => {
     setCurrentQuestionIndex(index);
   };
+
+  const optionColors = [
+    "bg-[#7ED4F7]", // youngblue
+    "bg-[#F9F871]", // yellow
+    "bg-[#6EE7B7]", // green
+    "bg-[#F0ABFC]", // pink
+  ];
+
+  const bgColors = [
+    "bg-[#E0F2FE]", // lightblue
+    "bg-[#FEFCE8]", // light yellow
+    "bg-[#ECFDF5]", // lightgreen
+    "bg-[#FAF5FF]", // light pink
+  ];
+
+  // ring (selection)
+  const optionActiveRingColors = [
+    "ring-[#7ED4F7]",
+    "ring-[#F9F871]",
+    "ring-[#6EE7B7]",
+    "ring-[#F0ABFC]",
+  ];
 
   return (
     <ContentDrawer>
@@ -82,32 +105,40 @@ export default function QuizPage() {
             <div className="flex flex-col gap-4 mb-8 flex-1">
               {currentQuestion.options.map((option, idx) => {
                 const isSelected = userAnswers[currentQuestion.id] === idx;
+                // get color w index
+                const barColor = optionColors[idx % optionColors.length];
+                const bgColor = bgColors[idx % bgColors.length];
+                const activeRing = optionActiveRingColors[idx % 4];
 
                 return (
-                  <button
+                  <Card
                     key={idx}
                     onClick={() => handleOptionSelect(idx)}
                     className={`
-                      w-full text-left py-4 px-6 rounded-2xl font-semibold text-sm transition-all duration-200 outline-none border-2
-                      ${
-                        isSelected
-                          ? "bg-[#EEF2FF] text-[#4A3B80] border-[#4A3B80]"
-                          : "bg-[#EEF2FF] text-gray-700 border-transparent hover:bg-[#EEF2FF] hover:text-[#4A3B80]"
-                      }
+                      w-full text-left p-0 rounded-2xl font-semibold text-sm transition-all duration-200 cursor-pointer overflow-hidden
+                      border-0 shadow-sm hover:shadow-md relative flex items-center justify-between
+                      ${bgColor} 
+                      ${isSelected ? `ring-2 ${activeRing}` : "ring-0"}
                     `}
                   >
-                    {option}
-                  </button>
+                    <div className="py-6 px-6 flex-grow text-gray-800">
+                      {option} . . . .{/* <br />. . . . */}
+                    </div>
+                    <div
+                      className={`w-3 h-10 rounded-full ${barColor} mr-4`}
+                    ></div>
+                  </Card>
                 );
               })}
             </div>
+
             {/* next prev nav */}
             <div className="mt-auto flex justify-between items-center pt-4">
               {/* btn's */}
               <button
                 onClick={handlePrev}
                 disabled={currentQuestionIndex === 0}
-                className="disabled:opacity-50 disabled:cursor-not-allowed bg-[#4A3B80] hover:bg-[#382c63] text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2"
+                className="disabled:opacity-50 disabled:cursor-not-allowed bg-primary hover:bg-[#382c63] text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2"
               >
                 Previous
               </button>
@@ -119,8 +150,8 @@ export default function QuizPage() {
                     px-10 py-3 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2 
                     ${
                       isAllAnswered
-                        ? "bg-[#4A3B80] text-[#EEF2FF]"
-                        : "bg-[#EEF2FF] text-[#4A3B80]"
+                        ? "bg-primary text-white"
+                        : "bg-muted text-primary"
                     }
                   `}
                 >
@@ -130,7 +161,7 @@ export default function QuizPage() {
                 <button
                   onClick={handleNext}
                   disabled={currentQuestionIndex === totalQuestions - 1}
-                  className="disabled:opacity-50 disabled:cursor-not-allowed bg-[#4A3B80] hover:bg-[#382c63] text-white px-10 py-3 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2"
+                  className="disabled:opacity-50 disabled:cursor-not-allowed bg-primary hover:bg-[#382c63] text-white px-10 py-3 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2"
                 >
                   Next
                 </button>
@@ -140,10 +171,10 @@ export default function QuizPage() {
         </article>
       </section>
 
-      {/* right side */}
+      {/* right side (Navigator Soal) */}
       <section className="w-full lg:w-[32%] shrink-0 flex flex-col">
-        <div className="bg-[#4c3a75] border border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
-          <header className="bg-[#4c3a75] py-5 px-6 text-center">
+        <div className="bg-primary border border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
+          <header className="bg-primary py-5 px-6 text-center">
             <h3 className="text-white font-medium text-base tracking-wide">
               List Pertanyaan
             </h3>
@@ -159,13 +190,13 @@ export default function QuizPage() {
 
                 if (isCurrent) {
                   boxClass =
-                    "bg-white text-[#4A3B80] border-2 border-[#4A3B80] font-extrabold shadow-md transform scale-105 z-10";
+                    "bg-white text-primary border-2 border-primary font-extrabold shadow-md transform scale-105 z-10";
                 } else if (isAnswered) {
                   boxClass =
-                    "bg-[#EEF2FF] text-[#4A3B80] border-2 border-transparent font-bold hover:bg-[#E0E7FF]";
+                    "bg-muted text-primary border-2 border-transparent font-bold hover:bg-muted/80";
                 } else {
                   boxClass =
-                    "bg-[#F3F4F6] text-gray-400 border-2 border-transparent hover:bg-gray-200";
+                    "bg-gray-100 text-gray-400 border-2 border-transparent hover:bg-gray-200";
                 }
 
                 return (
@@ -186,15 +217,15 @@ export default function QuizPage() {
             {/* legends */}
             <div className="mt-8 flex flex-wrap justify-center gap-4 text-xs text-gray-500 font-medium">
               <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full border-2 border-[#4A3B80] bg-white"></div>
+                <div className="w-3 h-3 rounded-full border-2 border-primary bg-white"></div>
                 <span>Aktif</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#EEF2FF]"></div>
+                <div className="w-3 h-3 rounded-full bg-muted"></div>
                 <span>Dijawab</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#F3F4F6]"></div>
+                <div className="w-3 h-3 rounded-full bg-gray-100"></div>
                 <span>Belum</span>
               </div>
             </div>

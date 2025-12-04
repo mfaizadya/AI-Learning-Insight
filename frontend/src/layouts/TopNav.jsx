@@ -54,7 +54,7 @@ const TopNav = () => {
         <section className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
+            onBlur={() => setTimeout(() => setIsDropdownOpen(false), 100)}
             className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-4 py-2 shadow-sm hover:bg-gray-50 transition-all focus:ring-2 focus:ring-purple-200 outline-none group"
             aria-haspopup="true"
             aria-expanded={isDropdownOpen}
@@ -77,6 +77,7 @@ const TopNav = () => {
 
           {/* dropdown */}
           <div
+            // preventing
             onMouseDown={(e) => e.preventDefault()}
             className={`
             absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 transform transition-all duration-200 origin-top-right
@@ -115,15 +116,15 @@ const TopNav = () => {
               <li>
                 <Link
                   to="/dashboard/account"
-                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg text-sm text-gray-700 font-medium transition-colors"
-                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-sm text-sm text-gray-700 font-medium transition-colors"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <Settings size={16} className="text-gray-400" />
                   Account Settings
                 </Link>
               </li>
               <li>
-                <button className="w-full flex items-center gap-2 text-left px-3 py-2 hover:bg-red-50 rounded-lg text-sm text-red-500 font-medium transition-colors">
+                <button className="w-full flex items-center gap-2 text-left px-3 py-2 hover:bg-red-50 rounded-sm text-sm text-red-500 font-medium transition-colors">
                   <LogOut size={16} />
                   Logout
                 </button>

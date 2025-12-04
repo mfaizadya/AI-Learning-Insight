@@ -65,7 +65,7 @@ export const dashboardService = {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(MOCK_DASHBOARD_DATA);
-      }, 800);
+      }, 300);
     });
 
     // replace with

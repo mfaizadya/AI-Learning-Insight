@@ -74,7 +74,7 @@ const Pretest = () => {
               <div className="mt-auto">
                 <Link
                   to="/dashboard/pretest/start-quiz"
-                  className="w-full bg-primary hover:bg-[#2e2555] text-white rounded-2xl p-6 flex items-center gap-6 transition-all shadow-lg shadow-purple-900/20 group"
+                  className="w-full bg-primary hover:bg-[#2e2555] text-white rounded-2xl p-7 flex items-center gap-6 transition-all shadow-lg shadow-purple-900/20 group"
                 >
                   <div
                     className="w-14 h-16 border-2 border-white/30 rounded-xl flex items-center justify-center ml-2"
