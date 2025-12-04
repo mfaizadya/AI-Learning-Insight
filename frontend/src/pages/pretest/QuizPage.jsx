@@ -89,7 +89,7 @@ export default function QuizPage() {
           <div className="p-6 flex flex-col h-full">
             <header className="mb-8">
               <div className="flex justify-between items-start mb-2">
-                <h2 className="text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900">
                   {currentQuestion.questionText}
                 </h2>
                 <span className="text-xs font-bold bg-gray-100 text-gray-500 px-3 py-1 rounded-full whitespace-nowrap ml-2">
@@ -97,7 +97,7 @@ export default function QuizPage() {
                 </span>
               </div>
 
-              <p className="text-gray-500 font-medium text-base leading-relaxed max-w-md">
+              <p className="text-gray-500 font-normal text-lg leading-relaxed max-w-md">
                 {currentQuestion.description}
               </p>
             </header>
@@ -116,7 +116,7 @@ export default function QuizPage() {
                     onClick={() => handleOptionSelect(idx)}
                     className={`
                       w-full text-left p-0 rounded-2xl font-semibold text-sm transition-all duration-200 cursor-pointer overflow-hidden
-                      border-0 shadow-sm hover:shadow-md relative flex items-center justify-between
+                      border-0 relative flex items-center justify-between
                       ${bgColor} 
                       ${isSelected ? `ring-2 ${activeRing}` : "ring-0"}
                     `}
