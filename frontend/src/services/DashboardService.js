@@ -1,7 +1,8 @@
 const MOCK_DASHBOARD_DATA = {
   user: {
-    name: "John Doe", 
+    name: "John Doe",
     username: "johndoe",
+    email: "johndoe@gmail.com",
     quote: {
       text: "Education is the passport to the future, prepare for it today.",
       author: "Malcolm X",
@@ -16,7 +17,7 @@ const MOCK_DASHBOARD_DATA = {
   learningPattern: {
     type: "Consistent Learner",
     description: "Pola belajarmu:",
-    // streak: 30, 
+    // streak: 30,
   },
   insights: [
     {

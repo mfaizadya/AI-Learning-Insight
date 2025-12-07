@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ContentDrawer from "@/components/reusable/ContentDrawer";
 import {
   User,
@@ -6,16 +6,15 @@ import {
   Calendar,
   Save,
   Shield,
-  //   Camera,
   AtSign,
   LogOut,
-  //   MapPin,
-  //   Info,
+  Loader2,
 } from "lucide-react";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { AccountPageSkeleton } from "@/components/skeletons/AccountPageSkeleton";
 
-// Mock Data (Simulasi data dari Backend)
+// mock data
 const USER_DATA = {
-  fullName: "John Doe",
   username: "johndoe123",
   email: "user@gmail.com",
   joinDate: "12 Oktober 2025",
@@ -25,15 +24,24 @@ const USER_DATA = {
 };
 
 export default function AccountPage() {
-  // State untuk form handling
+  const { data, isLoading: isFetching, error } = useDashboardData();
+  const [isSaving, setIsSaving] = useState(false);
+  // form handling state
   const [formData, setFormData] = useState({
-    fullName: USER_DATA.fullName,
+    fullName: "",
     username: USER_DATA.username,
     bio: USER_DATA.bio,
     location: USER_DATA.location,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    if (data?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: data.user.name || "",
+      }));
+    }
+  }, [data]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,22 +50,25 @@ export default function AccountPage() {
       [name]: value,
     }));
   };
+  // const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Simulasi API Call
+    setIsSaving(true);
     setTimeout(() => {
-      setIsLoading(false);
+      setIsSaving(false);
       alert("Perubahan profil berhasil disimpan!");
     }, 1000);
   };
 
+  if (isFetching) {
+    return <AccountPageSkeleton />;
+  }
   return (
     <ContentDrawer>
       {/* left side */}
       <section className="flex-1 flex flex-col gap-6 min-w-0">
-        <article className="bg-white border border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col h-full">
+        <article className="bg-white sm:border border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col h-full">
           <div className="flex flex-col h-full relative">
             {/* bg */}
             <div className="h-32 bg-gradient-to-r from-[#3F3370] to-[#6854a8] rounded-t-[1.3rem] relative overflow-hidden">
@@ -69,7 +80,6 @@ export default function AccountPage() {
                 {/* pp */}
                 <div className="relative group">
                   <div className="w-28 h-28 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-md">
-                    {/* Placeholder Avatar */}
                     <img
                       src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
                       alt="Avatar"
@@ -86,7 +96,7 @@ export default function AccountPage() {
               </div>
               {/* form */}
               <header className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                   Pengaturan Profil
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
@@ -104,7 +114,7 @@ export default function AccountPage() {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400"
+                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400 text-sm sm:text-base"
                     placeholder="Masukkan nama lengkap"
                   />
                 </div>
@@ -118,7 +128,7 @@ export default function AccountPage() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400"
+                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400 text-sm sm:text-base"
                     placeholder="Username unik"
                   />
                 </div>
@@ -132,7 +142,7 @@ export default function AccountPage() {
                       type="email"
                       value={USER_DATA.email}
                       disabled
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 font-medium cursor-not-allowed select-none"
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 font-medium cursor-not-allowed select-none text-sm sm:text-base"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
                       Tidak dapat diubah
@@ -142,7 +152,6 @@ export default function AccountPage() {
                     Hubungi administrator jika Anda perlu mengubah alamat email.
                   </p>
                 </div>
-
                 {/* Location */}
                 {/* <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -177,7 +186,7 @@ export default function AccountPage() {
               {/* mobile */}
               <button
                 onClick={handleSave}
-                className="mt-8 md:hidden w-full flex justify-center items-center gap-2 bg-primary hover:bg-[#2e2555] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95"
+                className="mt-8 md:hidden w-full flex justify-center items-center gap-2 bg-primary hover:bg-[#2e2555] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md transition-all active:scale-95"
               >
                 <Save size={18} /> Simpan Perubahan
               </button>
@@ -185,10 +194,10 @@ export default function AccountPage() {
               {/* desktop */}
               <button
                 onClick={handleSave}
-                disabled={isLoading}
+                disabled={isSaving}
                 className="hidden w-2/5 md:flex items-center justify-center gap-2 bg-primary hover:bg-[#2e2555] text-white px-6 py-4 rounded-xl font-medium text-sm shadow-md shadow-purple-900/10 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed mt-10"
               >
-                {isLoading ? (
+                {isSaving ? (
                   "Menyimpan..."
                 ) : (
                   <>

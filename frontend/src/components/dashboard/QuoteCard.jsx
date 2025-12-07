@@ -1,7 +1,10 @@
 import { Card, CardContent } from "../ui/card";
 
-export const QuoteCard = ({ quote }) => (
-  <Card className="w-full bg-white shadow-sm transition-all duration-300 hover:border-primary border-2 border-transparent overflow-hidden relative rounded-2xl !p-0">
+export const QuoteCard = ({ quote, className = "", ...props }) => (
+  <Card
+    className={`w-full bg-white shadow-sm transition-all duration-300 hover:border-primary border-2 border-transparent overflow-hidden relative rounded-2xl !p-0 ${className}`}
+    {...props}
+  >
     <CardContent className="!p-0 flex flex-col h-full gap-0">
       <div className="px-6 py-3">
         <h3 className="text-[#3b2f6e] text-center font-semibold text-[0.95rem] tracking-tight">

@@ -18,9 +18,11 @@ const LoadingState = () => (
 );
 
 const WelcomeHeader = ({ user }) => (
-  <section className="mb-8 mt-3 ms-2 flex flex-col gap-1">
-    <h1 className="font-semibold text-[1.65rem]">Hi, {user.name}!</h1>
-    <p className="text-[1.05rem] font-normal text-muted-foreground">
+  <section className="mb-8 md:mb-8 mt-4 md:mt-3 ms-1 md:ms-2 flex flex-col gap-1">
+    <h1 className="font-semibold text-[1.3rem] md:text-[1.65rem]">
+      Hi, {user.name}!
+    </h1>
+    <p className="text-sm md:text-[1.05rem] font-normal text-muted-foreground leading-relaxed">
       Berikut adalah ringkasan perkembangan belajar kamu minggu ini.
     </p>
   </section>
@@ -29,26 +31,30 @@ const WelcomeHeader = ({ user }) => (
 export const DashboardPage = () => {
   const { data, isLoading, error } = useDashboardData();
   if (isLoading) return <LoadingState />;
-
   if (error)
-    return (
-      <div className="p-10 text-center text-red-500">
-        Gagal memuat data dashboard.
-      </div>
-    );
+    return <div className="p-10 text-center text-red-500">Error...</div>;
 
   return (
     <>
-      <WelcomeHeader user={data.user} />
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        {/* row 1 */}
-        <LearningStyleCard styleData={data.learningStyle} />
-        <LearningPatternCard patternData={data.learningPattern} />
-        <QuoteCard quote={data.user.quote} />
+      <section className="max-sm:px-5">
+        <WelcomeHeader user={data.user} />
 
-        {/* row 2 */}
-        <InsightListCard insights={data.insights} />
-        <StatisticsChartCard data={data.statistics} />
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-16">
+          {/* row 1 */}
+          <LearningStyleCard
+            styleData={data.learningStyle}
+            className="max-lg:h-[10.5rem]"
+          />
+          <LearningPatternCard
+            patternData={data.learningPattern}
+            className="max-lg:h-[10.5rem]"
+          />
+          <QuoteCard quote={data.user.quote} className="max-lg:h-[10.5rem]" />
+
+          {/* row 2 */}
+          <InsightListCard insights={data.insights} />
+          <StatisticsChartCard data={data.statistics} />
+        </section>
       </section>
     </>
   );

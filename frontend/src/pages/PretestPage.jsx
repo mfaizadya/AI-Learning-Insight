@@ -8,15 +8,17 @@ const Pretest = () => {
     <ContentDrawer>
       {/* content / left side*/}
       <section className="flex-1 flex flex-col gap-6">
-        <article className="bg-white rounded-3xl p-1 shadow-sm flex flex-col">
-          <div className="p-6 flex flex-col h-full">
+        <article className="bg-white rounded-3xl p-1 flex flex-col">
+          <div className="p-5 px-4 sm:p-6 flex flex-col h-full">
             {/* header */}
             <header className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Ketahui Pola Belajarmu!
               </h2>
-              <p className="text-gray-500 text-base leading-relaxed max-w-md">
-                Isi serangkaian pertanyaan-pertanyaan yang kami sediakan untuk membantu anda mendapatkan Insight Gaya belajar anda secara tepat!
+              <p className="text-gray-500 text-sm sm:text-base leading-relaxed max-w-md">
+                Isi serangkaian pertanyaan-pertanyaan yang kami sediakan untuk
+                membantu anda mendapatkan Insight Gaya belajar anda secara
+                tepat!
               </p>
             </header>
             {/* menus */}
@@ -31,10 +33,10 @@ const Pretest = () => {
                     <Info size={20} aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
-                      Lorem
+                    <h3 className="font-bold text-lg sm:text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
+                      Info
                     </h3>
-                    <div className="flex items-center text-[#8A8A8A] text-base mt-1">
+                    <div className="flex items-center text-[#8A8A8A] text-sm sm:text-base mt-1">
                       ipsum dolor{" "}
                       <span
                         className="ml-1 text-xs transition-transform group-hover:translate-x-1"
@@ -54,11 +56,11 @@ const Pretest = () => {
                     <Info size={20} aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
-                      Lihat
+                    <h3 className="font-bold text-lg sm:text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
+                      Info
                     </h3>
-                    <div className="flex items-center text-[#8A8A8A] text-base mt-1">
-                      Jenis-jenis soal{" "}
+                    <div className="flex items-center text-[#8A8A8A] text-sm sm:text-base mt-1">
+                      Jenis soal
                       <span
                         className="ml-1 text-xs transition-transform group-hover:translate-x-1"
                         aria-hidden="true"
@@ -102,10 +104,10 @@ const Pretest = () => {
       </section>
       {/* right side */}
       <section
-        className="w-full lg:w-[380px] flex-shrink-0"
+        className="w-full lg:w-[380px] flex-shrink-0 py-5 px-4 sm:px-0"
         aria-label="Riwayat Pretest"
       >
-        <div className="bg-[#4A3B80] rounded-3xl overflow-hidden border border-gray-100 shadow-sm h-full flex flex-col">
+        <div className="bg-[#4A3B80] rounded-3xl overflow-hidden shadow-sm h-full flex flex-col max-h-[30.35rem]">
           {/* header */}
           <header className="p-6 flex justify-between items-center text-white rounded-t-3xl">
             <h3 className="font-semibold text-lg">Riwayat Pretest</h3>
@@ -117,7 +119,7 @@ const Pretest = () => {
             </button>
           </header>
           {/* tests history list */}
-          <div className="minimal-scroll p-5 bg-white flex-1 overflow-y-auto max-h-[500px] rounded-t-[1.2rem] rounded-b-none">
+          <div className="minimal-scroll p-6 sm:p-6 md:p-5 bg-white flex-1 overflow-y-auto max-h-[27rem] rounded-t-[1.2rem] rounded-b-none">
             <ul className="flex flex-col gap-3">
               {[1, 2, 3, 4, 5, 6, 7].map((item) => (
                 <li key={item}>

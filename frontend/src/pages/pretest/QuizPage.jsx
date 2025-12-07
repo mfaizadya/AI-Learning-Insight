@@ -85,7 +85,7 @@ export default function QuizPage() {
   return (
     <ContentDrawer>
       <section className="flex-1 flex flex-col gap-6 min-w-0">
-        <article className="bg-white border border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col h-full">
+        <article className="bg-white border-none border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col h-full">
           <div className="p-6 flex flex-col h-full">
             <header className="mb-8">
               <div className="flex justify-between items-start mb-2">
@@ -173,12 +173,12 @@ export default function QuizPage() {
 
       {/* right side (Navigator Soal) */}
       <section className="w-full lg:w-[32%] shrink-0 flex flex-col">
-        <div className="bg-primary border border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
-          <header className="bg-primary py-5 px-6 text-center">
+        <div className="border border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
+          {/* <header className="bg-primary py-5 px-6 text-center">
             <h3 className="text-white font-medium text-base tracking-wide">
               List Pertanyaan
             </h3>
-          </header>
+          </header> */}
 
           <div className="bg-white p-6 rounded-t-3xl min-h-[300px]">
             <div className="grid grid-cols-4 gap-3">
