@@ -7,7 +7,7 @@ export default function QuizPage() {
   const [userAnswers, setUserAnswers] = useState({});
 
   // dummy question
-  const questionsData = Array.from({ length: 16 }, (_, i) => ({
+  const questionsData = Array.from({ length: 15 }, (_, i) => ({
     id: i + 1,
     questionText: `Soal ${i + 1}`,
     description: `Lorem ipsum dolor sit amet, ini adalah detail pertanyaan untuk nomor ${
@@ -83,26 +83,30 @@ export default function QuizPage() {
   ];
 
   return (
-    <ContentDrawer>
+    <ContentDrawer className="">
+      {/* left side */}
       <section className="flex-1 flex flex-col gap-6 min-w-0">
-        <article className="bg-white border-none border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col h-full">
-          <div className="p-6 flex flex-col h-full">
-            <header className="mb-8">
-              <div className="flex justify-between items-start mb-2">
-                <h2 className="text-lg font-semibold text-gray-900">
+        <article className="bg-white border-none md:border border-gray-100 rounded-3xl sm:p-2 shadow-sm flex flex-col h-full">
+          {/*  */}
+          <div className="p-5 sm:p-5 flex flex-col h-full">
+            <header className="mb-7 sm:mb-10">
+              <div className="flex justify-between items-start mb-5 sm:mb-3">
+                {/*  */}
+                <h2 className="max-sm:hidden sm:visible text-lg sm:text-xl xl:text-xl font-bold text-gray-900">
                   {currentQuestion.questionText}
                 </h2>
-                <span className="text-xs font-bold bg-gray-100 text-gray-500 px-3 py-1 rounded-full whitespace-nowrap ml-2">
+                {/* current question badge */}
+                <span className="text-xs font-bold bg-gray-100 text-gray-500 px-3 py-1 rounded-full whitespace-nowrap">
                   {currentQuestionIndex + 1} / {totalQuestions}
                 </span>
               </div>
-
-              <p className="text-gray-500 font-normal text-lg leading-relaxed max-w-md">
+              {/* question */}
+              <p className="text-gray-500 font-normal text-base sm:text-lg leading-relaxed max-w-md">
                 {currentQuestion.description}
               </p>
             </header>
 
-            <div className="flex flex-col gap-4 mb-8 flex-1">
+            <div className="flex flex-col gap-4 mb-6 sm:mb-8 flex-1">
               {currentQuestion.options.map((option, idx) => {
                 const isSelected = userAnswers[currentQuestion.id] === idx;
                 // get color w index
@@ -118,10 +122,12 @@ export default function QuizPage() {
                       w-full text-left p-0 rounded-2xl font-semibold text-sm transition-all duration-200 cursor-pointer overflow-hidden
                       border-0 relative flex items-center justify-between
                       ${bgColor} 
-                      ${isSelected ? `ring-2 ${activeRing}` : "ring-0"}
+                      ${
+                        isSelected ? `ring-1 sm:ring-2 ${activeRing}` : "ring-0"
+                      }
                     `}
                   >
-                    <div className="py-6 px-6 flex-grow text-gray-800">
+                    <div className="py-5 sm:py-6 px-6 flex-grow text-gray-800">
                       {option} . . . .{/* <br />. . . . */}
                     </div>
                     <div
@@ -173,24 +179,22 @@ export default function QuizPage() {
 
       {/* right side (Navigator Soal) */}
       <section className="w-full lg:w-[32%] shrink-0 flex flex-col">
-        <div className="border border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
-          {/* <header className="bg-primary py-5 px-6 text-center">
-            <h3 className="text-white font-medium text-base tracking-wide">
+        <div className="sm:border-none border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
+          <header className="bg-transparents p-5 pb-0 text-center">
+            <h3 className="text-black font-medium text-sm sm:text-base tracking-wide bg-[#EEF2FF] p-4 rounded-[0.9rem]">
               List Pertanyaan
             </h3>
-          </header> */}
-
-          <div className="bg-white p-6 rounded-t-3xl min-h-[300px]">
-            <div className="grid grid-cols-4 gap-3">
+          </header>
+          <div className="bg-white p-5 rounded-t-3xl min-h-[300px]">
+            <div className="grid grid-cols-5 sm:grid-cols-4 gap-3">
               {questionsData.map((item, idx) => {
                 const isCurrent = idx === currentQuestionIndex;
                 const isAnswered = userAnswers[item.id] !== undefined;
-
                 let boxClass = "";
 
                 if (isCurrent) {
                   boxClass =
-                    "bg-white text-primary border-2 border-primary font-extrabold shadow-md transform scale-105 z-10";
+                    "bg-white text-primary border-2 border-primary font-bold shadow-md transform scale-105 z-10";
                 } else if (isAnswered) {
                   boxClass =
                     "bg-muted text-primary border-2 border-transparent font-bold hover:bg-muted/80";
@@ -200,11 +204,12 @@ export default function QuizPage() {
                 }
 
                 return (
+                  // question number lists box
                   <div
                     key={item.id}
                     onClick={() => handleJumpToQuestion(idx)}
                     className={`
-                      aspect-square rounded-[0.8rem] flex items-center justify-center text-sm transition-all cursor-pointer select-none
+                      aspect-square p-0 rounded-[0.8rem] flex items-center justify-center text-base sm:text-base md:text-lg transition-all cursor-pointer select-none
                       ${boxClass}
                     `}
                   >

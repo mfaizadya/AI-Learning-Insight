@@ -1,8 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartStyle, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { Label, Pie, PieChart } from "recharts";
 
-export const StatisticsChartCard = ({ data }) => {
+export const StatisticsChartCard = ({ data, className = "" }) => {
   const id = "pie-interactive";
 
   const chartConfig = {
@@ -19,7 +24,7 @@ export const StatisticsChartCard = ({ data }) => {
   return (
     <Card
       data-chart={id}
-      className="flex flex-col border-none shadow-sm rounded-2xl bg-white h-full max-h-[25rem]"
+      className={`flex flex-col border-none shadow-sm rounded-2xl bg-white h-full max-h-[25rem] ${className}`}
     >
       <ChartStyle id={id} config={chartConfig} />
       <CardHeader className="pb-0 pt-6 px-6">

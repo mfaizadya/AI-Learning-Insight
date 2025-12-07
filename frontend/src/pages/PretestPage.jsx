@@ -7,7 +7,7 @@ const Pretest = () => {
   return (
     <ContentDrawer>
       {/* content / left side*/}
-      <section className="flex-1 flex flex-col gap-6">
+      <section className="flex-1 flex flex-col justify-center gap-6 my-0 py-0">
         <article className="bg-white rounded-3xl p-1 flex flex-col">
           <div className="p-5 px-4 sm:p-6 flex flex-col h-full">
             {/* header */}
@@ -15,7 +15,7 @@ const Pretest = () => {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Ketahui Pola Belajarmu!
               </h2>
-              <p className="text-gray-500 text-sm sm:text-base leading-relaxed max-w-md">
+              <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
                 Isi serangkaian pertanyaan-pertanyaan yang kami sediakan untuk
                 membantu anda mendapatkan Insight Gaya belajar anda secara
                 tepat!
@@ -84,7 +84,7 @@ const Pretest = () => {
                   >
                     <ClipboardCheck size={32} className="text-white" />
                   </div>
-                  <div className="text-left py-3">
+                  <div className="text-left py-4">
                     <span className="block text-xl font-bold mb-1">Mulai</span>
                     <span className="flex items-center text-purple-200 text-sm">
                       Mengisi Test{" "}
@@ -104,7 +104,7 @@ const Pretest = () => {
       </section>
       {/* right side */}
       <section
-        className="w-full lg:w-[380px] flex-shrink-0 py-5 px-4 sm:px-0"
+        className="w-full lg:w-[380px] flex-shrink-0 justify-center py-5 px-4 sm:px-0"
         aria-label="Riwayat Pretest"
       >
         <div className="bg-[#4A3B80] rounded-3xl overflow-hidden shadow-sm h-full flex flex-col max-h-[30.35rem]">
