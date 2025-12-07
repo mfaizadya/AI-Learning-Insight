@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     container: {
       center: true,
@@ -21,11 +18,11 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsl(var(--primary))", // #3F3370
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "hsl(var(--secondary))", // #EDE8FA
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
@@ -33,11 +30,11 @@ export default {
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT: "hsl(var(--muted))", // #EEF2FF
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--accent))", // #A090E0
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -47,6 +44,12 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        // chart
+        chart: {
+          visual: "hsl(var(--primary))",
+          auditory: "hsl(var(--primary))",
+          kinesthetic: "hsl(var(--primary))",
         },
       },
       borderRadius: {
@@ -71,4 +74,4 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
