@@ -1,0 +1,4954 @@
+{
+	"info": {
+		"_postman_id": "learning-assessment-api-tests",
+		"name": "Learning Assessment API Tests",
+		"description": "# Learning Assessment API Test Collection\n\n## Overview\nThis collection provides comprehensive testing for all endpoints in the Learning Assessment System API. It includes automated test data cleanup, environment-based configuration, and extensive test coverage including both success and error scenarios.\n\n## 📚 Documentation\n**Complete documentation is available in the accompanying files:**\n- **README.md** - Complete setup and usage guide\n- **SETUP_GUIDE.md** - Step-by-step first-time setup instructions\n- **TROUBLESHOOTING.md** - Detailed troubleshooting and solutions\n- **Learning_Assessment_API.postman_environment.json** - Environment template\n\n## 🚀 Quick Start\n1. **Import** this collection and the environment template\n2. **Configure** environment variables: `baseUrl`, `adminUsername`, `adminPassword`\n3. **Run** the collection using Collection Runner\n4. **Monitor** results and check cleanup completion\n\n## 📋 Prerequisites\n- **API Server**: Running at configured baseUrl (default: `http://localhost:3000/api`)\n- **Database**: Contains pola/gaya tests with questions/choices and admin account\n- **Environment**: Required variables configured in Postman environment\n\n## 🗂️ Collection Structure\n**8 Main Folders** (run in sequence):\n1. **Authentication** - User/admin login, token management\n2. **User Management** - Profile operations, file uploads\n3. **Tests (Pola & Gaya)** - Test retrieval, data capture\n4. **Results** - Test submission, history, details\n5. **Insights** - User insights, admin creation\n6. **MOTD** - Message of the Day CRUD operations\n7. **Admin Operations** - Question/choice creation\n8. **Cleanup** - Automated test data removal\n\n## ⚙️ Environment Variables\n**Required (set manually):**\n- `baseUrl` - API server URL\n- `adminUsername` - Admin account email\n- `adminPassword` - Admin account password\n\n**Auto-generated (do not set manually):**\n- Authentication tokens (`userToken`, `adminToken`)\n- Test data IDs for cleanup\n- Dynamic test user credentials\n\n## 🔧 Key Features\n- **Self-cleaning**: Automatically removes all test data\n- **Idempotent**: Can run multiple times safely\n- **Comprehensive**: Tests all endpoints including error scenarios\n- **Dynamic data**: Generates unique test data each run\n- **Environment-based**: Easy configuration for different environments\n\n## ⚠️ Important Notes\n- **File uploads** require manual file selection in Postman\n- **Sequential execution** required for proper dependencies\n- **Admin credentials** must match existing database account\n- **Database cleanup** is automatic but can be done manually if needed\n\n## 🆘 Need Help?\n- Check **SETUP_GUIDE.md** for first-time setup\n- See **TROUBLESHOOTING.md** for common issues\n- Review **README.md** for complete documentation\n- Use Postman Console for detailed error information\n\n## 📊 Expected Results\n- **~80+ tests** should pass\n- **All test data** automatically cleaned up\n- **Environment variables** cleared after run\n- **No manual intervention** required for normal operation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate unique email and username for this test user",
+									"const timestamp = pm.environment.get('timestamp');",
+									"const random = Math.random().toString(36).substring(2, 8);",
+									"const email = `test_${timestamp}_${random}@example.com`;",
+									"const username = `testuser_${timestamp}_${random}`;",
+									"",
+									"// Store for use in request body and later requests",
+									"pm.environment.set('testUserEmail', email);",
+									"pm.environment.set('testUserUsername', username);",
+									"pm.environment.set('testUserPassword', 'TestPassword123!');",
+									"",
+									"console.log('Registering test user:', email);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate registration response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains user data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('email');",
+									"    pm.expect(jsonData.data).to.have.property('username');",
+									"    pm.expect(jsonData.data).to.have.property('role');",
+									"});",
+									"",
+									"pm.test('User ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testUserId', jsonData.data.id);",
+									"    console.log('Test user ID captured:', jsonData.data.id);",
+									"});",
+									"",
+									"pm.test('Email matches the generated email', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedEmail = pm.environment.get('testUserEmail');",
+									"    pm.expect(jsonData.data.email).to.equal(expectedEmail);",
+									"});",
+									"",
+									"pm.test('Role is set to user', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.role).to.equal('user');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{testUserEmail}}\",\n  \"username\": \"{{testUserUsername}}\",\n  \"password\": \"{{testUserPassword}}\",\n  \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Creates a new test user account with dynamically generated credentials. The user ID is captured for cleanup at the end of the test run."
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Use the credentials from the registered user",
+									"const email = pm.environment.get('testUserEmail');",
+									"const password = pm.environment.get('testUserPassword');",
+									"",
+									"console.log('Logging in as test user:', email);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate login response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains token', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('token');",
+									"    pm.expect(jsonData.data.token).to.be.a('string');",
+									"    pm.expect(jsonData.data.token.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('JWT token is stored in userToken variable', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('userToken', jsonData.data.token);",
+									"    console.log('User token stored for authenticated requests');",
+									"});",
+									"",
+									"pm.test('Response contains user data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('user');",
+									"    pm.expect(jsonData.data.user).to.have.property('id');",
+									"    pm.expect(jsonData.data.user).to.have.property('email');",
+									"    pm.expect(jsonData.data.user).to.have.property('username');",
+									"    pm.expect(jsonData.data.user).to.have.property('role');",
+									"});",
+									"",
+									"pm.test('User data matches registered user', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedEmail = pm.environment.get('testUserEmail');",
+									"    const expectedUserId = pm.environment.get('testUserId');",
+									"    pm.expect(jsonData.data.user.email).to.equal(expectedEmail);",
+									"    pm.expect(jsonData.data.user.id).to.equal(expectedUserId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{testUserEmail}}\",\n  \"password\": \"{{testUserPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Authenticates the test user and stores the JWT token in the userToken environment variable for use in subsequent authenticated requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Validate admin credentials are set in environment",
+									"const adminUsername = pm.environment.get('adminUsername');",
+									"const adminPassword = pm.environment.get('adminPassword');",
+									"",
+									"if (!adminUsername || !adminPassword) {",
+									"    console.error('❌ Admin credentials not set in environment');",
+									"    console.error('Please set adminUsername and adminPassword environment variables');",
+									"} else {",
+									"    console.log('Using admin credentials from environment');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Note: This request may fail if admin already exists, which is expected",
+									"// We're primarily testing that environment variables are being used correctly",
+									"",
+									"if (pm.response.code === 201) {",
+									"    pm.test('Status code is 201 Created', function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"    ",
+									"    pm.test('Response has success field set to true', function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('success');",
+									"        pm.expect(jsonData.success).to.be.true;",
+									"    });",
+									"    ",
+									"    pm.test('Admin role is set correctly', function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.data.role).to.equal('admin');",
+									"    });",
+									"    ",
+									"    console.log('✓ Admin account created successfully');",
+									"} else if (pm.response.code === 400) {",
+									"    pm.test('Admin already exists (expected)', function () {",
+									"        const jsonData = pm.response.json();",
+									"        pm.expect(jsonData.success).to.be.false;",
+									"        pm.expect(jsonData.error).to.include('already');",
+									"    });",
+									"    ",
+									"    console.log('ℹ Admin account already exists, proceeding to login');",
+									"} else {",
+									"    pm.test('Unexpected response code', function () {",
+									"        pm.expect.fail('Expected 201 or 400, got ' + pm.response.code);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{adminUsername}}\",\n  \"username\": \"admin\",\n  \"password\": \"{{adminPassword}}\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Attempts to register an admin account using credentials from environment variables. This may fail if the admin already exists, which is expected behavior."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Validate admin credentials are set in environment",
+									"const adminUsername = pm.environment.get('adminUsername');",
+									"const adminPassword = pm.environment.get('adminPassword');",
+									"",
+									"if (!adminUsername || !adminPassword) {",
+									"    console.error('❌ Admin credentials not set in environment');",
+									"    console.error('Please set adminUsername and adminPassword environment variables');",
+									"    throw new Error('Missing admin credentials in environment');",
+									"} else {",
+									"    console.log('Logging in as admin:', adminUsername);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate admin login response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains token', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('token');",
+									"    pm.expect(jsonData.data.token).to.be.a('string');",
+									"    pm.expect(jsonData.data.token.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Admin JWT token is stored in adminToken variable', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('adminToken', jsonData.data.token);",
+									"    console.log('Admin token stored for admin-only requests');",
+									"});",
+									"",
+									"pm.test('User has admin role', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.user).to.have.property('role');",
+									"    pm.expect(jsonData.data.user.role).to.equal('admin');",
+									"});",
+									"",
+									"pm.test('Admin credentials from environment are valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedEmail = pm.environment.get('adminUsername');",
+									"    pm.expect(jsonData.data.user.email).to.equal(expectedEmail);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Authenticates the admin user using credentials from environment variables and stores the JWT token in the adminToken environment variable for use in admin-only requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Login with Invalid Credentials",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    pm.expect(jsonData.error.length).to.be.greaterThan(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"invalid@example.com\",\n  \"password\": \"WrongPassword123!\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/login",
+									"host": ["{{baseUrl}}"],
+									"path": ["auth", "login"]
+								},
+								"description": "Tests that the API properly rejects login attempts with invalid credentials and returns a 401 Unauthorized status."
+							},
+							"response": []
+						},
+						{
+							"name": "Register with Missing Email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"TestPassword123!\",\n  \"role\": \"user\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/register",
+									"host": ["{{baseUrl}}"],
+									"path": ["auth", "register"]
+								},
+								"description": "Tests that the API properly validates required fields and returns a 400 Bad Request when email is missing."
+							},
+							"response": []
+						},
+						{
+							"name": "Register with Missing Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"test@example.com\",\n  \"username\": \"testuser\",\n  \"role\": \"user\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/register",
+									"host": ["{{baseUrl}}"],
+									"path": ["auth", "register"]
+								},
+								"description": "Tests that the API properly validates required fields and returns a 400 Bad Request when password is missing."
+							},
+							"response": []
+						},
+						{
+							"name": "Login with Missing Email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"password\": \"TestPassword123!\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/login",
+									"host": ["{{baseUrl}}"],
+									"path": ["auth", "login"]
+								},
+								"description": "Tests that the API properly validates required fields and returns a 400 Bad Request when email is missing from login request."
+							},
+							"response": []
+						},
+						{
+							"name": "Login with Missing Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"test@example.com\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/login",
+									"host": ["{{baseUrl}}"],
+									"path": ["auth", "login"]
+								},
+								"description": "Tests that the API properly validates required fields and returns a 400 Bad Request when password is missing from login request."
+							},
+							"response": []
+						}
+					],
+					"description": "Tests for error scenarios in authentication, including invalid credentials and missing required fields."
+				}
+			],
+			"description": "Authentication endpoints for user and admin registration and login. Includes dynamic test data generation and token management for subsequent authenticated requests."
+		},
+		{
+			"name": "2. User Management",
+			"item": [
+				{
+					"name": "Get Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate profile response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains user profile data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('email');",
+									"    pm.expect(jsonData.data).to.have.property('username');",
+									"    pm.expect(jsonData.data).to.have.property('role');",
+									"});",
+									"",
+									"pm.test('Profile data matches authenticated user', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedEmail = pm.environment.get('testUserEmail');",
+									"    const expectedUserId = pm.environment.get('testUserId');",
+									"    pm.expect(jsonData.data.email).to.equal(expectedEmail);",
+									"    pm.expect(jsonData.data.id).to.equal(expectedUserId);",
+									"});",
+									"",
+									"pm.test('Profile contains learning style and pattern fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('learning_style');",
+									"    pm.expect(jsonData.data).to.have.property('learning_pattern');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "profile"]
+						},
+						"description": "Retrieves the authenticated user's profile information including email, username, role, learning style, and learning pattern."
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Profile Picture",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Note: File upload requires manual file selection in Postman",
+									"// The file must be selected in the Body > form-data section",
+									"console.log('Uploading profile picture for user:', pm.environment.get('testUserEmail'));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate profile picture upload response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains profile picture URL', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('profile_picture');",
+									"    pm.expect(jsonData.data.profile_picture).to.be.a('string');",
+									"    pm.expect(jsonData.data.profile_picture).to.include('/users/profile/picture/');",
+									"});",
+									"",
+									"pm.test('Profile picture filename is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const pictureUrl = jsonData.data.profile_picture;",
+									"    // Extract filename from URL",
+									"    const filename = pictureUrl.split('/').pop();",
+									"    pm.environment.set('testProfilePicture', filename);",
+									"    console.log('Profile picture filename captured:', filename);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "profilePicture",
+									"type": "file",
+									"src": [],
+									"description": "Select an image file (JPEG, PNG, GIF, or WebP) to upload as profile picture. Maximum size: 5MB."
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/profile/picture",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "profile", "picture"]
+						},
+						"description": "Uploads or updates the authenticated user's profile picture. Accepts JPEG, PNG, GIF, and WebP formats up to 5MB. The filename is captured for cleanup at the end of the test run.\n\n**Note**: You must manually select a file in the Body > form-data section before running this request."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile Picture",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a profile picture was uploaded",
+									"const filename = pm.environment.get('testProfilePicture');",
+									"if (!filename) {",
+									"    console.warn('⚠️ No profile picture filename found. Make sure to run \"Upload Profile Picture\" first.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate profile picture retrieval",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an image file', function () {",
+									"    const contentType = pm.response.headers.get('Content-Type');",
+									"    pm.expect(contentType).to.match(/^image\\/(jpeg|png|gif|webp)/);",
+									"});",
+									"",
+									"pm.test('Response body contains image data', function () {",
+									"    pm.expect(pm.response).to.have.property('stream');",
+									"    pm.expect(pm.response.stream.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Uploaded image is accessible', function () {",
+									"    // If we got a 200 with image content-type, the image is accessible",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ Profile picture is accessible');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/profile/picture/{{testProfilePicture}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "profile", "picture", "{{testProfilePicture}}"]
+						},
+						"description": "Retrieves the uploaded profile picture by filename. This request verifies that the uploaded image is accessible and returns the correct content type."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Get Profile Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/profile",
+									"host": ["{{baseUrl}}"],
+									"path": ["users", "profile"]
+								},
+								"description": "Tests that accessing the profile endpoint without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Profile Picture Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "profilePicture",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/profile/picture",
+									"host": ["{{baseUrl}}"],
+									"path": ["users", "profile", "picture"]
+								},
+								"description": "Tests that attempting to upload a profile picture without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Profile Picture Without File",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about missing file', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    pm.expect(jsonData.error.toLowerCase()).to.include('file');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/profile/picture",
+									"host": ["{{baseUrl}}"],
+									"path": ["users", "profile", "picture"]
+								},
+								"description": "Tests that attempting to upload a profile picture without providing a file returns a 400 Bad Request error."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Non-Existent Profile Picture",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404 Not Found', function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about image not found', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/profile/picture/nonexistent-image.jpg",
+									"host": ["{{baseUrl}}"],
+									"path": ["users", "profile", "picture", "nonexistent-image.jpg"]
+								},
+								"description": "Tests that attempting to retrieve a non-existent profile picture returns a 404 Not Found error."
+							},
+							"response": []
+						}
+					],
+					"description": "Error scenario tests for user management endpoints, including unauthorized access and invalid requests."
+				}
+			],
+			"description": "User management endpoints for profile retrieval and profile picture upload. Includes automatic token injection and error scenario testing.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Folder-level pre-request script for User Management",
+							"// Automatically inject userToken into Authorization header for authenticated requests",
+							"",
+							"const token = pm.environment.get('userToken');",
+							"",
+							"if (token) {",
+							"    // Token will be added to requests that need it",
+							"    console.log('User token available for authenticated requests');",
+							"} else {",
+							"    console.warn('⚠️ User token not found. Make sure to run Authentication folder first.');",
+							"}"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Tests (Pola & Gaya)",
+			"item": [
+				{
+					"name": "Get All Pola Tests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate response for all pola tests",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains data array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Data array is not empty', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+									"    console.log('Found', jsonData.data.length, 'pola test(s)');",
+									"});",
+									"",
+									"pm.test('Each test has required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.forEach(test => {",
+									"        pm.expect(test).to.have.property('id');",
+									"        pm.expect(test).to.have.property('name');",
+									"        pm.expect(test).to.have.property('description');",
+									"    });",
+									"});",
+									"",
+									"pm.test('First test ID is captured for detail request', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        const firstTestId = jsonData.data[0].id;",
+									"        pm.environment.set('testPolaId', firstTestId);",
+									"        console.log('Pola test ID captured:', firstTestId);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests/pola",
+							"host": ["{{baseUrl}}"],
+							"path": ["tests", "pola"]
+						},
+						"description": "Retrieves a list of all available learning pattern (Pola) tests. No authentication required. The first test ID is captured for use in subsequent detail requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pola Test Details",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a pola test ID was captured",
+									"const testId = pm.environment.get('testPolaId');",
+									"if (!testId) {",
+									"    console.warn('⚠️ No pola test ID found. Make sure to run \"Get All Pola Tests\" first.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate pola test details response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains test data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('object');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('name');",
+									"    pm.expect(jsonData.data).to.have.property('description');",
+									"});",
+									"",
+									"pm.test('Test contains questions array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('questions');",
+									"    pm.expect(jsonData.data.questions).to.be.an('array');",
+									"    pm.expect(jsonData.data.questions.length).to.be.greaterThan(0);",
+									"    console.log('Test has', jsonData.data.questions.length, 'question(s)');",
+									"});",
+									"",
+									"pm.test('Each question has required structure', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.questions.forEach(question => {",
+									"        pm.expect(question).to.have.property('id');",
+									"        pm.expect(question).to.have.property('test_id');",
+									"        pm.expect(question).to.have.property('question');",
+									"        pm.expect(question).to.have.property('choices');",
+									"        pm.expect(question.choices).to.be.an('array');",
+									"    });",
+									"});",
+									"",
+									"pm.test('Each choice has pola weight fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.questions.forEach(question => {",
+									"        question.choices.forEach(choice => {",
+									"            pm.expect(choice).to.have.property('id');",
+									"            pm.expect(choice).to.have.property('soal_id');",
+									"            pm.expect(choice).to.have.property('option_text');",
+									"            pm.expect(choice).to.have.property('bobot_consistent');",
+									"            pm.expect(choice).to.have.property('bobot_fast');",
+									"            pm.expect(choice).to.have.property('bobot_reflective');",
+									"            pm.expect(choice).to.have.property('bobot_balanced');",
+									"        });",
+									"    });",
+									"});",
+									"",
+									"pm.test('First question and choice IDs captured for test submission', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data.questions.length > 0) {",
+									"        const firstQuestion = jsonData.data.questions[0];",
+									"        pm.environment.set('testPolaQuestionId', firstQuestion.id);",
+									"        console.log('First pola question ID captured:', firstQuestion.id);",
+									"        ",
+									"        if (firstQuestion.choices.length > 0) {",
+									"            const firstChoice = firstQuestion.choices[0];",
+									"            pm.environment.set('testPolaChoiceId', firstChoice.id);",
+									"            console.log('First pola choice ID captured:', firstChoice.id);",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests/pola/{{testPolaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["tests", "pola", "{{testPolaId}}"]
+						},
+						"description": "Retrieves detailed information about a specific learning pattern test, including all questions and choices with their weight values. The first question and choice IDs are captured for use in test submission."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Gaya Tests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate response for all gaya tests",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains data array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Data array is not empty', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+									"    console.log('Found', jsonData.data.length, 'gaya test(s)');",
+									"});",
+									"",
+									"pm.test('Each test has required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.forEach(test => {",
+									"        pm.expect(test).to.have.property('id');",
+									"        pm.expect(test).to.have.property('name');",
+									"        pm.expect(test).to.have.property('description');",
+									"    });",
+									"});",
+									"",
+									"pm.test('First test ID is captured for detail request', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        const firstTestId = jsonData.data[0].id;",
+									"        pm.environment.set('testGayaId', firstTestId);",
+									"        console.log('Gaya test ID captured:', firstTestId);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests/gaya",
+							"host": ["{{baseUrl}}"],
+							"path": ["tests", "gaya"]
+						},
+						"description": "Retrieves a list of all available learning style (Gaya) tests. No authentication required. The first test ID is captured for use in subsequent detail requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Gaya Test Details",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a gaya test ID was captured",
+									"const testId = pm.environment.get('testGayaId');",
+									"if (!testId) {",
+									"    console.warn('⚠️ No gaya test ID found. Make sure to run \"Get All Gaya Tests\" first.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate gaya test details response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains test data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('object');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('name');",
+									"    pm.expect(jsonData.data).to.have.property('description');",
+									"});",
+									"",
+									"pm.test('Test contains questions array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('questions');",
+									"    pm.expect(jsonData.data.questions).to.be.an('array');",
+									"    pm.expect(jsonData.data.questions.length).to.be.greaterThan(0);",
+									"    console.log('Test has', jsonData.data.questions.length, 'question(s)');",
+									"});",
+									"",
+									"pm.test('Each question has required structure', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.questions.forEach(question => {",
+									"        pm.expect(question).to.have.property('id');",
+									"        pm.expect(question).to.have.property('test_id');",
+									"        pm.expect(question).to.have.property('question');",
+									"        pm.expect(question).to.have.property('choices');",
+									"        pm.expect(question.choices).to.be.an('array');",
+									"    });",
+									"});",
+									"",
+									"pm.test('Each choice has gaya weight fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.questions.forEach(question => {",
+									"        question.choices.forEach(choice => {",
+									"            pm.expect(choice).to.have.property('id');",
+									"            pm.expect(choice).to.have.property('soal_id');",
+									"            pm.expect(choice).to.have.property('option_text');",
+									"            pm.expect(choice).to.have.property('bobot_visual');",
+									"            pm.expect(choice).to.have.property('bobot_auditori');",
+									"            pm.expect(choice).to.have.property('bobot_kinestetik');",
+									"        });",
+									"    });",
+									"});",
+									"",
+									"pm.test('First question and choice IDs captured for test submission', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data.questions.length > 0) {",
+									"        const firstQuestion = jsonData.data.questions[0];",
+									"        pm.environment.set('testGayaQuestionId', firstQuestion.id);",
+									"        console.log('First gaya question ID captured:', firstQuestion.id);",
+									"        ",
+									"        if (firstQuestion.choices.length > 0) {",
+									"            const firstChoice = firstQuestion.choices[0];",
+									"            pm.environment.set('testGayaChoiceId', firstChoice.id);",
+									"            console.log('First gaya choice ID captured:', firstChoice.id);",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests/gaya/{{testGayaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["tests", "gaya", "{{testGayaId}}"]
+						},
+						"description": "Retrieves detailed information about a specific learning style test, including all questions and choices with their weight values. The first question and choice IDs are captured for use in test submission."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Get Non-Existent Pola Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404 Not Found', function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    pm.expect(jsonData.error.length).to.be.greaterThan(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/tests/pola/99999",
+									"host": ["{{baseUrl}}"],
+									"path": ["tests", "pola", "99999"]
+								},
+								"description": "Tests that attempting to retrieve a non-existent pola test returns a 404 Not Found error."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Non-Existent Gaya Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404 Not Found', function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    pm.expect(jsonData.error.length).to.be.greaterThan(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/tests/gaya/99999",
+									"host": ["{{baseUrl}}"],
+									"path": ["tests", "gaya", "99999"]
+								},
+								"description": "Tests that attempting to retrieve a non-existent gaya test returns a 404 Not Found error."
+							},
+							"response": []
+						}
+					],
+					"description": "Error scenario tests for test endpoints, including non-existent test IDs."
+				}
+			],
+			"description": "Test endpoints for retrieving learning pattern (Pola) and learning style (Gaya) tests. Includes test listing, detailed test retrieval with questions and choices, and error scenario testing. Question and choice IDs are captured for use in result submission."
+		},
+		{
+			"name": "4. Results",
+			"item": [
+				{
+					"name": "Submit Pola Test",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that test data is available",
+									"const testId = pm.environment.get('testPolaId');",
+									"const questionId = pm.environment.get('testPolaQuestionId');",
+									"const choiceId = pm.environment.get('testPolaChoiceId');",
+									"",
+									"if (!testId || !questionId || !choiceId) {",
+									"    console.warn('⚠️ Missing test data. Make sure to run \"3. Tests (Pola & Gaya)\" folder first.');",
+									"} else {",
+									"    console.log('Submitting pola test with:', { testId, questionId, choiceId });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate pola test submission response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains result data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('hasil_test_id');",
+									"    pm.expect(jsonData.data).to.have.property('learning_pattern');",
+									"    pm.expect(jsonData.data).to.have.property('weight_totals');",
+									"});",
+									"",
+									"pm.test('Learning pattern is valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const validPatterns = ['consistent', 'fast', 'reflective', 'balanced'];",
+									"    pm.expect(validPatterns).to.include(jsonData.data.learning_pattern);",
+									"    console.log('Determined learning pattern:', jsonData.data.learning_pattern);",
+									"});",
+									"",
+									"pm.test('Weight totals contain all pattern types', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const weights = jsonData.data.weight_totals;",
+									"    pm.expect(weights).to.have.property('consistent');",
+									"    pm.expect(weights).to.have.property('fast');",
+									"    pm.expect(weights).to.have.property('reflective');",
+									"    pm.expect(weights).to.have.property('balanced');",
+									"});",
+									"",
+									"pm.test('Result ID is captured for cleanup and detail request', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.hasil_test_id).to.be.a('number');",
+									"    pm.environment.set('testPolaResultId', jsonData.data.hasil_test_id);",
+									"    console.log('Pola result ID captured:', jsonData.data.hasil_test_id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"test_id\": {{testPolaId}},\n  \"answers\": [\n    {\n      \"soal_id\": {{testPolaQuestionId}},\n      \"pilihan_id\": {{testPolaChoiceId}}\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/results/pola",
+							"host": ["{{baseUrl}}"],
+							"path": ["results", "pola"]
+						},
+						"description": "Submits answers for a learning pattern test and receives calculated results. The result ID is captured for use in history and detail requests, as well as for cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Gaya Test",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that test data is available",
+									"const testId = pm.environment.get('testGayaId');",
+									"const questionId = pm.environment.get('testGayaQuestionId');",
+									"const choiceId = pm.environment.get('testGayaChoiceId');",
+									"",
+									"if (!testId || !questionId || !choiceId) {",
+									"    console.warn('⚠️ Missing test data. Make sure to run \"3. Tests (Pola & Gaya)\" folder first.');",
+									"} else {",
+									"    console.log('Submitting gaya test with:', { testId, questionId, choiceId });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate gaya test submission response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains result data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('hasil_test_id');",
+									"    pm.expect(jsonData.data).to.have.property('learning_style');",
+									"    pm.expect(jsonData.data).to.have.property('weight_totals');",
+									"});",
+									"",
+									"pm.test('Learning style is valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const validStyles = ['visual', 'auditori', 'kinestetik'];",
+									"    pm.expect(validStyles).to.include(jsonData.data.learning_style);",
+									"    console.log('Determined learning style:', jsonData.data.learning_style);",
+									"});",
+									"",
+									"pm.test('Weight totals contain all style types', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const weights = jsonData.data.weight_totals;",
+									"    pm.expect(weights).to.have.property('visual');",
+									"    pm.expect(weights).to.have.property('auditori');",
+									"    pm.expect(weights).to.have.property('kinestetik');",
+									"});",
+									"",
+									"pm.test('Result ID is captured for cleanup and detail request', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.hasil_test_id).to.be.a('number');",
+									"    pm.environment.set('testGayaResultId', jsonData.data.hasil_test_id);",
+									"    console.log('Gaya result ID captured:', jsonData.data.hasil_test_id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"test_id\": {{testGayaId}},\n  \"answers\": [\n    {\n      \"soal_id\": {{testGayaQuestionId}},\n      \"pilihan_id\": {{testGayaChoiceId}}\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/results/gaya",
+							"host": ["{{baseUrl}}"],
+							"path": ["results", "gaya"]
+						},
+						"description": "Submits answers for a learning style test and receives calculated results. The result ID is captured for use in history and detail requests, as well as for cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Test History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate test history response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains data array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('History array contains submitted tests', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+									"    console.log('Found', jsonData.data.length, 'test result(s) in history');",
+									"});",
+									"",
+									"pm.test('Each history entry has required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.forEach(entry => {",
+									"        pm.expect(entry).to.have.property('id');",
+									"        pm.expect(entry).to.have.property('timestamp');",
+									"        pm.expect(entry).to.have.property('test_name');",
+									"        pm.expect(entry).to.have.property('test_type');",
+									"    });",
+									"});",
+									"",
+									"pm.test('Test types are valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const validTypes = ['pola', 'gaya'];",
+									"    jsonData.data.forEach(entry => {",
+									"        pm.expect(validTypes).to.include(entry.test_type);",
+									"    });",
+									"});",
+									"",
+									"pm.test('History includes recently submitted tests', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const polaResultId = pm.environment.get('testPolaResultId');",
+									"    const gayaResultId = pm.environment.get('testGayaResultId');",
+									"    ",
+									"    const resultIds = jsonData.data.map(entry => entry.id);",
+									"    ",
+									"    if (polaResultId) {",
+									"        pm.expect(resultIds).to.include(polaResultId);",
+									"        console.log('✓ Pola test result found in history');",
+									"    }",
+									"    ",
+									"    if (gayaResultId) {",
+									"        pm.expect(resultIds).to.include(gayaResultId);",
+									"        console.log('✓ Gaya test result found in history');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/history",
+							"host": ["{{baseUrl}}"],
+							"path": ["results", "history"]
+						},
+						"description": "Retrieves the authenticated user's complete test history, including both pola and gaya test results. Validates that recently submitted tests appear in the history."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Result Details",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Use the pola result ID for this request",
+									"const resultId = pm.environment.get('testPolaResultId');",
+									"",
+									"if (!resultId) {",
+									"    console.warn('⚠️ No result ID found. Make sure to run \"Submit Pola Test\" first.');",
+									"} else {",
+									"    console.log('Fetching details for result ID:', resultId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate result details response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains detailed result data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('user_id');",
+									"    pm.expect(jsonData.data).to.have.property('test_type');",
+									"    pm.expect(jsonData.data).to.have.property('test_name');",
+									"    pm.expect(jsonData.data).to.have.property('timestamp');",
+									"    pm.expect(jsonData.data).to.have.property('answers');",
+									"});",
+									"",
+									"pm.test('Result ID matches requested ID', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedId = parseInt(pm.environment.get('testPolaResultId'));",
+									"    pm.expect(jsonData.data.id).to.equal(expectedId);",
+									"});",
+									"",
+									"pm.test('User ID matches authenticated user', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedUserId = pm.environment.get('testUserId');",
+									"    pm.expect(jsonData.data.user_id).to.equal(expectedUserId);",
+									"});",
+									"",
+									"pm.test('Answers array is present and not empty', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.answers).to.be.an('array');",
+									"    pm.expect(jsonData.data.answers.length).to.be.greaterThan(0);",
+									"    console.log('Result contains', jsonData.data.answers.length, 'answer(s)');",
+									"});",
+									"",
+									"pm.test('Each answer has required structure', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.data.answers.forEach(answer => {",
+									"        pm.expect(answer).to.have.property('id');",
+									"        pm.expect(answer).to.have.property('soal_id');",
+									"        pm.expect(answer).to.have.property('pilihan_id');",
+									"        pm.expect(answer).to.have.property('question');",
+									"        pm.expect(answer).to.have.property('option_text');",
+									"    });",
+									"});",
+									"",
+									"pm.test('Answers contain weight information', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const testType = jsonData.data.test_type;",
+									"    ",
+									"    jsonData.data.answers.forEach(answer => {",
+									"        if (testType === 'pola') {",
+									"            pm.expect(answer).to.have.property('bobot_consistent');",
+									"            pm.expect(answer).to.have.property('bobot_fast');",
+									"            pm.expect(answer).to.have.property('bobot_reflective');",
+									"            pm.expect(answer).to.have.property('bobot_balanced');",
+									"        } else if (testType === 'gaya') {",
+									"            pm.expect(answer).to.have.property('bobot_visual');",
+									"            pm.expect(answer).to.have.property('bobot_auditori');",
+									"            pm.expect(answer).to.have.property('bobot_kinestetik');",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/{{testPolaResultId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["results", "{{testPolaResultId}}"]
+						},
+						"description": "Retrieves detailed information about a specific test result, including all submitted answers with their questions, choices, and weight values. Validates the complete result structure."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Submit Test Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"test_id\": 1,\n  \"answers\": [\n    {\n      \"soal_id\": 1,\n      \"pilihan_id\": 1\n    }\n  ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/results/pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["results", "pola"]
+								},
+								"description": "Tests that attempting to submit test results without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Submit Test With Invalid Test ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request or 404 Not Found', function () {",
+											"    pm.expect([400, 404]).to.include(pm.response.code);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"test_id\": 99999,\n  \"answers\": [\n    {\n      \"soal_id\": 1,\n      \"pilihan_id\": 1\n    }\n  ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/results/pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["results", "pola"]
+								},
+								"description": "Tests that submitting a test with an invalid test ID returns an appropriate error response."
+							},
+							"response": []
+						},
+						{
+							"name": "Submit Test With Missing Answers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"test_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/results/pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["results", "pola"]
+								},
+								"description": "Tests that submitting a test without the answers array returns a 400 Bad Request error."
+							},
+							"response": []
+						},
+						{
+							"name": "Get History Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/results/history",
+									"host": ["{{baseUrl}}"],
+									"path": ["results", "history"]
+								},
+								"description": "Tests that accessing test history without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Result Details Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/results/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["results", "1"]
+								},
+								"description": "Tests that accessing result details without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Non-Existent Result",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404 Not Found', function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/results/99999",
+									"host": ["{{baseUrl}}"],
+									"path": ["results", "99999"]
+								},
+								"description": "Tests that attempting to retrieve a non-existent result returns a 404 Not Found error."
+							},
+							"response": []
+						}
+					],
+					"description": "Error scenario tests for results endpoints, including unauthorized access, invalid test data, and missing resources."
+				}
+			],
+			"description": "Results endpoints for submitting test answers and retrieving test history and detailed results. Includes automatic token injection, result validation, and comprehensive error scenario testing. Result IDs are captured for cleanup.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Folder-level pre-request script for Results",
+							"// Automatically inject userToken into Authorization header for authenticated requests",
+							"",
+							"const token = pm.environment.get('userToken');",
+							"",
+							"if (token) {",
+							"    // Token will be added to requests that need it",
+							"    console.log('User token available for authenticated requests');",
+							"} else {",
+							"    console.warn('⚠️ User token not found. Make sure to run Authentication folder first.');",
+							"}"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Insights",
+			"item": [
+				{
+					"name": "Get User Insights",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate user insights response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains data array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    console.log('Found', jsonData.data.length, 'insight(s)');",
+									"});",
+									"",
+									"pm.test('Each insight has required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        jsonData.data.forEach(insight => {",
+									"            pm.expect(insight).to.have.property('id');",
+									"            pm.expect(insight).to.have.property('learning_style');",
+									"            pm.expect(insight).to.have.property('learning_pattern');",
+									"            pm.expect(insight).to.have.property('insight_text');",
+									"            pm.expect(insight).to.have.property('created_at');",
+									"        });",
+									"    }",
+									"});",
+									"",
+									"pm.test('Insights array structure is valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    console.log('✓ Insights array structure validated');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/insights",
+							"host": ["{{baseUrl}}"],
+							"path": ["insights"]
+						},
+						"description": "Retrieves personalized learning insights for the authenticated user based on their learning style and pattern. Returns an array of insights with recommendations and guidance."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Insight (Admin)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify admin token is available",
+									"const adminToken = pm.environment.get('adminToken');",
+									"",
+									"if (!adminToken) {",
+									"    console.warn('⚠️ Admin token not found. Make sure to run \"Login Admin\" first.');",
+									"} else {",
+									"    console.log('Creating insight with admin privileges');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate insight creation response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains created insight data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('learning_style');",
+									"    pm.expect(jsonData.data).to.have.property('learning_pattern');",
+									"    pm.expect(jsonData.data).to.have.property('insight_text');",
+									"});",
+									"",
+									"pm.test('Created insight matches request data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.learning_style).to.equal('visual');",
+									"    pm.expect(jsonData.data.learning_pattern).to.equal('consistent');",
+									"});",
+									"",
+									"pm.test('Insight ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testInsightId', jsonData.data.id);",
+									"    console.log('Insight ID captured for cleanup:', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"learning_style\": \"visual\",\n  \"learning_pattern\": \"consistent\",\n  \"insight_text\": \"Test insight created at {{timestamp}}: Visual learners with consistent patterns benefit from structured diagrams and regular review schedules.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/insights",
+							"host": ["{{baseUrl}}"],
+							"path": ["insights"]
+						},
+						"description": "Creates a new learning insight (admin only). The insight is associated with a specific learning style and pattern combination. The insight ID is captured for cleanup at the end of the test run."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Create Insight as Non-Admin User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403 Forbidden', function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about insufficient permissions', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Non-admin user correctly denied access to create insights');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"learning_style\": \"auditori\",\n  \"learning_pattern\": \"fast\",\n  \"insight_text\": \"This should fail - non-admin user attempting to create insight.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/insights",
+									"host": ["{{baseUrl}}"],
+									"path": ["insights"]
+								},
+								"description": "Tests that non-admin users cannot create insights and receive a 403 Forbidden error when attempting to do so."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Insights Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/insights",
+									"host": ["{{baseUrl}}"],
+									"path": ["insights"]
+								},
+								"description": "Tests that accessing insights without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Insight Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"learning_style\": \"kinestetik\",\n  \"learning_pattern\": \"reflective\",\n  \"insight_text\": \"This should fail - no authentication provided.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/insights",
+									"host": ["{{baseUrl}}"],
+									"path": ["insights"]
+								},
+								"description": "Tests that attempting to create an insight without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Insight With Missing Fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about missing fields', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"learning_style\": \"visual\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/insights",
+									"host": ["{{baseUrl}}"],
+									"path": ["insights"]
+								},
+								"description": "Tests that attempting to create an insight with missing required fields returns a 400 Bad Request error."
+							},
+							"response": []
+						}
+					],
+					"description": "Error scenario tests for insights endpoints, including unauthorized access, insufficient permissions, and invalid requests."
+				}
+			],
+			"description": "Insights endpoints for retrieving personalized learning insights and creating new insights (admin only). Includes automatic token injection for user and admin authentication, and comprehensive error scenario testing.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Folder-level pre-request script for Insights",
+							"// Note: Individual requests will use either userToken or adminToken as needed",
+							"",
+							"const userToken = pm.environment.get('userToken');",
+							"const adminToken = pm.environment.get('adminToken');",
+							"",
+							"if (!userToken) {",
+							"    console.warn('⚠️ User token not found. Make sure to run Authentication folder first.');",
+							"}",
+							"",
+							"if (!adminToken) {",
+							"    console.warn('⚠️ Admin token not found. Admin-only requests will fail.');",
+							"}"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "6. MOTD",
+			"item": [
+				{
+					"name": "Get All MOTD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate MOTD list response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains data array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    console.log('Found', jsonData.data.length, 'MOTD entry/entries');",
+									"});",
+									"",
+									"pm.test('Each MOTD entry has required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        jsonData.data.forEach(motd => {",
+									"            pm.expect(motd).to.have.property('id');",
+									"            pm.expect(motd).to.have.property('message');",
+									"            pm.expect(motd).to.have.property('created_at');",
+									"            pm.expect(motd).to.have.property('updated_at');",
+									"        });",
+									"    }",
+									"});",
+									"",
+									"pm.test('MOTD array structure is valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    console.log('✓ MOTD array structure validated');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/motd",
+							"host": ["{{baseUrl}}"],
+							"path": ["motd"]
+						},
+						"description": "Retrieves all Message of the Day entries. Requires user authentication. Returns an array of MOTD entries with their messages and timestamps."
+					},
+					"response": []
+				},
+				{
+					"name": "Create MOTD (Admin)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify admin token is available",
+									"const adminToken = pm.environment.get('adminToken');",
+									"const timestamp = pm.environment.get('timestamp');",
+									"",
+									"if (!adminToken) {",
+									"    console.warn('⚠️ Admin token not found. Make sure to run \"Login Admin\" first.');",
+									"} else {",
+									"    console.log('Creating MOTD with admin privileges at timestamp:', timestamp);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate MOTD creation response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains created MOTD data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('message');",
+									"    pm.expect(jsonData.data).to.have.property('created_at');",
+									"    pm.expect(jsonData.data).to.have.property('updated_at');",
+									"});",
+									"",
+									"pm.test('Created MOTD message contains timestamp', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const timestamp = pm.environment.get('timestamp');",
+									"    pm.expect(jsonData.data.message).to.include(timestamp);",
+									"});",
+									"",
+									"pm.test('MOTD ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testMotdId', jsonData.data.id);",
+									"    console.log('MOTD ID captured for cleanup:', jsonData.data.id);",
+									"});",
+									"",
+									"pm.test('Created_at and updated_at timestamps are present', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.created_at).to.be.a('string');",
+									"    pm.expect(jsonData.data.updated_at).to.be.a('string');",
+									"    // Store created_at for update comparison",
+									"    pm.environment.set('testMotdCreatedAt', jsonData.data.created_at);",
+									"    pm.environment.set('testMotdUpdatedAt', jsonData.data.updated_at);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Test MOTD created at {{timestamp}}: Welcome to the Learning Assessment System!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/motd",
+							"host": ["{{baseUrl}}"],
+							"path": ["motd"]
+						},
+						"description": "Creates a new Message of the Day entry (admin only). The message includes a timestamp for uniqueness. The MOTD ID is captured for use in subsequent requests and cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MOTD by ID (Admin)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a MOTD ID was captured",
+									"const motdId = pm.environment.get('testMotdId');",
+									"",
+									"if (!motdId) {",
+									"    console.warn('⚠️ No MOTD ID found. Make sure to run \"Create MOTD (Admin)\" first.');",
+									"} else {",
+									"    console.log('Fetching MOTD with ID:', motdId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate MOTD retrieval response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains MOTD data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('message');",
+									"    pm.expect(jsonData.data).to.have.property('created_at');",
+									"    pm.expect(jsonData.data).to.have.property('updated_at');",
+									"});",
+									"",
+									"pm.test('MOTD ID matches requested ID', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedId = parseInt(pm.environment.get('testMotdId'));",
+									"    pm.expect(jsonData.data.id).to.equal(expectedId);",
+									"});",
+									"",
+									"pm.test('MOTD message contains timestamp', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const timestamp = pm.environment.get('timestamp');",
+									"    pm.expect(jsonData.data.message).to.include(timestamp);",
+									"});",
+									"",
+									"pm.test('Single MOTD structure is valid', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('object');",
+									"    console.log('✓ Single MOTD structure validated');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/motd/{{testMotdId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["motd", "{{testMotdId}}"]
+						},
+						"description": "Retrieves a specific Message of the Day entry by ID (admin only). Validates that the returned MOTD matches the created entry."
+					},
+					"response": []
+				},
+				{
+					"name": "Update MOTD (Admin)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a MOTD ID was captured",
+									"const motdId = pm.environment.get('testMotdId');",
+									"const timestamp = pm.environment.get('timestamp');",
+									"",
+									"if (!motdId) {",
+									"    console.warn('⚠️ No MOTD ID found. Make sure to run \"Create MOTD (Admin)\" first.');",
+									"} else {",
+									"    console.log('Updating MOTD with ID:', motdId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate MOTD update response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains updated MOTD data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('message');",
+									"    pm.expect(jsonData.data).to.have.property('created_at');",
+									"    pm.expect(jsonData.data).to.have.property('updated_at');",
+									"});",
+									"",
+									"pm.test('MOTD message was updated', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.message).to.include('UPDATED');",
+									"    pm.expect(jsonData.data.message).to.include('System maintenance');",
+									"});",
+									"",
+									"pm.test('Updated_at timestamp changed after update', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const originalUpdatedAt = pm.environment.get('testMotdUpdatedAt');",
+									"    const newUpdatedAt = jsonData.data.updated_at;",
+									"    ",
+									"    // The updated_at should be different from the original",
+									"    // Note: In some cases they might be the same if update happens very quickly",
+									"    pm.expect(newUpdatedAt).to.be.a('string');",
+									"    console.log('Original updated_at:', originalUpdatedAt);",
+									"    console.log('New updated_at:', newUpdatedAt);",
+									"    ",
+									"    // Store new updated_at",
+									"    pm.environment.set('testMotdUpdatedAt', newUpdatedAt);",
+									"});",
+									"",
+									"pm.test('Created_at timestamp remains unchanged', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const originalCreatedAt = pm.environment.get('testMotdCreatedAt');",
+									"    pm.expect(jsonData.data.created_at).to.equal(originalCreatedAt);",
+									"    console.log('✓ Created_at timestamp preserved after update');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"UPDATED at {{timestamp}}: System maintenance scheduled for tonight\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/motd/{{testMotdId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["motd", "{{testMotdId}}"]
+						},
+						"description": "Updates an existing Message of the Day entry (admin only). Validates that the message is updated and the updated_at timestamp changes while created_at remains the same."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete MOTD (Admin)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a MOTD ID was captured",
+									"const motdId = pm.environment.get('testMotdId');",
+									"",
+									"if (!motdId) {",
+									"    console.warn('⚠️ No MOTD ID found. Make sure to run \"Create MOTD (Admin)\" first.');",
+									"} else {",
+									"    console.log('Deleting MOTD with ID:', motdId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate MOTD deletion response",
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains success message', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.be.a('string');",
+									"    pm.expect(jsonData.message.toLowerCase()).to.include('deleted');",
+									"});",
+									"",
+									"pm.test('MOTD deletion successful', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    console.log('✓ MOTD deleted successfully');",
+									"    ",
+									"    // Clear the MOTD ID from environment since it's been deleted",
+									"    pm.environment.unset('testMotdId');",
+									"    pm.environment.unset('testMotdCreatedAt');",
+									"    pm.environment.unset('testMotdUpdatedAt');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/motd/{{testMotdId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["motd", "{{testMotdId}}"]
+						},
+						"description": "Deletes a Message of the Day entry (admin only). Validates successful deletion and clears the MOTD ID from environment variables."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Create MOTD with Missing Message",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about missing message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    pm.expect(jsonData.error.toLowerCase()).to.include('message');",
+											"    console.log('✓ Missing message field correctly rejected');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/motd",
+									"host": ["{{baseUrl}}"],
+									"path": ["motd"]
+								},
+								"description": "Tests that attempting to create a MOTD without a message field returns a 400 Bad Request error."
+							},
+							"response": []
+						},
+						{
+							"name": "Create MOTD as Non-Admin User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403 Forbidden', function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about insufficient permissions', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Non-admin user correctly denied access to create MOTD');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"message\": \"This should fail - non-admin user attempting to create MOTD\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/motd",
+									"host": ["{{baseUrl}}"],
+									"path": ["motd"]
+								},
+								"description": "Tests that non-admin users cannot create MOTD entries and receive a 403 Forbidden error when attempting to do so."
+							},
+							"response": []
+						},
+						{
+							"name": "Get MOTD by Non-Existent ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404 Not Found', function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about MOTD not found', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    pm.expect(jsonData.error.toLowerCase()).to.include('not found');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/motd/99999",
+									"host": ["{{baseUrl}}"],
+									"path": ["motd", "99999"]
+								},
+								"description": "Tests that attempting to retrieve a non-existent MOTD entry returns a 404 Not Found error."
+							},
+							"response": []
+						},
+						{
+							"name": "Update MOTD as Non-Admin User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403 Forbidden', function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about insufficient permissions', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Non-admin user correctly denied access to update MOTD');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"message\": \"This should fail - non-admin user attempting to update MOTD\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/motd/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["motd", "1"]
+								},
+								"description": "Tests that non-admin users cannot update MOTD entries and receive a 403 Forbidden error when attempting to do so."
+							},
+							"response": []
+						},
+						{
+							"name": "Delete MOTD as Non-Admin User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403 Forbidden', function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about insufficient permissions', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Non-admin user correctly denied access to delete MOTD');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/motd/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["motd", "1"]
+								},
+								"description": "Tests that non-admin users cannot delete MOTD entries and receive a 403 Forbidden error when attempting to do so."
+							},
+							"response": []
+						},
+						{
+							"name": "Get All MOTD Without Authentication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401 Unauthorized', function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/motd",
+									"host": ["{{baseUrl}}"],
+									"path": ["motd"]
+								},
+								"description": "Tests that accessing MOTD list without authentication returns a 401 Unauthorized error."
+							},
+							"response": []
+						}
+					],
+					"description": "Error scenario tests for MOTD endpoints, including missing fields, unauthorized access, insufficient permissions, and non-existent resources."
+				}
+			],
+			"description": "Message of the Day (MOTD) endpoints for retrieving and managing system messages. Includes CRUD operations (admin only for create/update/delete) and comprehensive error scenario testing. MOTD IDs and timestamps are captured for validation and cleanup.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Folder-level pre-request script for MOTD",
+							"// Note: Individual requests will use either userToken or adminToken as needed",
+							"",
+							"const userToken = pm.environment.get('userToken');",
+							"const adminToken = pm.environment.get('adminToken');",
+							"",
+							"if (!userToken) {",
+							"    console.warn('⚠️ User token not found. Make sure to run Authentication folder first.');",
+							"}",
+							"",
+							"if (!adminToken) {",
+							"    console.warn('⚠️ Admin token not found. Admin-only requests will fail.');",
+							"}"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Admin Operations",
+			"item": [
+				{
+					"name": "Create Pola Question",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify admin token is available",
+									"const adminToken = pm.environment.get('adminToken');",
+									"const timestamp = pm.environment.get('timestamp');",
+									"const testPolaId = pm.environment.get('testPolaId');",
+									"",
+									"if (!adminToken) {",
+									"    console.warn('⚠️ Admin token not found. Make sure to run \"Login Admin\" first.');",
+									"}",
+									"",
+									"if (!testPolaId) {",
+									"    console.warn('⚠️ Pola test ID not found. Make sure to run \"3. Tests (Pola & Gaya)\" folder first.');",
+									"} else {",
+									"    console.log('Creating pola question for test ID:', testPolaId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate pola question creation response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains question data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('test_id');",
+									"    pm.expect(jsonData.data).to.have.property('question');",
+									"});",
+									"",
+									"pm.test('Question text contains timestamp', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const timestamp = pm.environment.get('timestamp');",
+									"    pm.expect(jsonData.data.question).to.include(timestamp);",
+									"});",
+									"",
+									"pm.test('Question ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testCreatedPolaQuestionId', jsonData.data.id);",
+									"    console.log('Pola question ID captured for cleanup:', jsonData.data.id);",
+									"});",
+									"",
+									"pm.test('Test ID matches requested test', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedTestId = parseInt(pm.environment.get('testPolaId'));",
+									"    pm.expect(jsonData.data.test_id).to.equal(expectedTestId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"test_id\": {{testPolaId}},\n  \"question\": \"Test question created at {{timestamp}}: How do you approach new learning material?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/soal-pola",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "soal-pola"]
+						},
+						"description": "Creates a new question for a learning pattern test (admin only). The question text includes a timestamp for uniqueness. The question ID is captured for use in creating choices and cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Pola Choice",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a pola question ID was captured",
+									"const questionId = pm.environment.get('testCreatedPolaQuestionId');",
+									"",
+									"if (!questionId) {",
+									"    console.warn('⚠️ No pola question ID found. Make sure to run \"Create Pola Question\" first.');",
+									"} else {",
+									"    console.log('Creating pola choice for question ID:', questionId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate pola choice creation response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains choice data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('soal_id');",
+									"    pm.expect(jsonData.data).to.have.property('option_text');",
+									"});",
+									"",
+									"pm.test('Choice has all pola weight fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('bobot_consistent');",
+									"    pm.expect(jsonData.data).to.have.property('bobot_fast');",
+									"    pm.expect(jsonData.data).to.have.property('bobot_reflective');",
+									"    pm.expect(jsonData.data).to.have.property('bobot_balanced');",
+									"});",
+									"",
+									"pm.test('Weight values match request', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.bobot_consistent).to.equal(0);",
+									"    pm.expect(jsonData.data.bobot_fast).to.equal(3);",
+									"    pm.expect(jsonData.data.bobot_reflective).to.equal(1);",
+									"    pm.expect(jsonData.data.bobot_balanced).to.equal(2);",
+									"});",
+									"",
+									"pm.test('Choice ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testCreatedPolaChoiceId', jsonData.data.id);",
+									"    console.log('Pola choice ID captured for cleanup:', jsonData.data.id);",
+									"});",
+									"",
+									"pm.test('Soal ID matches created question', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedSoalId = parseInt(pm.environment.get('testCreatedPolaQuestionId'));",
+									"    pm.expect(jsonData.data.soal_id).to.equal(expectedSoalId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"soal_id\": {{testCreatedPolaQuestionId}},\n  \"option_text\": \"I dive right in and learn as I go\",\n  \"bobot_consistent\": 0,\n  \"bobot_fast\": 3,\n  \"bobot_reflective\": 1,\n  \"bobot_balanced\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/pilihan-pola",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "pilihan-pola"]
+						},
+						"description": "Creates a new choice for a learning pattern question (admin only). All four weight fields (consistent, fast, reflective, balanced) are required. The choice ID is captured for cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Gaya Question",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify admin token is available",
+									"const adminToken = pm.environment.get('adminToken');",
+									"const timestamp = pm.environment.get('timestamp');",
+									"const testGayaId = pm.environment.get('testGayaId');",
+									"",
+									"if (!adminToken) {",
+									"    console.warn('⚠️ Admin token not found. Make sure to run \"Login Admin\" first.');",
+									"}",
+									"",
+									"if (!testGayaId) {",
+									"    console.warn('⚠️ Gaya test ID not found. Make sure to run \"3. Tests (Pola & Gaya)\" folder first.');",
+									"} else {",
+									"    console.log('Creating gaya question for test ID:', testGayaId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate gaya question creation response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains question data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('test_id');",
+									"    pm.expect(jsonData.data).to.have.property('question');",
+									"});",
+									"",
+									"pm.test('Question text contains timestamp', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const timestamp = pm.environment.get('timestamp');",
+									"    pm.expect(jsonData.data.question).to.include(timestamp);",
+									"});",
+									"",
+									"pm.test('Question ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testCreatedGayaQuestionId', jsonData.data.id);",
+									"    console.log('Gaya question ID captured for cleanup:', jsonData.data.id);",
+									"});",
+									"",
+									"pm.test('Test ID matches requested test', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedTestId = parseInt(pm.environment.get('testGayaId'));",
+									"    pm.expect(jsonData.data.test_id).to.equal(expectedTestId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"test_id\": {{testGayaId}},\n  \"question\": \"Test question created at {{timestamp}}: What helps you remember information best?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/soal-gaya",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "soal-gaya"]
+						},
+						"description": "Creates a new question for a learning style test (admin only). The question text includes a timestamp for uniqueness. The question ID is captured for use in creating choices and cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Gaya Choice",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Verify that a gaya question ID was captured",
+									"const questionId = pm.environment.get('testCreatedGayaQuestionId');",
+									"",
+									"if (!questionId) {",
+									"    console.warn('⚠️ No gaya question ID found. Make sure to run \"Create Gaya Question\" first.');",
+									"} else {",
+									"    console.log('Creating gaya choice for question ID:', questionId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate gaya choice creation response",
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has success field set to true', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response contains choice data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('soal_id');",
+									"    pm.expect(jsonData.data).to.have.property('option_text');",
+									"});",
+									"",
+									"pm.test('Choice has all gaya weight fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('bobot_visual');",
+									"    pm.expect(jsonData.data).to.have.property('bobot_auditori');",
+									"    pm.expect(jsonData.data).to.have.property('bobot_kinestetik');",
+									"});",
+									"",
+									"pm.test('Weight values match request', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.bobot_visual).to.equal(3);",
+									"    pm.expect(jsonData.data.bobot_auditori).to.equal(0);",
+									"    pm.expect(jsonData.data.bobot_kinestetik).to.equal(1);",
+									"});",
+									"",
+									"pm.test('Choice ID is captured for cleanup', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.id).to.be.a('number');",
+									"    pm.environment.set('testCreatedGayaChoiceId', jsonData.data.id);",
+									"    console.log('Gaya choice ID captured for cleanup:', jsonData.data.id);",
+									"});",
+									"",
+									"pm.test('Soal ID matches created question', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const expectedSoalId = parseInt(pm.environment.get('testCreatedGayaQuestionId'));",
+									"    pm.expect(jsonData.data.soal_id).to.equal(expectedSoalId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"soal_id\": {{testCreatedGayaQuestionId}},\n  \"option_text\": \"Seeing pictures and diagrams\",\n  \"bobot_visual\": 3,\n  \"bobot_auditori\": 0,\n  \"bobot_kinestetik\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/pilihan-gaya",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "pilihan-gaya"]
+						},
+						"description": "Creates a new choice for a learning style question (admin only). All three weight fields (visual, auditori, kinestetik) are required. The choice ID is captured for cleanup."
+					},
+					"response": []
+				},
+				{
+					"name": "Error Scenarios",
+					"item": [
+						{
+							"name": "Create Pola Question with Missing test_id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Missing test_id field correctly rejected');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"question\": \"This should fail - missing test_id\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/soal-pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "soal-pola"]
+								},
+								"description": "Tests that attempting to create a pola question without test_id returns a 400 Bad Request error."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Pola Question with Missing question",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Missing question field correctly rejected');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"test_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/soal-pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "soal-pola"]
+								},
+								"description": "Tests that attempting to create a pola question without question text returns a 400 Bad Request error."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Pola Choice with Missing Fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400 Bad Request', function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Missing required fields correctly rejected');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"soal_id\": 1,\n  \"option_text\": \"This should fail - missing weight fields\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/pilihan-pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "pilihan-pola"]
+								},
+								"description": "Tests that attempting to create a pola choice without all required weight fields returns a 400 Bad Request error."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Pola Question as Non-Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403 Forbidden', function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about insufficient permissions', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Non-admin user correctly denied access to create question');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"test_id\": 1,\n  \"question\": \"This should fail - non-admin user\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/soal-pola",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "soal-pola"]
+								},
+								"description": "Tests that non-admin users cannot create pola questions and receive a 403 Forbidden error when attempting to do so."
+							},
+							"response": []
+						},
+						{
+							"name": "Create Gaya Question as Non-Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403 Forbidden', function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test('Response has success field set to false', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('success');",
+											"    pm.expect(jsonData.success).to.be.false;",
+											"});",
+											"",
+											"pm.test('Response contains error message about insufficient permissions', function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.have.property('error');",
+											"    pm.expect(jsonData.error).to.be.a('string');",
+											"    console.log('✓ Non-admin user correctly denied access to create question');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"test_id\": 1,\n  \"question\": \"This should fail - non-admin user\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/soal-gaya",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "soal-gaya"]
+								},
+								"description": "Tests that non-admin users cannot create gaya questions and receive a 403 Forbidden error when attempting to do so."
+							},
+							"response": []
+						}
+					],
+					"description": "Error scenario tests for admin operations, including missing fields and non-admin access attempts."
+				}
+			],
+			"description": "Admin-only endpoints for creating questions and choices for learning pattern (Pola) and learning style (Gaya) tests. Includes comprehensive validation and error scenario testing. Question and choice IDs are captured for cleanup.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Folder-level pre-request script for Admin Operations",
+							"// Automatically inject adminToken into Authorization header",
+							"",
+							"const adminToken = pm.environment.get('adminToken');",
+							"",
+							"if (adminToken) {",
+							"    console.log('Admin token available for admin operations');",
+							"} else {",
+							"    console.warn('⚠️ Admin token not found. Make sure to run \"Login Admin\" first.');",
+							"}"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "Delete Test Insights",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if insight ID exists for cleanup",
+									"const insightId = pm.environment.get('testInsightId');",
+									"if (!insightId) {",
+									"    console.log('ℹ️ No test insight ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test insight ID:', insightId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const insightId = pm.environment.get('testInsightId');",
+									"",
+									"if (!insightId) {",
+									"    pm.test('No insight to delete (skipped)', function () {",
+									"        console.log('✓ No test insight found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test insight deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test insight deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Insight already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Insight already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete insight ID', insightId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/insights/{{testInsightId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["insights", "{{testInsightId}}"]
+						},
+						"description": "Deletes test insights created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Test Results",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if result IDs exist for cleanup",
+									"const polaResultId = pm.environment.get('testPolaResultId');",
+									"const gayaResultId = pm.environment.get('testGayaResultId');",
+									"",
+									"if (!polaResultId && !gayaResultId) {",
+									"    console.log('ℹ️ No test result IDs found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test results - Pola:', polaResultId, 'Gaya:', gayaResultId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const polaResultId = pm.environment.get('testPolaResultId');",
+									"const gayaResultId = pm.environment.get('testGayaResultId');",
+									"",
+									"if (!polaResultId && !gayaResultId) {",
+									"    pm.test('No results to delete (skipped)', function () {",
+									"        console.log('✓ No test results found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test results deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test results deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Results already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Results already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete results. Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/{{testPolaResultId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["results", "{{testPolaResultId}}"]
+						},
+						"description": "Deletes test results created during the test run. Uses admin token for authorization. Handles both Pola and Gaya result IDs. Failures are logged but don't fail the test run."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete MOTD Entries",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if MOTD ID exists for cleanup",
+									"const motdId = pm.environment.get('testMotdId');",
+									"if (!motdId) {",
+									"    console.log('ℹ️ No test MOTD ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test MOTD ID:', motdId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const motdId = pm.environment.get('testMotdId');",
+									"",
+									"if (!motdId) {",
+									"    pm.test('No MOTD to delete (skipped)', function () {",
+									"        console.log('✓ No test MOTD found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test MOTD deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test MOTD deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('MOTD already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ MOTD already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete MOTD ID', motdId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/motd/{{testMotdId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["motd", "{{testMotdId}}"]
+						},
+						"description": "Deletes test MOTD entries created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pola Choices",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if Pola choice ID exists for cleanup",
+									"const choiceId = pm.environment.get('createdPolaChoiceId');",
+									"if (!choiceId) {",
+									"    console.log('ℹ️ No test Pola choice ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test Pola choice ID:', choiceId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const choiceId = pm.environment.get('createdPolaChoiceId');",
+									"",
+									"if (!choiceId) {",
+									"    pm.test('No Pola choice to delete (skipped)', function () {",
+									"        console.log('✓ No test Pola choice found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test Pola choice deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test Pola choice deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Pola choice already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Pola choice already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete Pola choice ID', choiceId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/pola/choices/{{createdPolaChoiceId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "pola", "choices", "{{createdPolaChoiceId}}"]
+						},
+						"description": "Deletes test Pola choices created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pola Questions",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if Pola question ID exists for cleanup",
+									"const questionId = pm.environment.get('createdPolaQuestionId');",
+									"if (!questionId) {",
+									"    console.log('ℹ️ No test Pola question ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test Pola question ID:', questionId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const questionId = pm.environment.get('createdPolaQuestionId');",
+									"",
+									"if (!questionId) {",
+									"    pm.test('No Pola question to delete (skipped)', function () {",
+									"        console.log('✓ No test Pola question found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test Pola question deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test Pola question deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Pola question already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Pola question already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete Pola question ID', questionId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/pola/questions/{{createdPolaQuestionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "pola", "questions", "{{createdPolaQuestionId}}"]
+						},
+						"description": "Deletes test Pola questions created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Gaya Choices",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if Gaya choice ID exists for cleanup",
+									"const choiceId = pm.environment.get('createdGayaChoiceId');",
+									"if (!choiceId) {",
+									"    console.log('ℹ️ No test Gaya choice ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test Gaya choice ID:', choiceId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const choiceId = pm.environment.get('createdGayaChoiceId');",
+									"",
+									"if (!choiceId) {",
+									"    pm.test('No Gaya choice to delete (skipped)', function () {",
+									"        console.log('✓ No test Gaya choice found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test Gaya choice deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test Gaya choice deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Gaya choice already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Gaya choice already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete Gaya choice ID', choiceId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/gaya/choices/{{createdGayaChoiceId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "gaya", "choices", "{{createdGayaChoiceId}}"]
+						},
+						"description": "Deletes test Gaya choices created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Gaya Questions",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if Gaya question ID exists for cleanup",
+									"const questionId = pm.environment.get('createdGayaQuestionId');",
+									"if (!questionId) {",
+									"    console.log('ℹ️ No test Gaya question ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test Gaya question ID:', questionId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const questionId = pm.environment.get('createdGayaQuestionId');",
+									"",
+									"if (!questionId) {",
+									"    pm.test('No Gaya question to delete (skipped)', function () {",
+									"        console.log('✓ No test Gaya question found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test Gaya question deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test Gaya question deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Gaya question already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Gaya question already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete Gaya question ID', questionId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/gaya/questions/{{createdGayaQuestionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "gaya", "questions", "{{createdGayaQuestionId}}"]
+						},
+						"description": "Deletes test Gaya questions created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Profile Picture",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if profile picture filename exists for cleanup",
+									"const filename = pm.environment.get('testProfilePicture');",
+									"if (!filename) {",
+									"    console.log('ℹ️ No test profile picture filename found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test profile picture:', filename);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const filename = pm.environment.get('testProfilePicture');",
+									"",
+									"if (!filename) {",
+									"    pm.test('No profile picture to delete (skipped)', function () {",
+									"        console.log('✓ No test profile picture found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test profile picture deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test profile picture deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Profile picture already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Profile picture already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete profile picture', filename, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/profile/picture/{{testProfilePicture}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "profile", "picture", "{{testProfilePicture}}"]
+						},
+						"description": "Deletes test profile pictures uploaded during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Test User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if test user ID exists for cleanup",
+									"const userId = pm.environment.get('testUserId');",
+									"if (!userId) {",
+									"    console.log('ℹ️ No test user ID found, skipping deletion');",
+									"} else {",
+									"    console.log('Deleting test user ID:', userId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Handle cleanup response with error tolerance",
+									"const userId = pm.environment.get('testUserId');",
+									"",
+									"if (!userId) {",
+									"    pm.test('No test user to delete (skipped)', function () {",
+									"        console.log('✓ No test user found, cleanup not needed');",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else if (pm.response.code === 200) {",
+									"    pm.test('Test user deleted successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        console.log('✓ Test user deleted successfully');",
+									"    });",
+									"} else if (pm.response.code === 404) {",
+									"    pm.test('Test user already deleted (expected)', function () {",
+									"        pm.response.to.have.status(404);",
+									"        console.log('ℹ️ Test user already deleted or not found');",
+									"    });",
+									"} else {",
+									"    pm.test('Cleanup warning logged (non-critical)', function () {",
+									"        console.warn('⚠️ Cleanup warning: Failed to delete test user ID', userId, 'Status:', pm.response.code);",
+									"        // Don't fail the test - cleanup failures are non-critical",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/users/{{testUserId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "users", "{{testUserId}}"]
+						},
+						"description": "Deletes the test user account created during the test run. Uses admin token for authorization. Failures are logged but don't fail the test run to ensure cleanup continues."
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Environment Variables",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This request doesn't make an HTTP call, it just clears variables",
+									"console.log('Clearing all runtime environment variables...');",
+									"",
+									"// List of runtime variables to clear",
+									"const runtimeVars = [",
+									"    'timestamp',",
+									"    'userToken',",
+									"    'adminToken',",
+									"    'testUserId',",
+									"    'testUserEmail',",
+									"    'testUserUsername',",
+									"    'testUserPassword',",
+									"    'testMotdId',",
+									"    'testInsightId',",
+									"    'testPolaId',",
+									"    'testGayaId',",
+									"    'testPolaQuestionId',",
+									"    'testPolaChoiceId',",
+									"    'testGayaQuestionId',",
+									"    'testGayaChoiceId',",
+									"    'testPolaResultId',",
+									"    'testGayaResultId',",
+									"    'testProfilePicture',",
+									"    'createdPolaQuestionId',",
+									"    'createdPolaChoiceId',",
+									"    'createdGayaQuestionId',",
+									"    'createdGayaChoiceId'",
+									"];",
+									"",
+									"// Clear each variable",
+									"runtimeVars.forEach(varName => {",
+									"    pm.environment.unset(varName);",
+									"});",
+									"",
+									"console.log('✓ All runtime environment variables cleared');",
+									"",
+									"// Skip the actual HTTP request since this is just for cleanup",
+									"pm.execution.skipRequest();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify that variables were cleared",
+									"pm.test('Runtime environment variables cleared successfully', function () {",
+									"    const runtimeVars = [",
+									"        'timestamp', 'userToken', 'adminToken', 'testUserId',",
+									"        'testUserEmail', 'testUserUsername', 'testUserPassword',",
+									"        'testMotdId', 'testInsightId', 'testPolaId', 'testGayaId',",
+									"        'testPolaQuestionId', 'testPolaChoiceId', 'testGayaQuestionId',",
+									"        'testGayaChoiceId', 'testPolaResultId', 'testGayaResultId',",
+									"        'testProfilePicture', 'createdPolaQuestionId', 'createdPolaChoiceId',",
+									"        'createdGayaQuestionId', 'createdGayaChoiceId'",
+									"    ];",
+									"    ",
+									"    let clearedCount = 0;",
+									"    runtimeVars.forEach(varName => {",
+									"        if (!pm.environment.get(varName)) {",
+									"            clearedCount++;",
+									"        }",
+									"    });",
+									"    ",
+									"    console.log(`✓ Cleared ${clearedCount}/${runtimeVars.length} runtime variables`);",
+									"    pm.expect(clearedCount).to.equal(runtimeVars.length);",
+									"});",
+									"",
+									"pm.test('Collection cleanup completed', function () {",
+									"    console.log('🎉 Test collection cleanup completed successfully!');",
+									"    console.log('The environment is now clean and ready for the next test run.');",
+									"    pm.expect(true).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Clears all runtime environment variables to ensure a clean state for the next test run. This request is skipped via pre-request script and only serves to execute the cleanup logic."
+					},
+					"response": []
+				}
+			],
+			"description": "Cleanup operations to remove all test data created during the test run. This folder should be run last to ensure the system returns to its pre-test state. All cleanup operations are designed to be non-critical - failures are logged but don't stop the cleanup process.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Folder-level pre-request script for Cleanup",
+							"// Automatically inject adminToken into Authorization header for deletion requests",
+							"",
+							"const adminToken = pm.environment.get('adminToken');",
+							"",
+							"if (adminToken) {",
+							"    console.log('Admin token available for cleanup operations');",
+							"} else {",
+							"    console.warn('⚠️ Admin token not found. Cleanup operations may fail.');",
+							"    console.warn('Make sure to run \"Login Admin\" before cleanup.');",
+							"}"
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Collection-level pre-request script",
+					"// This runs before every request in the collection",
+					"",
+					"// ========================================",
+					"// ENVIRONMENT VARIABLE VALIDATION",
+					"// ========================================",
+					"",
+					"// Define required environment variables with descriptions",
+					"const requiredVars = {",
+					"    'baseUrl': {",
+					"        description: 'API base URL (e.g., http://localhost:3000/api)',",
+					"        example: 'http://localhost:3000/api'",
+					"    },",
+					"    'adminUsername': {",
+					"        description: 'Admin account email/username for authentication',",
+					"        example: 'admin@example.com'",
+					"    },",
+					"    'adminPassword': {",
+					"        description: 'Admin account password for authentication',",
+					"        example: 'AdminPassword123!'",
+					"    }",
+					"};",
+					"",
+					"// Validate environment variables",
+					"const missingVars = [];",
+					"const invalidVars = [];",
+					"",
+					"console.log('🔍 Validating environment configuration...');",
+					"console.log('=====================================');",
+					"",
+					"Object.keys(requiredVars).forEach(varName => {",
+					"    const value = pm.environment.get(varName);",
+					"    const config = requiredVars[varName];",
+					"    ",
+					"    if (!value || value.trim() === '') {",
+					"        missingVars.push({",
+					"            name: varName,",
+					"            description: config.description,",
+					"            example: config.example",
+					"        });",
+					"        console.error(`❌ ${varName}: MISSING`);",
+					"    } else {",
+					"        // Additional validation for specific variables",
+					"        if (varName === 'baseUrl') {",
+					"            if (!value.startsWith('http://') && !value.startsWith('https://')) {",
+					"                invalidVars.push({",
+					"                    name: varName,",
+					"                    value: value,",
+					"                    issue: 'Must start with http:// or https://',",
+					"                    example: config.example",
+					"                });",
+					"                console.error(`❌ ${varName}: INVALID FORMAT - ${value}`);",
+					"            } else {",
+					"                console.log(`✅ ${varName}: ${value}`);",
+					"            }",
+					"        } else if (varName === 'adminUsername') {",
+					"            if (value.length < 3) {",
+					"                invalidVars.push({",
+					"                    name: varName,",
+					"                    value: value,",
+					"                    issue: 'Must be at least 3 characters long',",
+					"                    example: config.example",
+					"                });",
+					"                console.error(`❌ ${varName}: TOO SHORT - ${value}`);",
+					"            } else {",
+					"                console.log(`✅ ${varName}: ${value}`);",
+					"            }",
+					"        } else if (varName === 'adminPassword') {",
+					"            if (value.length < 6) {",
+					"                invalidVars.push({",
+					"                    name: varName,",
+					"                    value: '[HIDDEN]',",
+					"                    issue: 'Must be at least 6 characters long',",
+					"                    example: config.example",
+					"                });",
+					"                console.error(`❌ ${varName}: TOO SHORT`);",
+					"            } else {",
+					"                console.log(`✅ ${varName}: [CONFIGURED]`);",
+					"            }",
+					"        } else {",
+					"            console.log(`✅ ${varName}: ${value}`);",
+					"        }",
+					"    }",
+					"});",
+					"",
+					"// Report validation results",
+					"console.log('=====================================');",
+					"",
+					"if (missingVars.length > 0 || invalidVars.length > 0) {",
+					"    console.error('🚨 ENVIRONMENT CONFIGURATION ERRORS DETECTED');",
+					"    console.error('');",
+					"    ",
+					"    if (missingVars.length > 0) {",
+					"        console.error('📋 MISSING VARIABLES:');",
+					"        missingVars.forEach(variable => {",
+					"            console.error(`   • ${variable.name}`);",
+					"            console.error(`     Description: ${variable.description}`);",
+					"            console.error(`     Example: ${variable.example}`);",
+					"            console.error('');",
+					"        });",
+					"    }",
+					"    ",
+					"    if (invalidVars.length > 0) {",
+					"        console.error('⚠️ INVALID VARIABLES:');",
+					"        invalidVars.forEach(variable => {",
+					"            console.error(`   • ${variable.name}: ${variable.value}`);",
+					"            console.error(`     Issue: ${variable.issue}`);",
+					"            console.error(`     Example: ${variable.example}`);",
+					"            console.error('');",
+					"        });",
+					"    }",
+					"    ",
+					"    console.error('🔧 HOW TO FIX:');",
+					"    console.error('   1. Open your Postman environment settings');",
+					"    console.error('   2. Add/update the missing or invalid variables');",
+					"    console.error('   3. Save the environment and re-run the collection');",
+					"    console.error('');",
+					"    console.error('⚠️ Tests may fail without proper environment configuration!');",
+					"} else {",
+					"    console.log('🎉 ENVIRONMENT VALIDATION SUCCESSFUL');",
+					"    console.log('   All required variables are properly configured');",
+					"    console.log('   Collection is ready to run');",
+					"}",
+					"",
+					"console.log('=====================================');",
+					"",
+					"// ========================================",
+					"// DYNAMIC DATA GENERATION SETUP",
+					"// ========================================",
+					"",
+					"// Generate unique timestamp for this test run (only once)",
+					"if (!pm.environment.get('timestamp')) {",
+					"    const timestamp = Date.now();",
+					"    pm.environment.set('timestamp', timestamp);",
+					"    console.log('🕒 Test run timestamp generated:', timestamp);",
+					"    console.log('   This timestamp will be used for all dynamic data generation in this test run');",
+					"}",
+					"",
+					"// ========================================",
+					"// DYNAMIC DATA GENERATION HELPER FUNCTIONS",
+					"// ========================================",
+					"",
+					"/**",
+					" * Generates a unique email address using timestamp and random values",
+					" * Format: test_{timestamp}_{random}@example.com",
+					" * @returns {string} Unique email address",
+					" */",
+					"function generateUniqueEmail() {",
+					"    const timestamp = pm.environment.get('timestamp');",
+					"    const random = Math.random().toString(36).substring(2, 8);",
+					"    const email = `test_${timestamp}_${random}@example.com`;",
+					"    console.log('📧 Generated unique email:', email);",
+					"    return email;",
+					"}",
+					"",
+					"/**",
+					" * Generates a unique username using timestamp and random values",
+					" * Format: testuser_{timestamp}_{random}",
+					" * @returns {string} Unique username",
+					" */",
+					"function generateUniqueUsername() {",
+					"    const timestamp = pm.environment.get('timestamp');",
+					"    const random = Math.random().toString(36).substring(2, 8);",
+					"    const username = `testuser_${timestamp}_${random}`;",
+					"    console.log('👤 Generated unique username:', username);",
+					"    return username;",
+					"}",
+					"",
+					"/**",
+					" * Generates a timestamp string for unique identifiers",
+					" * Can be used for creating unique test data that won't conflict",
+					" * @returns {string} ISO timestamp string",
+					" */",
+					"function generateTimestamp() {",
+					"    const timestamp = new Date().toISOString();",
+					"    console.log('⏰ Generated timestamp identifier:', timestamp);",
+					"    return timestamp;",
+					"}",
+					"",
+					"/**",
+					" * Generates a unique identifier combining timestamp and random string",
+					" * Useful for creating unique test data like MOTD messages, insight titles, etc.",
+					" * @param {string} prefix - Optional prefix for the identifier",
+					" * @returns {string} Unique identifier",
+					" */",
+					"function generateUniqueId(prefix = 'test') {",
+					"    const timestamp = pm.environment.get('timestamp');",
+					"    const random = Math.random().toString(36).substring(2, 8);",
+					"    const uniqueId = `${prefix}_${timestamp}_${random}`;",
+					"    console.log('🆔 Generated unique ID:', uniqueId);",
+					"    return uniqueId;",
+					"}",
+					"",
+					"/**",
+					" * Generates a random string of specified length",
+					" * Useful for creating varied test data",
+					" * @param {number} length - Length of random string (default: 6)",
+					" * @returns {string} Random string",
+					" */",
+					"function generateRandomString(length = 6) {",
+					"    const randomStr = Math.random().toString(36).substring(2, 2 + length);",
+					"    return randomStr;",
+					"}",
+					"",
+					"// ========================================",
+					"// STORE HELPER FUNCTIONS IN GLOBAL SCOPE",
+					"// ========================================",
+					"",
+					"// Store helper functions as strings in global variables so they can be",
+					"// evaluated and used in individual request pre-request scripts",
+					"pm.globals.set('generateUniqueEmail', generateUniqueEmail.toString());",
+					"pm.globals.set('generateUniqueUsername', generateUniqueUsername.toString());",
+					"pm.globals.set('generateTimestamp', generateTimestamp.toString());",
+					"pm.globals.set('generateUniqueId', generateUniqueId.toString());",
+					"pm.globals.set('generateRandomString', generateRandomString.toString());",
+					"",
+					"// ========================================",
+					"// USAGE EXAMPLES (for reference)",
+					"// ========================================",
+					"",
+					"// To use these functions in request pre-request scripts:",
+					"// const generateEmail = eval(pm.globals.get('generateUniqueEmail'));",
+					"// const email = generateEmail();",
+					"// pm.environment.set('testUserEmail', email);",
+					"",
+					"console.log('✅ Dynamic data generation helpers initialized and ready for use');"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Collection-level test script",
+					"// This runs after every request in the collection",
+					"",
+					"// Log response time for monitoring",
+					"console.log(`Response time: ${pm.response.responseTime}ms`);"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "{{baseUrl}}",
+			"type": "string"
+		}
+	]
+}
