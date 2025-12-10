@@ -9,6 +9,7 @@ import {
   AtSign,
   LogOut,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { AccountPageSkeleton } from "@/components/skeletons/AccountPageSkeleton";
@@ -70,16 +71,16 @@ export default function AccountPage() {
       <section className="flex-1 flex flex-col gap-6 min-w-0">
         <article className="bg-white sm:border border-gray-100 rounded-3xl p-1 shadow-sm flex flex-col h-full">
           <div className="flex flex-col h-full relative">
-            {/* bg */}
+            {/* bg/cover */}
             <div className="h-32 bg-gradient-to-r from-[#3F3370] to-[#6854a8] rounded-t-[1.3rem] relative overflow-hidden">
               <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl transform translate-x-10 -translate-y-10"></div>
             </div>
 
-            <div className="px-8 pb-8 flex flex-col flex-1">
+            <div className="px-6 sm:px-8 pb-8 flex flex-col flex-1">
               <div className="relative -mt-12 mb-6 flex justify-between items-end">
                 {/* pp */}
                 <div className="relative group">
-                  <div className="w-28 h-28 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-md">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-md">
                     <img
                       src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
                       alt="Avatar"
@@ -96,7 +97,7 @@ export default function AccountPage() {
               </div>
               {/* form */}
               <header className="mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                <h2 className="text-[1.21rem] sm:text-2xl font-bold text-gray-900">
                   Pengaturan Profil
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
@@ -144,7 +145,7 @@ export default function AccountPage() {
                       disabled
                       className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 font-medium cursor-not-allowed select-none text-sm sm:text-base"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[0.6rem] sm:text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
                       Tidak dapat diubah
                     </span>
                   </div>
@@ -166,7 +167,6 @@ export default function AccountPage() {
                     placeholder="Kota, Negara"
                   />
                 </div> */}
-
                 {/* Bio */}
                 {/* <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -222,11 +222,14 @@ export default function AccountPage() {
               <p className="text-xs text-gray-400">Detail keanggotaan Anda</p>
             </header>
 
+            {/* account info's */}
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              {/*  */}
+              <div className="flex items-center gap-4 p-3 py-4 bg-white rounded-2xl border border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary">
                   <Calendar size={18} />
                 </div>
+                {/*  */}
                 <div>
                   <p className="text-xs text-gray-400 font-medium">
                     Bergabung sejak
@@ -237,7 +240,7 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex items-center gap-4 p-3 py-4 bg-white rounded-2xl border border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary">
                   <Shield size={18} />
                 </div>
@@ -248,7 +251,7 @@ export default function AccountPage() {
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                     <p className="text-sm font-bold text-gray-800">
-                      Aktif • {USER_DATA.role}
+                      Aktif - {USER_DATA.role}
                     </p>
                   </div>
                 </div>
@@ -265,8 +268,9 @@ export default function AccountPage() {
               <span className="text-sm font-semibold text-gray-600 group-hover:text-primary">
                 Ganti Password
               </span>
-              <span className="text-gray-400 group-hover:translate-x-1 transition-transform">
-                &gt;
+              <span className="text-gray-400 group-hover:translate-x-1 transition-transform py-1">
+                {/* &gt; */}
+                <ArrowRight />
               </span>
             </button>
 

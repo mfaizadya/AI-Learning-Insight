@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 import SidebarNav from "./SidebarNav";
 import TopNav from "./TopNav";
 import Footer from "./Footer";
+import { CookieConsent } from "@/components/common/CookieConsent";
 
 const DashboardLayout = () => {
   return (
@@ -20,7 +21,8 @@ const DashboardLayout = () => {
           </div>
         </section>
       </main>
-      <Footer />
+      <CookieConsent />
+      <Footer className="ml-64 w-[calc(100%-16rem)]" />
     </>
   );
 };

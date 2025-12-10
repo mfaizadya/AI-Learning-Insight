@@ -9,9 +9,11 @@ export const AccountPageSkeleton = () => {
           <div className="flex flex-col h-full relative">
             <Skeleton className="h-32 w-full rounded-t-[1.3rem] bg-gray-200" />
             <div className="px-8 pb-8 flex flex-col flex-1">
+              {/*  */}
               <div className="relative -mt-12 mb-6">
                 <Skeleton className="w-28 h-28 rounded-full border-4 border-white bg-gray-200" />
               </div>
+              {/*  */}
               <div className="mb-6 space-y-2">
                 <Skeleton className="h-8 w-48 bg-gray-200" />
                 <Skeleton className="h-4 w-72 bg-gray-100" />

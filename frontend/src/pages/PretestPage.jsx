@@ -1,7 +1,14 @@
 import React from "react";
-import { Filter, ArrowUpRight, ClipboardCheck, Info } from "lucide-react";
+import {
+  Filter,
+  ArrowUpRight,
+  ClipboardCheck,
+  Info,
+  ChevronLast,
+} from "lucide-react";
 import { Link } from "react-router";
 import ContentDrawer from "@/components/reusable/ContentDrawer";
+import { Separator } from "@/components/ui/separator";
 
 const Pretest = () => {
   return (
@@ -22,28 +29,32 @@ const Pretest = () => {
               </p>
             </header>
             {/* menus */}
-            <div className="flex flex-col gap-6">
-              <div aria-label="Pilihan Informasi" className="flex gap-6">
+            <div className="flex flex-col gap-5 sm:gap-6">
+              <div
+                aria-label="Pilihan Informasi"
+                className="flex gap-5 sm:gap-6"
+              >
                 {/*  */}
                 <Link
                   to="/dashboard/info/lorem"
                   className="flex-1 border-2 border-[#A090E0]/30 bg-[#FDFDFF] rounded-2xl p-5 flex flex-col gap-3 hover:border-[#A090E0] transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-full border border-[#A090E0] flex items-center justify-center text-[#4A3B80]">
-                    <Info size={20} aria-hidden="true" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-[#A090E0] flex items-center justify-center text-primary">
+                    <Info
+                      className="h-4 w-4 sm:w-5 sm:h-5"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg sm:text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
+                    <h3 className="font-bold text-lg sm:text-xl text-primary group-hover:text-[#3F3370]">
                       Info
                     </h3>
-                    <div className="flex items-center text-[#8A8A8A] text-sm sm:text-base mt-1">
+                    <div className="flex items-center text-[#8A8A8A] text-sm sm:text-base sm:mt-1">
                       ipsum dolor{" "}
                       <span
                         className="ml-1 text-xs transition-transform group-hover:translate-x-1"
                         aria-hidden="true"
-                      >
-                        &gt;
-                      </span>
+                      ></span>
                     </div>
                   </div>
                 </Link>
@@ -52,21 +63,22 @@ const Pretest = () => {
                   to="/dashboard/info/jenis-soal"
                   className="flex-1 border-2 border-[#A090E0]/30 bg-[#FDFDFF] rounded-2xl p-5 flex flex-col gap-3 hover:border-[#A090E0] transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-full border border-[#A090E0] flex items-center justify-center text-[#4A3B80]">
-                    <Info size={20} aria-hidden="true" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-[#A090E0] flex items-center justify-center text-primary">
+                    <Info
+                      className="h-4 w-4 sm:w-5 sm:h-5"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg sm:text-xl text-[#4A3B80] group-hover:text-[#3F3370]">
+                  <div className="">
+                    <h3 className="font-bold text-lg sm:text-xl text-primary group-hover:text-[#3F3370]">
                       Info
                     </h3>
-                    <div className="flex items-center text-[#8A8A8A] text-sm sm:text-base mt-1">
+                    <div className="flex items-center text-[#8A8A8A] text-sm sm:text-base sm:mt-1">
                       Jenis soal
                       <span
                         className="ml-1 text-xs transition-transform group-hover:translate-x-1"
                         aria-hidden="true"
-                      >
-                        &gt;
-                      </span>
+                      ></span>
                     </div>
                   </div>
                 </Link>
@@ -84,15 +96,15 @@ const Pretest = () => {
                   >
                     <ClipboardCheck size={32} className="text-white" />
                   </div>
-                  <div className="text-left py-4">
-                    <span className="block text-xl font-bold mb-1">Mulai</span>
+                  <div className="text-left sm:py-4">
+                    <span className="block text-lg sm:text-xl font-bold sm:mb-1">Mulai</span>
                     <span className="flex items-center text-purple-200 text-sm">
                       Mengisi Test{" "}
                       <span
                         className="ml-2 transform group-hover:translate-x-1 transition-transform"
                         aria-hidden="true"
                       >
-                        &gt;
+                        <ChevronLast size={17} className="mt-[0.2rem]" />
                       </span>
                     </span>
                   </div>
@@ -102,14 +114,17 @@ const Pretest = () => {
           </div>
         </article>
       </section>
+      {/*  */}
+      <Separator className="sm:hidden w-[80%] px-8 mx-auto" />
       {/* right side */}
+      {/* pretest history */}
       <section
         className="w-full lg:w-[380px] flex-shrink-0 justify-center py-5 px-4 sm:px-0"
         aria-label="Riwayat Pretest"
       >
-        <div className="bg-[#4A3B80] rounded-3xl overflow-hidden shadow-sm h-full flex flex-col max-h-[30.35rem]">
+        <div className="bg-transparent rounded-2xl overflow-hidden shadow-sm h-full flex flex-col max-h-[30.35rem]">
           {/* header */}
-          <header className="p-6 flex justify-between items-center text-white rounded-t-3xl">
+          <header className="p-6 flex justify-between items-center bg-primary text-primary rounded-2xl px-9 text-white">
             <h3 className="font-semibold text-lg">Riwayat Pretest</h3>
             <button
               aria-label="Filter Riwayat"
@@ -136,7 +151,7 @@ const Pretest = () => {
                       </p>
                     </div>
                     <div
-                      className="text-gray-400 group-hover:text-[#4A3B80]"
+                      className="text-gray-400 group-hover:text-primary"
                       aria-hidden="true"
                     >
                       <ArrowUpRight size={20} />

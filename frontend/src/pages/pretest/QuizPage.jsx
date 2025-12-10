@@ -127,7 +127,7 @@ export default function QuizPage() {
                       }
                     `}
                   >
-                    <div className="py-5 sm:py-6 px-6 flex-grow text-gray-800">
+                    <div className="py-5 sm:py-6 px-6 flex-grow text-gray-800 text-[0.81rem] sm:text-sm 2xl:text-base">
                       {option} . . . .{/* <br />. . . . */}
                     </div>
                     <div
@@ -177,7 +177,7 @@ export default function QuizPage() {
         </article>
       </section>
 
-      {/* right side (Navigator Soal) */}
+      {/* right side */}
       <section className="w-full lg:w-[32%] shrink-0 flex flex-col">
         <div className="sm:border-none border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
           <header className="bg-transparents p-5 pb-0 text-center">
