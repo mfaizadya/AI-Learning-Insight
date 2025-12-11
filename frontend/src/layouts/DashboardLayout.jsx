@@ -3,11 +3,12 @@ import { Outlet } from "react-router";
 import SidebarNav from "./SidebarNav";
 import TopNav from "./TopNav";
 import Footer from "./Footer";
+import { CookieConsent } from "@/components/common/CookieConsent";
 
 const DashboardLayout = () => {
   return (
     <>
-      <main className="min-h-screen max-h-full bg-[#F5F5F5] font-sans relative flex">
+      <main className="min-h-screen max-h-full bg-[#f8f8f8] font-sans relative flex">
         <SidebarNav />
         {/* section main/content */}
         <section
@@ -20,7 +21,8 @@ const DashboardLayout = () => {
           </div>
         </section>
       </main>
-      <Footer />
+      <CookieConsent />
+      <Footer className="ml-64 w-[calc(100%-16rem)]" />
     </>
   );
 };

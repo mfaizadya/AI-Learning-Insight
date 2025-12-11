@@ -2,7 +2,7 @@ import { Card, CardContent } from "../ui/card";
 
 export const QuoteCard = ({ quote, className = "", ...props }) => (
   <Card
-    className={`w-full bg-white shadow-sm transition-all duration-300 hover:border-primary border-2 border-transparent overflow-hidden relative rounded-2xl !p-0 ${className}`}
+    className={`w-full bg-white shadow-sm transition-all duration-300 border-none hover:ring-primary hover:ring-1 sm:hover:ring-2 overflow-hidden relative rounded-2xl !p-0 ${className}`}
     {...props}
   >
     <CardContent className="!p-0 flex flex-col h-full gap-0">

@@ -11,6 +11,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import QuizPage from "@/pages/pretest/QuizPage";
 import AccountPage from "@/pages/AccountPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 
 export default function AppRoutes() {
   return (
@@ -35,6 +36,7 @@ export default function AppRoutes() {
         {/* <Route path="/auth" element={<AuthLayout />}> (optional)*/}
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
         {/* </Route> */}
         {/* </Route> */}
         <Route path="*" element={<NotFoundPage />} />
