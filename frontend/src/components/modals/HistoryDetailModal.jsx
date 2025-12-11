@@ -58,7 +58,7 @@ export const HistoryDetailModal = ({ isOpen, data, onClose, isClosing }) => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
           <div className="relative z-10 flex justify-between items-start">
             <div>
-              <h3 className="text-xl font-bold">Laporan Hasil Tes</h3>
+              <h3 className="text-xl font-semibold">Laporan Hasil Tes</h3>
               <p className="text-purple-200 text-xs mt-1 flex items-center gap-1.5 opacity-90">
                 <CalendarDays size={12} /> {data.date} • {data.duration}
               </p>
@@ -81,7 +81,7 @@ export const HistoryDetailModal = ({ isOpen, data, onClose, isClosing }) => {
                 <div className="absolute top-0 right-0 p-3 opacity-5">
                   <BrainCircuit size={80} />
                 </div>
-                <p className="text-xs text-primary font-bold mb-3 flex items-center gap-2">
+                <p className="text-xs text-primary font-semibold mb-3 flex items-center gap-2">
                   {/* <span className="w-1.5 h-1.5 rounded-full bg-primary"></span> */}
                   Pola Belajar (9 Soal)
                 </p>
@@ -101,8 +101,8 @@ export const HistoryDetailModal = ({ isOpen, data, onClose, isClosing }) => {
               </div>
 
               {/* learn style result */}
-              <div className="space-y-4 px-3">
-                <p className="text-xs text-gray-400 font-bold flex items-center gap-2 px-0">
+              <div className="space-y-4 px-1">
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-2 px-0">
                   {/* <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span> */}
                   Gaya Belajar (6 Soal)
                 </p>
@@ -177,7 +177,7 @@ export const HistoryDetailModal = ({ isOpen, data, onClose, isClosing }) => {
 
               {/* AI Insight */}
               <div className="bg-gray-50 border border-gray-200/60 p-4 rounded-xl text-sm text-gray-600 leading-relaxed">
-                <span className="font-bold text-gray-800 block mb-1">
+                <span className="font-semibold text-gray-800 block mb-1">
                   💡 AI Insight:
                 </span>
                 {data.summary}
@@ -188,7 +188,7 @@ export const HistoryDetailModal = ({ isOpen, data, onClose, isClosing }) => {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
                 <AlertCircle size={32} />
               </div>
-              <h4 className="text-lg font-bold text-gray-800">
+              <h4 className="text-lg font-semibold text-gray-800">
                 Tes Belum Diselesaikan
               </h4>
               <p className="text-sm text-gray-500 max-w-xs">
@@ -203,12 +203,12 @@ export const HistoryDetailModal = ({ isOpen, data, onClose, isClosing }) => {
         <div className="p-4 bg-gray-50 border-t border-gray-100 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-white transition-colors"
+            className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-white transition-colors"
           >
             Tutup
           </button>
           {data.status === "Draft" && (
-            <button className="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-[#2e2555] transition-colors shadow-lg shadow-purple-900/10">
+            <button className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-[#2e2555] transition-colors shadow-lg shadow-purple-900/10">
               Lanjutkan Tes
             </button>
           )}

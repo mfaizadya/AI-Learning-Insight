@@ -6,7 +6,7 @@ const NotFoundPage = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="min-h-screen w-full bg-[#FDFDFF] flex items-center justify-center relative overflow-hidden font-sans">
+    <main className="h-dvh sm:min-h-screen w-full bg-[#FDFDFF] flex items-center justify-center relative overflow-hidden font-sans">
       {/* blobs */}
       <div className="absolute -top-20 -left-20 w-96 h-96 bg-[#EDE8FA] rounded-full blur-3xl opacity-60 pointer-events-none animate-pulse"></div>
       <div className="absolute -bottom-32 -right-20 w-[30rem] h-[30rem] bg-[#F3E8FF] rounded-full blur-3xl opacity-60 pointer-events-none"></div>

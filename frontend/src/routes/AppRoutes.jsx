@@ -12,33 +12,35 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import QuizPage from "@/pages/pretest/QuizPage";
 import AccountPage from "@/pages/AccountPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import ProtectedRoutes from "./ProtectedRoutes";
+import PublicRoutes from "./PublicRoutes";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         {/* uncomment when the auth logic/service has been implement */}
-        {/* <Route element={<ProtectedRoutes />}> */}
-        <Route path="/" element={<DashboardLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route index element={<DashboardPage />} />
-          <Route path="dashboard/pretest" element={<Pretest />} />
-          {/* (!) for the next, a parameter or slug will be added for a unique quiz ID for each session. (maybe)*/}
-          <Route path="dashboard/pretest/start-quiz" element={<QuizPage />} />
-          <Route path="dashboard/account" element={<AccountPage />} />
-          {/* other/next */}
-          {/* <Route path="dashboard/account" element={<AccountPage />} /> */}
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/" element={<DashboardLayout />}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="dashboard/pretest" element={<Pretest />} />
+            {/* (!) for the next, a parameter or slug will be added for a unique quiz ID for each session. (maybe)*/}
+            <Route path="dashboard/pretest/start-quiz" element={<QuizPage />} />
+            <Route path="dashboard/account" element={<AccountPage />} />
+            {/* other/next */}
+            {/* <Route path="dashboard/account" element={<AccountPage />} /> */}
+          </Route>
         </Route>
-        {/* </Route> */}
         {/* uncomment when the auth logic/service has been implement */}
-        {/* <Route element={<PublicRoutes />}> */}
-        {/* <Route path="/auth" element={<AuthLayout />}> (optional)*/}
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
-        {/* </Route> */}
-        {/* </Route> */}
+        <Route element={<PublicRoutes />}>
+          <Route path="/auth">
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+          </Route>
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
