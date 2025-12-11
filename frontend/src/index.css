@@ -62,7 +62,7 @@
 @layer base {
   * {
     border-color: hsl(var(--border));
-    @apply selection:bg-purple-200;
+    @apply selection:bg-purple-200 selection:text-primary;
   }
   
   body {

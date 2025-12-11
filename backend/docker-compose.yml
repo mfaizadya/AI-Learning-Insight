@@ -1,0 +1,18 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: asah_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ailearninginsight  
+      MYSQL_DATABASE: capstone_db
+      MYSQL_USER: asah_user                   
+      MYSQL_PASSWORD: ailearninginsight    
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/init:/docker-entrypoint-initdb.d 
+
+volumes:
+  db_data:

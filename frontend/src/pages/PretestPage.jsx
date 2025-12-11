@@ -122,7 +122,7 @@ const Pretest = () => {
                       <BrainCircuit size={20} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg text-primary">
+                      <h3 className="font-semibold text-lg text-primary">
                         Pola Belajar
                       </h3>
                       <div className="text-[#8A8A8A] text-xs sm:text-sm mt-1 group-hover:text-primary/70 transition-colors duration-300">
@@ -139,7 +139,7 @@ const Pretest = () => {
                       <BookOpen size={20} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg text-primary">
+                      <h3 className="font-semibold text-lg text-primary">
                         Gaya Belajar
                       </h3>
                       <div className="text-[#8A8A8A] text-xs sm:text-sm mt-1 group-hover:text-primary/70 transition-colors duration-300">
@@ -222,13 +222,13 @@ const Pretest = () => {
                     onClick={() => setSelectedHistory(item)}
                     className="group relative flex items-center justify-between bg-white border border-gray-100 hover:border-primary/30 hover:bg-purple-50/40 p-4 rounded-2xl transition-all duration-300 shadow-sm  cursor-pointer"
                   >
-                    <div
+                    {/* <div
                       className={`absolute left-0 top-3 bottom-3 w-1 rounded-r-full transition-colors duration-300 ${
                         item.status === "Selesai"
                           ? "bg-green-400/80 group-hover:bg-green-500"
                           : "bg-gray-300/80 group-hover:bg-gray-400"
                       }`}
-                    ></div>
+                    ></div> */}
                     <div className="flex flex-col gap-1.5 pl-3 w-full">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md w-fit group-hover:bg-white transition-colors duration-300">

@@ -28,6 +28,14 @@ async function register(req, res, next) {
         ].filter(Boolean)
       });
     }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password weak',
+        details: ['Password must be at least 8 characters long']
+      });
+    }
     
     // Check for duplicate email
     const existingUser = await db.query(
@@ -36,7 +44,7 @@ async function register(req, res, next) {
     );
     
     if (existingUser.length > 0) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         error: 'Email already registered'
       });
@@ -48,8 +56,8 @@ async function register(req, res, next) {
     // Insert user into database with default role 'user' and default learning values
     const userRole = role === 'admin' ? 'admin' : 'user';
     const result = await db.execute(
-      `INSERT INTO users (email, username, password, role, learning_style, learning_pattern) 
-       VALUES (?, ?, ?, ?, 'visual', 'consistent')`,
+      `INSERT INTO users (email, username, password, role) 
+       VALUES (?, ?, ?, ?)`,
       [email, username, hashedPassword, userRole]
     );
     

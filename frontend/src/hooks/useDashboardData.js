@@ -1,6 +1,6 @@
 // src/hooks/useDashboardData.js
 import { useState, useEffect } from "react";
-import { dashboardService } from "@/services/DashboardService";
+import { dashboardService } from "@/services/dashboard_mockup";
 
 export const useDashboardData = () => {
   const [data, setData] = useState(null);

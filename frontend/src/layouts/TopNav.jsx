@@ -1,14 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router";
-import { LogOut, Settings, X, Logs } from "lucide-react";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useLocation, Link, useNavigate } from "react-router";
+import { Settings, X, Logs, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/services/user.service";
 
 const TopNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user: authUser } = useAuth();
+  // const { data, isLoading } = useDashboardData();
+
+  const [profile, setProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { data, isLoading } = useDashboardData();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        setLoadingProfile(true);
+        const userData = await userService.getProfile();
+        setProfile(userData);
+      } catch (err) {
+        console.error("Gagal load profile header:", err);
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,7 +39,14 @@ const TopNav = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  });
+  }, []);
+
+  const handleLogout = () => {
+    setIsDropdownOpen(false);
+    logout();
+
+    navigate("/auth/login", { replace: true });
+  };
 
   const getPageTitle = (pathname) => {
     if (pathname.includes("/dashboard/pretest/quiz")) return "Quiz";
@@ -27,6 +57,9 @@ const TopNav = () => {
   };
 
   const pageTitle = getPageTitle(location.pathname);
+  // 
+  const displayName = profile?.username || authUser?.username || "User";
+  const displayEmail = profile?.email || authUser?.email || "user@email.com";
 
   const mobileMenuItems = [
     { label: "Dashboard", href: "/dashboard" },
@@ -66,7 +99,10 @@ const TopNav = () => {
           >
             <div className="flex flex-col p-2 gap-1">
               {mobileMenuItems.map((item) => {
-                const isActive = location.pathname === item.href || (item.href !== "/dashboard" && location.pathname.startsWith(item.href));
+                const isActive =
+                  location.pathname === item.href ||
+                  (item.href !== "/dashboard" &&
+                    location.pathname.startsWith(item.href));
                 return (
                   <Link
                     key={item.href}
@@ -121,7 +157,7 @@ const TopNav = () => {
                 />
               </div>
               <span className="hidden md:block text-sm text-gray-600 font-medium">
-                user@gmail.com
+                {displayEmail}
               </span>
             </button>
 
@@ -147,15 +183,15 @@ const TopNav = () => {
                   />
                 </div>
                 <div className="overflow-hidden">
-                  {isLoading ? (
+                  {loadingProfile ? (
                     <p className="text-sm font-bold text-gray-800">...</p>
                   ) : (
                     <>
                       <p className="text-sm font-bold text-gray-800 truncate">
-                        {data?.user?.name}
+                        {displayName}
                       </p>
                       <p className="text-xs font-medium text-gray-500 truncate">
-                        {data?.user?.email}
+                        {displayEmail}
                       </p>
                     </>
                   )}
@@ -176,7 +212,7 @@ const TopNav = () => {
                 </li>
                 <li>
                   <button
-                    onClick={() => setIsDropdownOpen(false)}
+                    onClick={handleLogout}
                     className="w-full flex items-center gap-2 text-left px-3 py-2 hover:bg-red-50 rounded-sm text-sm text-red-500 font-medium transition-colors"
                   >
                     <LogOut size={16} /> Logout
