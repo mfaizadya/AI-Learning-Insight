@@ -6,11 +6,11 @@ export const CookieConsent = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Cek apakah user sudah pernah merespon
+    // checking
     const consent = localStorage.getItem("cookieConsent");
     if (!consent) {
-      // Tampilkan dengan sedikit delay agar animasi masuk terasa halus
-      const timer = setTimeout(() => setIsVisible(true), 1500);
+      // delay time
+      const timer = setTimeout(() => setIsVisible(true), 1200);
       return () => clearTimeout(timer);
     }
   }, []);

@@ -19,7 +19,7 @@ const LoadingState = () => (
 );
 
 const WelcomeHeader = ({ user }) => (
-  <section className="mb-10 sm:mb-8 md:mb-8 mt-5 md:mt-3 ms-1 md:ms-2 flex flex-col gap-1">
+  <section className="mb-8 sm:mb-8 md:mb-8 mt-5 md:mt-3 ms-1 md:ms-2 flex flex-col gap-1">
     <h1 className="max-sm:text-gray-400 max-sm:font-normal sm:font-semibold text-[1.2rem] sm:text-[1.65rem]">
       Hi, {user.name}!
     </h1>
@@ -41,7 +41,6 @@ export const DashboardPage = () => {
     <>
       <section className="max-sm:px-5">
         <WelcomeHeader user={data.user} />
-
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-16">
           {/* row 1 */}
           <LearningStyleCard

@@ -119,7 +119,7 @@ export default function QuizPage() {
                     key={idx}
                     onClick={() => handleOptionSelect(idx)}
                     className={`
-                      w-full text-left p-0 rounded-2xl font-semibold text-sm transition-all duration-200 cursor-pointer overflow-hidden
+                      w-full text-left p-0 rounded-xl sm:rounded-2xl font-semibold text-sm transition-all duration-200 cursor-pointer overflow-hidden
                       border-0 relative flex items-center justify-between
                       ${bgColor} 
                       ${
@@ -127,11 +127,11 @@ export default function QuizPage() {
                       }
                     `}
                   >
-                    <div className="py-5 sm:py-6 px-6 flex-grow text-gray-800 text-[0.81rem] sm:text-sm 2xl:text-base">
+                    <div className="py-4 sm:py-6 px-6 flex-grow text-gray-800 text-[0.81rem] sm:text-sm 2xl:text-base">
                       {option} . . . .{/* <br />. . . . */}
                     </div>
                     <div
-                      className={`w-3 h-10 rounded-full ${barColor} mr-4`}
+                      className={`w-3 sm:w-3 h-7 sm:h-10 rounded-full ${barColor} mr-4`}
                     ></div>
                   </Card>
                 );
@@ -186,7 +186,7 @@ export default function QuizPage() {
             </h3>
           </header>
           <div className="bg-white p-5 rounded-t-3xl min-h-[300px]">
-            <div className="grid grid-cols-5 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-5 2xl:grid-cols-5 gap-3">
               {questionsData.map((item, idx) => {
                 const isCurrent = idx === currentQuestionIndex;
                 const isAnswered = userAnswers[item.id] !== undefined;
@@ -194,7 +194,7 @@ export default function QuizPage() {
 
                 if (isCurrent) {
                   boxClass =
-                    "bg-white text-primary border-2 border-primary font-bold shadow-md transform scale-105 z-10";
+                    "bg-white text-primary border-2 border-primary font-bold transform scale-105 z-10";
                 } else if (isAnswered) {
                   boxClass =
                     "bg-muted text-primary border-2 border-transparent font-bold hover:bg-muted/80";
@@ -209,7 +209,7 @@ export default function QuizPage() {
                     key={item.id}
                     onClick={() => handleJumpToQuestion(idx)}
                     className={`
-                      aspect-square p-0 rounded-[0.8rem] flex items-center justify-center text-base sm:text-base md:text-lg transition-all cursor-pointer select-none
+                      aspect-square p-0 rounded-[0.8rem] sm:rounded-[0.6rem] flex items-center justify-center text-base sm:text-base md:text-base xl:text-base 2xl:text-lg transition-all cursor-pointer select-none
                       ${boxClass}
                     `}
                   >
