@@ -106,7 +106,7 @@ Aplikasi biasanya akan berjalan di **http://localhost:5173**. Buka URL tersebut 
 ## 📚 Dokumentasi API
 Dokumentasi lengkap mengenai endpoint API tersedia di dalam repository ini:
 
-- **Dokumentasi Markdown**: Lihat file backend/API.md untuk detail endpoint, format request, dan response.
+- **Dokumentasi Markdown**: Lihat file [backend/API.md](https://github.com/mfaizadya/AI-Learning-Insight/blob/main/backend/API.md) untuk detail endpoint, format request, dan response.
 
 - **Postman Collection**: Import file backend/postman/Learning Assessment API Tests.postman_collection.json ke aplikasi Postman Anda untuk pengujian langsung.
 
