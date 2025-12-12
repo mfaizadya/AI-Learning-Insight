@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, verifyOwnershipOrAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const userController = require('../controllers/userController');
 
@@ -11,6 +11,27 @@ const userController = require('../controllers/userController');
  * Requirements: 3.1, 4.1, 4.3
  */
 router.get('/profile', verifyToken, userController.getProfile);
+
+/**
+ * PUT /api/users/profile
+ * Update user profile (self-service)
+ * Requirements: 4.1, 4.2, 4.3, 4.4
+ */
+router.put('/profile', verifyToken, userController.updateProfile);
+
+/**
+ * DELETE /api/users/profile
+ * Delete user profile (self-service) - Soft delete
+ * Requirements: 3.1, 3.3, 3.4, 3.5
+ */
+router.delete('/profile', verifyToken, userController.deleteProfile);
+
+/**
+ * GET /api/users/:id
+ * Get user by ID (self or admin)
+ * Requirements: 4.1, 4.2, 4.3, 4.4
+ */
+router.get('/:id', verifyToken, verifyOwnershipOrAdmin, userController.getUserById);
 
 /**
  * POST /api/users/profile/picture

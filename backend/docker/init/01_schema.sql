@@ -339,7 +339,8 @@ CREATE TABLE `users` (
   `learning_style` enum('visual','auditori','kinestetik') DEFAULT NULL,
   `learning_pattern` enum('consistent','fast','reflective','balanced') DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -442,7 +443,8 @@ ALTER TABLE `test_pola`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_deleted_at` (`deleted_at`);
 
 --
 -- AUTO_INCREMENT for dumped tables
