@@ -29,7 +29,7 @@ async function comparePassword(password, hashedPassword) {
  */
 function generateToken(payload) {
   const secret = process.env.JWT_SECRET;
-  const expiresIn = process.env.JWT_EXPIRES_IN || '24h';
+  const expiresIn = process.env.JWT_EXPIRES_IN || '12h';
   
   if (!secret) {
     throw new Error('JWT_SECRET is not defined in environment variables');
