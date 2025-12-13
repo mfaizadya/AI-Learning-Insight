@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "53b73b2c-f025-46ec-a030-c5e4fe259275",
+		"_postman_id": "664e259b-db1f-4148-bd73-0d990e996ae8",
 		"name": "Learning Assessment API Tests",
-		"description": "# Learning Assessment API Test Collection\n\n## Overview\nThis collection provides comprehensive testing for all endpoints in the Learning Assessment System API. It includes automated test data cleanup, environment-based configuration, and extensive test coverage including both success and error scenarios.\n\n## 📚 Documentation\n**Complete documentation is available in the accompanying files:**\n- **README.md** - Complete setup and usage guide\n- **SETUP_GUIDE.md** - Step-by-step first-time setup instructions\n- **TROUBLESHOOTING.md** - Detailed troubleshooting and solutions\n- **Learning_Assessment_API.postman_environment.json** - Environment template\n\n## 🚀 Quick Start\n1. **Import** this collection and the environment template\n2. **Configure** environment variables: `baseUrl`, `adminUsername`, `adminPassword`\n3. **Run** the collection using Collection Runner\n4. **Monitor** results and check cleanup completion\n\n## 📋 Prerequisites\n- **API Server**: Running at configured baseUrl (default: `http://localhost:3000/api`)\n- **Database**: Contains pola/gaya tests with questions/choices and admin account\n- **Environment**: Required variables configured in Postman environment\n\n## 🗂️ Collection Structure\n**8 Main Folders** (run in sequence):\n1. **Authentication** - User/admin login, token management\n2. **User Management** - Profile operations, file uploads\n3. **Tests (Pola & Gaya)** - Test retrieval, data capture\n4. **Results** - Test submission, history, details\n5. **Insights** - User insights, admin creation\n6. **MOTD** - Message of the Day CRUD operations\n7. **Admin Operations** - Question/choice creation\n8. **Cleanup** - Automated test data removal\n\n## ⚙️ Environment Variables\n**Required (set manually):**\n- `baseUrl` - API server URL\n- `adminUsername` - Admin account email\n- `adminPassword` - Admin account password\n\n**Auto-generated (do not set manually):**\n- Authentication tokens (`userToken`, `adminToken`)\n- Test data IDs for cleanup\n- Dynamic test user credentials\n\n## 🔧 Key Features\n- **Self-cleaning**: Automatically removes all test data\n- **Idempotent**: Can run multiple times safely\n- **Comprehensive**: Tests all endpoints including error scenarios\n- **Dynamic data**: Generates unique test data each run\n- **Environment-based**: Easy configuration for different environments\n\n## ⚠️ Important Notes\n- **File uploads** require manual file selection in Postman\n- **Sequential execution** required for proper dependencies\n- **Admin credentials** must match existing database account\n- **Database cleanup** is automatic but can be done manually if needed\n\n## 🆘 Need Help?\n- Check **SETUP_GUIDE.md** for first-time setup\n- See **TROUBLESHOOTING.md** for common issues\n- Review **README.md** for complete documentation\n- Use Postman Console for detailed error information\n\n## 📊 Expected Results\n- **~80+ tests** should pass\n- **All test data** automatically cleaned up\n- **Environment variables** cleared after run\n- **No manual intervention** required for normal operation",
+		"description": "# Learning Assessment API Test Collection\n\n## Overview\n\nThis collection provides comprehensive testing for all endpoints in the Learning Assessment System API. It includes automated test data cleanup, environment-based configuration, and extensive test coverage including both success and error scenarios.\n\n## 📚 Documentation\n\n**Complete documentation is available in the accompanying files:**\n\n- **README.md** - Complete setup and usage guide\n    \n- **SETUP_GUIDE.md** - Step-by-step first-time setup instructions\n    \n- **TROUBLESHOOTING.md** - Detailed troubleshooting and solutions\n    \n- **Learning_Assessment_API.postman_environment.json** - Environment template\n    \n\n## 🚀 Quick Start\n\n1. **Import** this collection and the environment template\n    \n2. **Configure** environment variables: `baseUrl`, `adminUsername`, `adminPassword`\n    \n3. **Run** the collection using Collection Runner\n    \n4. **Monitor** results and check cleanup completion\n    \n\n## 📋 Prerequisites\n\n- **API Server**: Running at configured baseUrl (default: `http://localhost:3000/api`)\n    \n- **Database**: Contains pola/gaya tests with questions/choices and admin account\n    \n- **Environment**: Required variables configured in Postman environment\n    \n\n## 🗂️ Collection Structure\n\n**8 Main Folders** (run in sequence):\n\n1. **Authentication** - User/admin login, token management\n    \n2. **User Management** - Profile operations, file uploads\n    \n3. **Tests (Pola & Gaya)** - Test retrieval, data capture\n    \n4. **Results** - Test submission, history, details\n    \n5. **Insights** - User insights, admin creation\n    \n6. **MOTD** - Message of the Day CRUD operations\n    \n7. **Admin Operations** - Question/choice creation\n    \n8. **Cleanup** - Automated test data removal\n    \n\n## ⚙️ Environment Variables\n\n**Required (set manually):**\n\n- `baseUrl` - API server URL\n    \n- `adminUsername` - Admin account email\n    \n- `adminPassword` - Admin account password\n    \n\n**Auto-generated (do not set manually):**\n\n- Authentication tokens (`userToken`, `adminToken`)\n    \n- Test data IDs for cleanup\n    \n- Dynamic test user credentials\n    \n\n## 🔧 Key Features\n\n- **Self-cleaning**: Automatically removes all test data\n    \n- **Idempotent**: Can run multiple times safely\n    \n- **Comprehensive**: Tests all endpoints including error scenarios\n    \n- **Dynamic data**: Generates unique test data each run\n    \n- **Environment-based**: Easy configuration for different environments\n    \n\n## ⚠️ Important Notes\n\n- **File uploads** require manual file selection in Postman\n    \n- **Sequential execution** required for proper dependencies\n    \n- **Admin credentials** must match existing database account\n    \n- **Database cleanup** is automatic but can be done manually if needed\n    \n\n## 🆘 Need Help?\n\n- Check **SETUP_GUIDE.md** for first-time setup\n    \n- See **TROUBLESHOOTING.md** for common issues\n    \n- Review **README.md** for complete documentation\n    \n- Use Postman Console for detailed error information\n    \n\n## 📊 Expected Results\n\n- **\\~80+ tests** should pass\n    \n- **All test data** automatically cleaned up\n    \n- **Environment variables** cleared after run\n    \n- **No manual intervention** required for normal operation",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "49103275"
+		"_exporter_id": "32294319",
+		"_collection_link": "https://ml-ai5.postman.co/workspace/capstone-project~e8295f9c-589a-4f8b-a434-a7e0b72f264c/collection/32294319-664e259b-db1f-4148-bd73-0d990e996ae8?action=share&source=collection_link&creator=32294319"
 	},
 	"item": [
 		{
@@ -289,20 +290,22 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// Generate unique email and username for this test user",
-									"const timestamp = pm.environment.get('timestamp');",
-									"const random = Math.random().toString(36).substring(2, 8);",
-									"const email = `test_${timestamp}_${random}@example.com`;",
-									"const username = `testuser_${timestamp}_${random}`;",
+									"// // Generate unique email and username for this test user",
+									"// const timestamp = pm.environment.get('timestamp');",
+									"// const random = Math.random().toString(36).substring(2, 8);",
+									"// const email = `test_${timestamp}_${random}@example.com`;",
+									"// const username = `testuser_${timestamp}_${random}`;",
 									"",
-									"// Store for use in request body and later requests",
-									"pm.environment.set('testUserEmail', email);",
-									"pm.environment.set('testUserUsername', username);",
-									"pm.environment.set('testUserPassword', 'TestPassword123!');",
+									"// // Store for use in request body and later requests",
+									"// pm.environment.set('testUserEmail', email);",
+									"// pm.environment.set('testUserUsername', username);",
+									"// pm.environment.set('testUserPassword', 'TestPassword123!');",
 									"",
-									"console.log('Registering test user:', email);"
+									"// console.log('Registering test user:', email);"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -347,7 +350,9 @@
 									"    pm.expect(jsonData.data.role).to.equal('user');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -390,7 +395,9 @@
 									"",
 									"console.log('Logging in as test user:', email);"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -439,7 +446,9 @@
 									"    pm.expect(jsonData.data.user.id).to.equal(expectedUserId);",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1080,6 +1089,130 @@
 							]
 						},
 						"description": "Retrieves the uploaded profile picture by filename. This request verifies that the uploaded image is accessible and returns the correct content type."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Postman Test Script untuk PUT /api/users/profile (Uji Sukses)",
+									"",
+									"// =======================================================",
+									"// A. Uji Status Respons & Waktu",
+									"// =======================================================",
+									"pm.test(\"Status code is 200 OK for successful update\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is acceptable (under 500ms)\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"// =======================================================",
+									"// B. Uji Struktur & Validitas Data",
+									"// =======================================================",
+									"pm.test(\"Response body structure is correct\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('success').that.is.true;",
+									"    pm.expect(responseData).to.have.property('data').that.is.an('object');",
+									"",
+									"    const user = responseData.data;",
+									"    // Asumsi userResponse berisi setidaknya id dan username",
+									"    pm.expect(user).to.have.property('id').that.is.a('number');",
+									"    pm.expect(user).to.have.property('username').that.is.a('string');",
+									"});",
+									"",
+									"// =======================================================",
+									"// C. Uji Logika Pembaruan",
+									"// =======================================================",
+									"pm.test(\"Updated username matches request body\", function () {",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    const updatedUsername = pm.response.json().data.username;",
+									"    ",
+									"    // Asumsi Anda mengirim 'username' di body",
+									"    if (requestBody.username) {",
+									"        pm.expect(updatedUsername).to.equal(requestBody.username, \"The returned username must match the requested update.\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"new_username\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"currentPassword\": \"{{testUserPassword}}\",\r\n  // ganti dg password baru & konfirnya \r\n  \"newPassword\": \"{{testUserPassword}}\",\r\n  \"confirmPassword\": \"{{testUserPassword}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/profile/password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"profile",
+								"password"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1909,7 +2042,9 @@
 									"    console.log('Submitting pola test with:', { testId, questionId, choiceId });",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -1958,7 +2093,9 @@
 									"    console.log('Pola result ID captured:', jsonData.data.hasil_test_id);",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -1976,7 +2113,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"test_id\": {{testPolaId}},\n  \"answers\": [\n    {\n      \"soal_id\": {{testPolaQuestionId}},\n      \"pilihan_id\": {{testPolaChoiceId}}\n    }\n  ]\n}"
+							"raw": "{\n  \"test_id\": {{testPolaId}},\n  \"answers\": [\n    { \"soal_id\": 1, \"pilihan_id\": 2 },  \n    { \"soal_id\": 2, \"pilihan_id\": 6 },  \n    { \"soal_id\": 3, \"pilihan_id\": 10 }, \n    { \"soal_id\": 4, \"pilihan_id\": 14 }, \n    { \"soal_id\": 5, \"pilihan_id\": 18 }, \n    { \"soal_id\": 6, \"pilihan_id\": 22 }, \n    { \"soal_id\": 7, \"pilihan_id\": 26 }, \n    { \"soal_id\": 8, \"pilihan_id\": 29 }, \n    { \"soal_id\": 9, \"pilihan_id\": 34 }  \n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/results/pola",
@@ -2010,7 +2147,9 @@
 									"    console.log('Submitting gaya test with:', { testId, questionId, choiceId });",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -2058,7 +2197,9 @@
 									"    console.log('Gaya result ID captured:', jsonData.data.hasil_test_id);",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -2076,7 +2217,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"test_id\": {{testGayaId}},\n  \"answers\": [\n    {\n      \"soal_id\": {{testGayaQuestionId}},\n      \"pilihan_id\": {{testGayaChoiceId}}\n    }\n  ]\n}"
+							"raw": "{\n  \"test_id\": {{testGayaId}},\n  \"answers\": [\n    { \"soal_id\": 1, \"pilihan_id\": 1 },  \n    { \"soal_id\": 2, \"pilihan_id\": 4 },  \n    { \"soal_id\": 3, \"pilihan_id\": 7 },  \n    { \"soal_id\": 4, \"pilihan_id\": 11 }, \n    { \"soal_id\": 5, \"pilihan_id\": 14 }, \n    { \"soal_id\": 6, \"pilihan_id\": 17 }  \n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/results/gaya",
