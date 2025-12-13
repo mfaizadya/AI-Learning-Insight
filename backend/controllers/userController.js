@@ -1,6 +1,7 @@
 const db = require("../db/connection");
 const fs = require("fs").promises;
 const path = require("path");
+const bcrypt = require('bcrypt');
 const UserService = require("../services/userService");
 const UserRepository = require("../repositories/userRepository");
 
