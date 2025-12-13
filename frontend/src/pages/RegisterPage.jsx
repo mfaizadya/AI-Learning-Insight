@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
         {/* Footer Text */}
         <div className="relative z-10 text-sm text-purple-200/60">
-          © 2025 AI Learning Insight. All rights reserved.
+          © 2025 CerdasKu. All rights reserved.
         </div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-600 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full blur-3xl opacity-10 pointer-events-none"></div>
