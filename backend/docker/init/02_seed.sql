@@ -3,7 +3,7 @@
 -- TUJUAN: Isi Data Dummy (9 Soal Pola Fixed Value, 6 Soal Gaya)
 -- ========================================================
 
-USE `capstone_db`;
+USE `capstone-db`;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 1. BERSIHKAN DATA LAMA
