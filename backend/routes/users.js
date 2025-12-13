@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path");
-const multer = require("multer");
-const { verifyToken } = require("../middleware/auth");
-const upload = require("../middleware/upload");
-const userController = require("../controllers/userController");
+const path = require('path');
+const { verifyToken, verifyOwnershipOrAdmin } = require('../middleware/auth');
+const upload = require('../middleware/upload');
+const userController = require('../controllers/userController');
 
 /**
  * @route   GET /api/users/profile
@@ -14,9 +13,30 @@ const userController = require("../controllers/userController");
 router.get("/profile", verifyToken, userController.getProfile);
 
 /**
- * @route   PUT /api/users/profile
- * @desc    Update user profile information (e.g., username)
- * @access  Private
+ * PUT /api/users/profile
+ * Update user profile (self-service)
+ * Requirements: 4.1, 4.2, 4.3, 4.4
+ */
+router.put('/profile', verifyToken, userController.updateProfile);
+
+/**
+ * DELETE /api/users/profile
+ * Delete user profile (self-service) - Soft delete
+ * Requirements: 3.1, 3.3, 3.4, 3.5
+ */
+router.delete('/profile', verifyToken, userController.deleteProfile);
+
+/**
+ * GET /api/users/:id
+ * Get user by ID (self or admin)
+ * Requirements: 4.1, 4.2, 4.3, 4.4
+ */
+router.get('/:id', verifyToken, verifyOwnershipOrAdmin, userController.getUserById);
+
+/**
+ * POST /api/users/profile/picture
+ * Upload or update user profile picture
+ * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 4.1, 4.3, 5.5
  */
 router.put("/profile", verifyToken, userController.updateProfile);
 

@@ -1,9 +1,11 @@
 const { verifyToken } = require("../utils/auth");
+const UserRepository = require("../repositories/userRepository");
 
 /**
- * Middleware to verify JWT token from Authorization header
+ * Middleware to verify JWT token from Authorization header and check if user is not deleted
+ * Requirements: 3.5
  */
-function verifyTokenMiddleware(req, res, next) {
+async function verifyTokenMiddleware(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
@@ -24,8 +26,18 @@ function verifyTokenMiddleware(req, res, next) {
 
     const token = parts[1];
     const decoded = verifyToken(token);
+    
+    // Check if user exists and is not deleted
+    // Requirements: 3.5 - Deleted user authentication rejection
+    const user = await UserRepository.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: "User account not found or has been deactivated",
+      });
+    }
+    
     req.user = decoded;
-
     next();
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
@@ -59,7 +71,44 @@ function verifyAdmin(req, res, next) {
   next();
 }
 
+/**
+ * Middleware to verify user ownership or admin access
+ * Allows users to access their own resources or admins to access any resource
+ * Expects user ID in req.params.id
+ */
+function verifyOwnershipOrAdmin(req, res, next) {
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ success: false, error: "Authentication required" });
+  }
+
+  const userId = parseInt(req.params.id);
+  
+  if (isNaN(userId)) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid user ID",
+      details: {
+        field: "id",
+        code: "INVALID_ID"
+      }
+    });
+  }
+
+  // Allow access if user is admin or accessing their own resource
+  if (req.user.role === "admin" || req.user.id === userId) {
+    return next();
+  }
+
+  return res.status(403).json({
+    success: false,
+    error: "Access denied. You can only access your own profile."
+  });
+}
+
 module.exports = {
   verifyToken: verifyTokenMiddleware,
   verifyAdmin,
+  verifyOwnershipOrAdmin,
 };
