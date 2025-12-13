@@ -101,7 +101,7 @@ export default function LoginPage() {
 
         {/* Footer Text */}
         <div className="relative z-10 text-sm text-purple-200/60">
-          © 2025 AI Learning Insight. All rights reserved.
+          © 2025 CerdasKu. All rights reserved.
         </div>
       </div>
 
