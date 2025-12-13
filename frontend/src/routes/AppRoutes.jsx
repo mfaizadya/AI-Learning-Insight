@@ -9,11 +9,11 @@ import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import RegisterPage from "@/pages/RegisterPage";
 import NotFoundPage from "@/pages/NotFoundPage";
-import QuizPage from "@/pages/pretest/QuizPage";
 import AccountPage from "@/pages/AccountPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import ProtectedRoutes from "./ProtectedRoutes";
 import PublicRoutes from "./PublicRoutes";
+import TestPage from "@/pages/TestPage";
 
 export default function AppRoutes() {
   return (
@@ -26,8 +26,8 @@ export default function AppRoutes() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route index element={<DashboardPage />} />
             <Route path="dashboard/pretest" element={<Pretest />} />
-            {/* (!) for the next, a parameter or slug will be added for a unique quiz ID for each session. (maybe)*/}
-            <Route path="dashboard/pretest/start-quiz" element={<QuizPage />} />
+            {/* (!) for the next, a parameter or slug will be added for a unique test ID for each session. (maybe)*/}
+            <Route path="dashboard/pretest/test" element={<TestPage />} />
             <Route path="dashboard/account" element={<AccountPage />} />
             {/* other/next */}
             {/* <Route path="dashboard/account" element={<AccountPage />} /> */}

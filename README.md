@@ -152,7 +152,7 @@ ai-learning-insight/
     │   ├── context/        # State Management (AuthContext)
     │   ├── hooks/          # Custom React Hooks (useToast, useDashboardData)
     │   ├── layouts/        # Layout utama halaman (Sidebar, Navbar)
-    │   ├── pages/          # Halaman aplikasi (Login, Dashboard, Quiz)
+    │   ├── pages/          # Halaman aplikasi (Login, Dashboard, Test)
     │   ├── routes/         # Konfigurasi routing dan proteksi halaman
     │   ├── services/       # Layanan pemanggilan API ke Backend
     │   └── utils/          # Fungsi bantuan (Storage, Error Handler)

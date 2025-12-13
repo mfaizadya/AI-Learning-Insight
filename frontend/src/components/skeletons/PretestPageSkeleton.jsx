@@ -46,7 +46,7 @@ export const PretestPageSkeleton = () => {
                   </div>
                 </div>
 
-                {/* Start Quiz Button Skeleton */}
+                {/* Start Test Button Skeleton */}
                 <div className="mt-0 pt-2 sm:pt-0">
                   <div className="w-full bg-gray-100 rounded-2xl p-6 sm:p-7 flex items-center gap-6">
                     <Skeleton className="w-12 h-12 sm:w-14 sm:h-16 rounded-xl bg-gray-200" />{" "}

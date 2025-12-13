@@ -49,7 +49,7 @@ const TopNav = () => {
   };
 
   const getPageTitle = (pathname) => {
-    if (pathname.includes("/dashboard/pretest/quiz")) return "Quiz";
+    if (pathname.includes("/dashboard/pretest/test")) return "Test";
     if (pathname.includes("/dashboard/pretest")) return "Pretest";
     if (pathname.includes("/dashboard/account")) return "Akun Saya";
     if (pathname === "/dashboard") return "Dashboard";
