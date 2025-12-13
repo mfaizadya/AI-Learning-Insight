@@ -1,35 +1,29 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { verifyToken } = require('../middleware/auth');
-const resultsController = require('../controllers/resultsController');
+const resultsController = require("../controllers/resultsController");
+const { verifyToken } = require("../middleware/auth");
 
 /**
- * POST /api/results/pola
- * Submit test_pola answers
- * Requirements: 5.1, 5.2, 5.5
+ * @route   POST /api/results/pola
+ * @desc    Submit answers for Learning Pattern (POLA) test.
+ * Calculates weights and sends data to external ML API for prediction.
+ * @access  Private
  */
-router.post('/pola', verifyToken, resultsController.submitPolaTest);
+router.post("/pola", verifyToken, resultsController.submitPolaResult);
 
 /**
- * POST /api/results/gaya
- * Submit test_gaya answers
- * Requirements: 5.1, 5.2, 5.5
+ * @route   POST /api/results/gaya
+ * @desc    Submit answers for Learning Style (GAYA) test.
+ * Calculates weights manually and determines the dominant style.
+ * @access  Private
  */
-router.post('/gaya', verifyToken, resultsController.submitGayaTest);
+router.post("/gaya", verifyToken, resultsController.submitGayaResult);
 
 /**
- * GET /api/results/history
- * Get user's test history
- * Requirements: 5.1, 5.3
+ * @route   GET /api/results/history
+ * @desc    Retrieve the authenticated user's test history.
+ * @access  Private
  */
-router.get('/history', verifyToken, resultsController.getTestHistory);
-
-/**
- * GET /api/results/:id
- * Get specific test result details
- * Requirements: 5.1, 5.3, 5.4
- */
-router.get('/:id', verifyToken, resultsController.getTestResultById);
-
+router.get("/history", verifyToken, resultsController.getHistory);
 
 module.exports = router;

@@ -1,29 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const testsController = require('../controllers/testsController');
+const testsController = require("../controllers/testsController");
 
-// GET /api/tests/pola - Get all test_pola records
-router.get('/pola', (req, res, next) => {
-  req.params.type = 'pola';
-  testsController.getTestList(req, res, next);
-});
+/**
+ * @route   GET /api/tests/:type
+ * @desc    Retrieve a list of available tests by type ('pola' or 'gaya')
+ * @param   {string} type - The category of the test
+ * @access  Public
+ */
+router.get("/:type", testsController.getTestList);
 
-// GET /api/tests/pola/:id - Get test_pola with questions and choices
-router.get('/pola/:id', (req, res, next) => {
-  req.params.type = 'pola';
-  testsController.getTestById(req, res, next);
-});
-
-// GET /api/tests/gaya - Get all test_gaya records
-router.get('/gaya', (req, res, next) => {
-  req.params.type = 'gaya';
-  testsController.getTestList(req, res, next);
-});
-
-// GET /api/tests/gaya/:id - Get test_gaya with questions and choices
-router.get('/gaya/:id', (req, res, next) => {
-  req.params.type = 'gaya';
-  testsController.getTestById(req, res, next);
-});
+/**
+ * @route   GET /api/tests/:type/:id
+ * @desc    Retrieve a specific test including all nested questions and choices
+ * @param   {string} type - The category of the test ('pola' or 'gaya')
+ * @param   {number} id   - The unique identifier of the test
+ * @access  Public
+ */
+router.get("/:type/:id", testsController.getTestById);
 
 module.exports = router;
