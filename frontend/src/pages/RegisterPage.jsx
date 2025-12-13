@@ -116,7 +116,7 @@ export default function RegisterPage() {
                   htmlFor="name"
                   className="text-sm font-semibold text-gray-700 ml-1"
                 >
-                  Nama Lengkap
+                  Username
                 </Label>
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3F3370] transition-colors">
