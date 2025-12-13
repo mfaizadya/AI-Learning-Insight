@@ -107,7 +107,7 @@ export default function LoginPage() {
 
       {/* right */}
       <div className="flex-1 flex items-center justify-center p-0 sm:p-14">
-        <div className="w-full max-w-[470px] xl:max-w-[490px] 2xl:max-w-[520px] space-y-8 max-sm:h-dvh">
+        <div className="w-full max-w-[470px] xl:max-w-[470px] 2xl:max-w-[520px] space-y-8 max-sm:h-dvh">
           {/* mobile header */}
           <AuthHeaderTitle />
 

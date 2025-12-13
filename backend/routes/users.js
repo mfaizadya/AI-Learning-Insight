@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const path = require('path');
 const { verifyToken, verifyOwnershipOrAdmin } = require('../middleware/auth');
@@ -6,11 +6,11 @@ const upload = require('../middleware/upload');
 const userController = require('../controllers/userController');
 
 /**
- * GET /api/users/profile
- * Get authenticated user profile
- * Requirements: 3.1, 4.1, 4.3
+ * @route   GET /api/users/profile
+ * @desc    Retrieve authenticated user profile details
+ * @access  Private
  */
-router.get('/profile', verifyToken, userController.getProfile);
+router.get("/profile", verifyToken, userController.getProfile);
 
 /**
  * PUT /api/users/profile
@@ -38,60 +38,88 @@ router.get('/:id', verifyToken, verifyOwnershipOrAdmin, userController.getUserBy
  * Upload or update user profile picture
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 4.1, 4.3, 5.5
  */
-router.post('/profile/picture', verifyToken, upload.single('profilePicture'), userController.uploadProfilePicture);
+router.put("/profile", verifyToken, userController.updateProfile);
 
 /**
- * Multer error handling middleware
- * Requirements: 5.1, 5.2, 5.3, 5.4
- * 
- * Catches and handles multer-specific errors:
- * - MulterError for file size limit exceeded
- * - File filter errors for invalid file types
- * - Other multer-related errors
+ * @route   PUT /api/users/profile/password
+ * @desc    Change the authenticated user's password
+ * @access  Private
+ */
+router.put("/profile/password", verifyToken, userController.changePassword);
+
+/**
+ * @route   POST /api/users/profile/picture
+ * @desc    Upload or update the user's profile picture
+ * @access  Private
+ */
+router.post(
+  "/profile/picture",
+  verifyToken,
+  upload.single("profilePicture"),
+  userController.uploadProfilePicture
+);
+
+/**
+ * Middleware: File Upload Error Handler
+ * Captures Multer errors (e.g., file size limits) and custom file validation exceptions
+ * to ensure a standardized JSON error response.
  */
 router.use((err, req, res, next) => {
-  // Handle MulterError (file size limit exceeded)
-  if (err instanceof require('multer').MulterError) {
-    if (err.code === 'LIMIT_FILE_SIZE') {
+  // Handle specific Multer errors, such as file size limits
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({
         success: false,
-        error: 'File size exceeds 5MB limit'
+        error: "File size exceeds 5MB limit",
       });
     }
-    // Handle other MulterErrors
+
+    // Handle generic Multer errors
     return res.status(400).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-  
-  // Handle file filter errors (invalid file type)
-  if (err && err.message === 'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed') {
+
+  // Handle manual file type validation errors thrown by the filter
+  if (
+    err &&
+    err.message ===
+      "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed"
+  ) {
     return res.status(400).json({
       success: false,
-      error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed'
+      error: err.message,
     });
   }
-  
-  // Pass other errors to the next error handler
+
+  // Pass unrelated errors to the global error handler
   next(err);
 });
 
 /**
- * GET /api/users/profile/picture/:filename
- * Serve uploaded profile picture
- * Requirements: 3.3, 4.1, 4.3
+ * @route   GET /api/users/profile/picture/:filename
+ * @desc    Serve the uploaded profile picture file
+ * @access  Public (Image resource)
  */
-router.get('/profile/picture/:filename', (req, res) => {
+router.get("/profile/picture/:filename", (req, res) => {
   const filename = req.params.filename;
-  const filepath = path.join(__dirname, '..', 'uploads', 'profile-pictures', filename);
-  
+  // Resolve file path securely to prevent directory traversal attacks
+  const filepath = path.join(
+    __dirname,
+    "..",
+    "uploads",
+    "profile-pictures",
+    filename
+  );
+
   // Send file with appropriate content-type headers
   res.sendFile(filepath, (err) => {
     if (err) {
+      // Return 404 without exposing internal server paths on error
       res.status(404).json({
         success: false,
-        error: 'Image not found'
+        error: "Image not found",
       });
     }
   });

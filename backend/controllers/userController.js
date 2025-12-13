@@ -5,10 +5,9 @@ const UserService = require('../services/userService');
 const UserRepository = require('../repositories/userRepository');
 
 /**
- * Get authenticated user profile
- * Requirements: 3.1, 3.2, 4.4
- * 
- * @param {Object} req - Express request object with req.user set by verifyToken middleware
+ * Retrieve authenticated user profile details
+ * Fetches user information based on the ID from the verified token
+ * * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  */
@@ -20,7 +19,7 @@ async function getProfile(req, res, next) {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: "User not found",
       });
     }
     
@@ -37,98 +36,192 @@ async function getProfile(req, res, next) {
 }
 
 /**
- * Upload or update user profile picture
- * Requirements: 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 4.2, 4.4
- * 
- * Handles file upload, deletes old profile picture if exists,
- * updates database with new profile picture URL
- * 
- * @param {Object} req - Express request object with req.file set by multer middleware
- * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
+ * Update User Profile Information
+ * Updates the username and refreshes the updated_at timestamp
+ */
+async function updateProfile(req, res, next) {
+  try {
+    const { username } = req.body;
+    const userId = req.user.id;
+
+    // Validate input parameters
+    if (!username || username.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        error: "Username cannot be empty",
+      });
+    }
+
+    // Check if the username is already taken by another user
+    const existingUser = await db.query(
+      "SELECT id FROM users WHERE username = ? AND id != ?",
+      [username, userId]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Username already taken",
+      });
+    }
+
+    // Execute update query
+    await db.execute(
+      "UPDATE users SET username = ?, updated_at = NOW() WHERE id = ?",
+      [username, userId]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: userId,
+        username: username,
+        message: "Profile updated successfully",
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Change User Password
+ * Verifies the current password before hashing and storing the new password
+ */
+async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const userId = req.user.id;
+
+    // Validate required fields
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: "Current password and new password are required",
+      });
+    }
+
+    // Enforce minimum password length
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "New password must be at least 6 characters",
+      });
+    }
+
+    // Confirm password match
+    if (confirmPassword && newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        error: "New password and confirmation do not match",
+      });
+    }
+
+    // Retrieve current password hash from database
+    const users = await db.query("SELECT password FROM users WHERE id = ?", [
+      userId,
+    ]);
+
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    const storedHash = users[0].password;
+
+    // Verify current password against stored hash
+    const isMatch = await bcrypt.compare(currentPassword, storedHash);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        error: "Incorrect current password",
+      });
+    }
+
+    // Generate new password hash
+    const saltRounds = 10;
+    const newHash = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password in database
+    await db.execute(
+      "UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?",
+      [newHash, userId]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "Password changed successfully",
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Upload or Update Profile Picture
+ * Handles file storage, deletes the previous image file to save space,
+ * and updates the database record
  */
 async function uploadProfilePicture(req, res, next) {
   try {
-    // Check if file was uploaded (multer sets req.file)
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        error: 'No file provided'
+        error: "No file provided",
       });
     }
-    
+
     const userId = req.user.id;
-    const newFilePath = req.file.path;
+    // Construct the public URL for the new image
     const newFileUrl = `/api/users/profile/picture/${req.file.filename}`;
-    
-    // Get current profile picture URL from database
+
+    // Retrieve the existing profile picture URL
     const users = await db.query(
-      'SELECT image as profile_picture_url FROM users WHERE id = ?',
+      "SELECT image as profile_picture_url FROM users WHERE id = ?",
       [userId]
     );
-    
+
     if (users.length === 0) {
-      // Clean up uploaded file if user not found
-      await fs.unlink(newFilePath).catch(err => {
-        console.error('Error deleting uploaded file:', err);
-      });
-      
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
+      // Remove the uploaded file if the user does not exist
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(404).json({ success: false, error: "User not found" });
     }
-    
+
     const oldProfilePictureUrl = users[0].profile_picture_url;
-    
-    // Delete old profile picture file if it exists
+
+    // Delete the old physical file if it exists
     if (oldProfilePictureUrl) {
-      // Extract filename from URL (format: /api/users/profile/picture/{filename})
-      const oldFilename = oldProfilePictureUrl.split('/').pop();
-      const oldFilePath = path.join('uploads', 'profile-pictures', oldFilename);
-      
-      // Attempt to delete old file (don't fail if file doesn't exist)
+      const oldFilename = oldProfilePictureUrl.split("/").pop();
+      const oldFilePath = path.join("uploads", "profile-pictures", oldFilename);
+
       try {
         await fs.unlink(oldFilePath);
       } catch (error) {
-        // File might not exist, log but continue
-        if (error.code !== 'ENOENT') {
-          console.error('Error deleting old profile picture:', error);
-        }
+        // Log error but proceed if file deletion fails (e.g., file already missing)
+        if (error.code !== "ENOENT")
+          console.error("Error deleting old pic:", error);
       }
     }
-    
-    // Update database with new profile picture URL
+
+    // Update the database with the new image URL
     await db.execute(
-      'UPDATE users SET image = ? WHERE id = ?',
+      "UPDATE users SET image = ?, updated_at = NOW() WHERE id = ?",
       [newFileUrl, userId]
     );
-    
-    // Return success response with new profile picture URL
+
     res.status(200).json({
       success: true,
       data: {
         profile_picture_url: newFileUrl,
-        message: 'Profile picture uploaded successfully'
-      }
+        message: "Profile picture uploaded successfully",
+      },
     });
   } catch (error) {
-    // If database or file system error occurs, try to clean up uploaded file
+    // Cleanup the uploaded file if an error occurs during processing
     if (req.file && req.file.path) {
-      await fs.unlink(req.file.path).catch(err => {
-        console.error('Error cleaning up uploaded file:', err);
-      });
+      await fs.unlink(req.file.path).catch(() => {});
     }
-    
-    // Check if it's a storage error
-    if (error.code === 'ENOSPC' || error.code === 'EROFS') {
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to upload image'
-      });
-    }
-    
-    // Pass other errors to error handler middleware
     next(error);
   }
 }
