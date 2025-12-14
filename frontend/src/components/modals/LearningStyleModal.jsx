@@ -1,42 +1,28 @@
 import React from "react";
-import {
-  Lightbulb,
-  Repeat,
-  Scale,
-  Search,
-  Sparkles,
-  X,
-  Zap,
-} from "lucide-react";
+import { Lightbulb, Eye, Volume2, Sparkles, X, Hand } from "lucide-react";
 
-const learningPatternsInfo = [
+const learningStylesInfo = [
   {
-    title: "Consistent Learner",
-    icon: <Repeat size={24} />,
-    color: "bg-blue-100 text-blue-600",
-    desc: "Tipe pembelajar yang menjaga ritme belajar secara stabil dan rutin. Belajar dengan frekuensi tinggi, durasi moderat, dan pengulangan konsisten.",
+    title: "Visual Learner",
+    icon: <Eye size={24} />,
+    color: "bg-teal-100 text-teal-600",
+    desc: "Belajar paling efektif melalui penglihatan. Menyukai diagram, peta konsep, warna, video, dan mencatat dengan rapi.",
   },
   {
-    title: "Fast Learner",
-    icon: <Zap size={24} />,
-    color: "bg-yellow-100 text-yellow-600",
-    desc: "Pembelajar yang cepat memahami materi dengan durasi singkat dan jarang melakukan pengulangan. Unggul dalam kecepatan menyelesaikan tugas.",
+    title: "Auditory Learner",
+    icon: <Volume2 size={24} />,
+    color: "bg-indigo-100 text-indigo-600",
+    desc: "Belajar paling baik melalui pendengaran. Menyukai diskusi, mendengarkan ceramah atau rekaman, dan mengulang informasi secara verbal.",
   },
   {
-    title: "Reflective Learner",
-    icon: <Search size={24} />,
-    color: "bg-purple-100 text-purple-600",
-    desc: "Pembelajar yang teliti dan mendalam. Cenderung menghabiskan waktu lama dan sering mengulang materi untuk pemahaman yang kuat.",
-  },
-  {
-    title: "Balanced Learner",
-    icon: <Scale size={24} />,
-    color: "bg-green-100 text-green-600",
-    desc: "Menyeimbangkan kecepatan dan kedalaman. Frekuensi, durasi, dan pengulangan serba moderat. Sangat fleksibel.",
+    title: "Kinesthetic Learner",
+    icon: <Hand size={24} />,
+    color: "bg-orange-100 text-orange-600",
+    desc: "Belajar melalui pengalaman fisik dan gerakan. Menyukai praktik langsung (hands-on), eksperimen, dan bergerak saat belajar (active learning).",
   },
 ];
 
-export const LearningPatternModal = ({ isOpen, onClose }) => {
+export const LearningStyleModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
@@ -56,12 +42,12 @@ export const LearningPatternModal = ({ isOpen, onClose }) => {
             <div className="flex items-center gap-4">
               <Sparkles size={18} className="text-primary animate-pulse" />
               <h3 className="text-2xl sm:text-2xl font-semibold text-gray-900 tracking-tight">
-                Pola Belajar
+                Gaya Belajar
               </h3>
             </div>
             <p className="text-gray-500 mt-2 text-sm sm:text-base leading-relaxed max-w-lg">
-              Setiap orang memiliki ritme unik. Kenali 4 arketipe utama cara
-              otak memproses informasi baru.
+              Setiap orang memiliki preferensi sensorik. Kenali 3 gaya utama
+              untuk mengoptimalkan retensi memori.
             </p>
           </div>
           <button
@@ -75,22 +61,22 @@ export const LearningPatternModal = ({ isOpen, onClose }) => {
         {/*body */}
         <div className="p-6 overflow-y-auto minimal-scroll">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {learningPatternsInfo.map((pattern, idx) => (
+            {learningStylesInfo.map((style, idx) => (
               <div
                 key={idx}
                 className="p-5 rounded-2xl border-2 border-gray-100 hover:ring-1 ring-primary/5 transition-all bg-white flex flex-col gap-3 shadow-none hover:shadow-sm"
               >
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${pattern.color}`}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${style.color}`}
                 >
-                  {pattern.icon}
+                  {style.icon}
                 </div>
                 <div>
                   <h4 className="text-lg font-bold text-gray-800 mb-2">
-                    {pattern.title}
+                    {style.title}
                   </h4>
                   <p className="text-sm text-gray-500 leading-relaxed text-justify">
-                    {pattern.desc}
+                    {style.desc}
                   </p>
                 </div>
               </div>
@@ -112,10 +98,10 @@ export const LearningPatternModal = ({ isOpen, onClose }) => {
                 Pro Insight
               </p>
               <p className="text-sm text-gray-600 font-medium max-w-xl leading-relaxed">
-                "Pola belajar Anda bersifat{" "}
-                <span className="text-gray-900 font-bold">dinamis</span>. Ia
-                dapat berevolusi seiring tingkat kesulitan materi dan kondisi
-                mental Anda."
+                "Gaya belajar Anda bersifat{" "}
+                <span className="text-gray-900 font-bold">fleksibel</span>. Ia
+                dapat diasah dan disesuaikan dengan jenis materi yang
+                dipelajari."
               </p>
             </div>
           </div>

@@ -12,9 +12,11 @@ import { HistoryDetailModal } from "@/components/modals/HistoryDetailModal";
 import { LearningPatternModal } from "@/components/modals/LearningPatternModal";
 import { TestHistory } from "./pretest/TestHistory";
 import { resultService } from "@/services/result.service";
+import { LearningStyleModal } from "@/components/modals/LearningStyleModal";
 
 const Pretest = () => {
   const [isPatternModalOpen, setIsPatternModalOpen] = useState(false);
+  const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState(null);
   const [historyList, setHistoryList] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
@@ -22,7 +24,6 @@ const Pretest = () => {
   const handleSelectHistory = async (historySnapshot) => {
     try {
       setSelectedHistory({ ...historySnapshot, isLoading: true });
-
       const res = await resultService.getHistoryDetail(historySnapshot.id);
 
       setSelectedHistory({
@@ -68,6 +69,12 @@ const Pretest = () => {
           onClose={() => setIsPatternModalOpen(false)}
         />
       )}
+      {isStyleModalOpen && (
+        <LearningStyleModal
+          isOpen={!!isStyleModalOpen}
+          onClose={() => setIsStyleModalOpen(false)}
+        />
+      )}
       <HistoryDetailModal
         isOpen={!!selectedHistory && !selectedHistory.isLoading}
         data={selectedHistory}
@@ -92,39 +99,41 @@ const Pretest = () => {
               {/* */}
               <div className="flex flex-col gap-5 sm:gap-6 flex-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {/* btn group */}
+                  {/* btn learn pattern */}
                   <button
                     onClick={() => setIsPatternModalOpen(true)}
-                    className="text-left border sm:border-[1.5px] border-primary/15 bg-[#FDFDFF] hover:bg-purple-50/60 hover:border-primary/40 rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300 group shadow-sm  h-full"
+                    className="text-left border sm:border-[1.5px] border-primary/15 bg-[#FDFDFF] hover:bg-purple-50/60 hover:border-primary/40 rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300 group shadow-sm h-full"
                   >
-                    <div className="w-10 h-10 rounded-full border border-purple-200 bg-purple-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300">
+                    <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-full border border-purple-200 bg-purple-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300">
                       <BrainCircuit size={20} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-primary">
+                      <h3 className="font-semibold text-lg 2xl:text-xl text-primary">
                         Pola Belajar
                       </h3>
-                      <div className="text-[#8A8A8A] text-xs sm:text-sm mt-1 group-hover:text-primary/70 transition-colors duration-300">
+                      <div className="text-[#8A8A8A] text-xs sm:text-sm 2xl:text-base mt-1 group-hover:text-primary/70 transition-colors duration-300">
                         Consistent, Fast, Reflective dan Balanced.
                       </div>
                     </div>
                   </button>
-                  {/* */}
-                  <Link
-                    to="#"
-                    className="border sm:border-[1.5px] border-primary/15 bg-[#FDFDFF] hover:bg-purple-50/60 hover:border-primary/40 rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300 group shadow-sm  h-full"
+                  {/* learnstyle*/}
+                  <button
+                    onClick={() => setIsStyleModalOpen(true)}
+                    className="text-left border sm:border-[1.5px] border-primary/15 bg-[#FDFDFF] hover:bg-purple-50/60 hover:border-primary/40 rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300 group shadow-sm  h-full"
                   >
-                    <div className="w-10 h-10 rounded-full border border-purple-200 bg-purple-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300">
+                    <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-full border border-purple-200 bg-purple-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-300">
                       <BookOpen size={20} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-primary">
+                      <h3 className="font-semibold text-lg 2xl:text-xl text-primary">
                         Gaya Belajar
                       </h3>
-                      <div className="text-[#8A8A8A] text-xs sm:text-sm mt-1 group-hover:text-primary/70 transition-colors duration-300">
+                      <div className="text-[#8A8A8A] text-xs sm:text-sm 2xl:text-base mt-1 group-hover:text-primary/70 transition-colors duration-300">
                         Visual, Auditori dan Kinestetik.
                       </div>
                     </div>
-                  </Link>
+                  </button>
                 </div>
                 <div className="mt-0 pt-0 sm:pt-0">
                   <Link
