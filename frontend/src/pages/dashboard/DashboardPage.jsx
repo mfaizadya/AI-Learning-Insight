@@ -44,11 +44,11 @@ export const DashboardPage = () => {
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-16">
           {/* row 1 */}
           <LearningStyleCard
-            styleData={data.learningStyle}
+            // styleData={data.learningStyle}
             className="max-lg:h-[10.8rem] rounded-[1.25rem]"
           />
           <LearningPatternCard
-            patternData={data.learningPattern}
+            // patternData={data.learningPattern}
             className="max-lg:h-[10.8rem] rounded-[1.25rem]"
           />
           <QuoteCard

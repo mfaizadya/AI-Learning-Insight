@@ -1,13 +1,21 @@
-import axiosClient from "@/api/axiosClient";
+import { resultService } from "./result.service";
 
-export const dashboardService = {
-  getDashboardData: async () => {
-    const response = await axiosClient.get("/dashboard/summary");
-    return response.data.data;
-  },
+const dashboardService = {
+  getLastTestResult: async () => {
+    try {
+      const response = await resultService.getHistory();
+      const dataArray = response.data.data || response.data;
 
-  getWeeklyProgress: async () => {
-    const response = await axiosClient.get("/dashboard/progress");
-    return response.data.data;
+      if (Array.isArray(dataArray) && dataArray.length > 0) {
+        const lastItem = dataArray[0];  
+        return { success: true, data: lastItem };
+      }
+
+      return { success: false, data: null, message: "No test results found." };
+    } catch (error) {
+      throw error;
+    }
   },
 };
+
+export default dashboardService;
