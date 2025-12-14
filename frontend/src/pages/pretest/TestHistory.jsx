@@ -73,7 +73,7 @@ export const TestHistory = ({ onSelectHistory, historyData, isLoading }) => {
                       </h4>
                       <div className="flex items-center gap-2 mt-0.5">
                         {/* Badge Style */}
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] 2xl:text-xs font-bold bg-[#EDE8FA] text-primary border border-primary/10 group-hover:border-primary/30 transition-colors duration-300">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] 2xl:text-sm font-bold bg-[#EDE8FA] text-primary border border-primary/10 group-hover:border-primary/30 transition-colors duration-300">
                           {item.subtitle || "Gaya Belajar Tidak Ditemukan"} •{" "}
                           {item.score || 0}%
                         </span>
