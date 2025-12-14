@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -6,9 +7,16 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Label, Pie, PieChart } from "recharts";
+import { AlertCircle } from "lucide-react"; // Ikon tambahan untuk empty state
 
 export const StatisticsChartCard = ({ data, className = "" }) => {
   const id = "pie-interactive";
+
+  // 1. SAFE GUARD: Cek apakah data valid dan tidak kosong
+  const hasData =
+    Array.isArray(data) &&
+    data.length > 0 &&
+    data.some((item) => item.visitors > 0);
 
   const chartConfig = {
     visitors: { label: "Persentase" },
@@ -17,10 +25,40 @@ export const StatisticsChartCard = ({ data, className = "" }) => {
     kinestetik: { label: "Kinestetik" },
   };
 
-  const topData = data.reduce((prev, current) =>
-    prev.visitors > current.visitors ? prev : current
-  );
+  // 2. SAFE CALCULATION: Mencegah crash pada .reduce() jika array kosong
+  const topData = useMemo(() => {
+    if (!hasData) return { visitors: 0, type: "Belum Tes" };
+    return data.reduce((prev, current) =>
+      prev.visitors > current.visitors ? prev : current
+    );
+  }, [data, hasData]);
 
+  // 3. EMPTY STATE UI: Tampilan jika user belum tes (tetap mempertahankan dimensi card)
+  if (!hasData) {
+    return (
+      <Card
+        className={`flex flex-col border-none shadow-sm rounded-2xl bg-white h-full max-h-[25rem] ${className}`}
+      >
+        <CardHeader className="pb-0 pt-6 px-6">
+          <CardTitle className="text-base font-bold text-primary">
+            Statistik Gaya Belajar
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-1 flex-col gap-3 justify-center pb-2 items-center min-h-[16.875rem] text-muted-foreground">
+          <AlertCircle className="h-10 w-10 text-gray-300" />
+          <p className="text-sm font-medium text-gray-400 text-center px-4">
+            Belum ada data statistik.
+            <br />
+            Silakan lakukan tes terlebih dahulu.
+          </p>
+        </CardContent>
+        {/* Footer kosong agar tinggi card tetap konsisten/mirip */}
+        <div className="border-t p-4 bg-gray-50/50 rounded-b-xl min-h-[3.5rem]" />
+      </Card>
+    );
+  }
+
+  // 4. RENDER UTAMA (Jika data ada) - Styling original Anda 100% utuh
   return (
     <Card
       data-chart={id}
@@ -50,7 +88,6 @@ export const StatisticsChartCard = ({ data, className = "" }) => {
               innerRadius={65}
               outerRadius={90}
               strokeWidth={5}
-              // Render Custom Label di tengah
             >
               <Label
                 content={({ viewBox }) => {

@@ -1,6 +1,5 @@
 import {
   ChartNoAxesColumn,
-  Loader2,
   AlertCircle,
   Zap,
   Repeat,
@@ -8,25 +7,25 @@ import {
   Scale,
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
-import { useLastTestResult } from "@/hooks/useLastTestResult";
 
-// desc
 const getPatternDescription = (pattern) => {
-  switch (pattern) {
-    case "Consistent Learner":
-      return "Ritme belajar yang stabil & terstruktur.";
-    case "Fast Learner":
-      return "Mampu menyerap & menyelesaikan materi dengan cepat.";
-    case "Reflective Learner":
-      return "Menghabiskan waktu untuk mendalami & mengulas materi.";
-    case "Balanced Learner":
-      return "Keseimbangan baik antara kecepatan & ketelitian.";
-    default:
-      return "Lakukan tes Pola Belajar untuk mendapatkan wawasan pribadi.";
-  }
+  if (!pattern)
+    return "Lakukan tes Pola Belajar untuk mendapatkan wawasan pribadi.";
+
+  const p = pattern.toLowerCase();
+
+  if (p.includes("consistent"))
+    return "Ritme belajar yang stabil & terstruktur.";
+  if (p.includes("fast"))
+    return "Mampu menyerap & menyelesaikan materi dengan cepat.";
+  if (p.includes("reflective"))
+    return "Menghabiskan waktu untuk mendalami & mengulas materi.";
+  if (p.includes("balanced"))
+    return "Keseimbangan baik antara kecepatan & ketelitian.";
+
+  return "Lakukan tes Pola Belajar untuk mendapatkan wawasan pribadi.";
 };
 
-// ico's
 const getPatternIcon = (patternType) => {
   if (!patternType || patternType === "Belum Tes") {
     return <AlertCircle size={40} className="text-white" />;
@@ -45,30 +44,19 @@ const getPatternIcon = (patternType) => {
   return <ChartNoAxesColumn size={40} className="text-white" />;
 };
 
-export const LearningPatternCard = ({ className = "", ...props }) => {
-  const { lastResult, isLoading, error } = useLastTestResult();
-  const patternType = lastResult?.title || "Belum Tes";
+export const LearningPatternCard = ({
+  patternData,
+  className = "",
+  ...props
+}) => {
+  const patternType = patternData?.type || "Belum Tes";
 
-  let displayIcon;
-  let patternText;
-  let descriptionText;
-
-  if (isLoading) {
-    displayIcon = <Loader2 size={40} className="text-white animate-spin" />;
-    patternText = "Memuat Pola...";
-    descriptionText = "Menunggu analisis...";
-  } else if (error || patternType === "Belum Tes") {
-    displayIcon = getPatternIcon(patternType);
-    patternText = patternType;
-    descriptionText = getPatternDescription(patternType);
-  } else {
-    displayIcon = getPatternIcon(patternType);
-    patternText = patternType;
-    descriptionText = getPatternDescription(patternType);
-  }
+  const displayIcon = getPatternIcon(patternType);
+  const patternText = patternType;
+  const descriptionText = getPatternDescription(patternType);
 
   const cardClass =
-    patternType === "Belum Tes" || error
+    patternType === "Belum Tes"
       ? "bg-secondary"
       : "bg-secondary";
 
@@ -78,9 +66,10 @@ export const LearningPatternCard = ({ className = "", ...props }) => {
       {...props}
     >
       <CardContent className="p-6 pb-0 flex items-center justify-between h-full relative z-10">
-        {/* left */}
+        {/* left side */}
         <div className="flex flex-col justify-center max-md:ms-2 gap-2">
-          <h3 className="text-[1.4rem] sm:text-2xl font-semibold text-primary mt-2 leading-tight ">
+          {/* title */}
+          <h3 className="text-[1.4rem] sm:text-2xl font-semibold text-primary mt-2 leading-tight w-[85%]">
             {(typeof patternText === "string"
               ? patternText
               : patternText.toString()
@@ -97,15 +86,14 @@ export const LearningPatternCard = ({ className = "", ...props }) => {
                 </span>
               ))}
           </h3>
-          <p
-            className={`text-primary font-normal text-sm sm:text-sm w-[65%] ${
-              isLoading ? "animate-pulse" : ""
-            }`}
-          >
+
+          {/* desc */}
+          <p className="text-primary font-normal text-sm sm:text-sm w-[65%]">
             {descriptionText}
           </p>
         </div>
-        {/* right */}
+
+        {/* right icon */}
         <div className="bg-primary absolute right-0 p-6 sm:p-7 rounded-[1.2rem] shadow-lg shadow-purple-900/10 flex items-center justify-center">
           {displayIcon}
         </div>

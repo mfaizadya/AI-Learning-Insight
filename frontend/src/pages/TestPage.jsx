@@ -2,20 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ContentDrawer from "@/components/reusable/ContentDrawer";
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import testService from "@/services/test.service";
 import { HistoryDetailModal } from "@/components/modals/HistoryDetailModal";
 import { resultService } from "@/services/result.service";
+import { useToast } from "@/hooks/use-toast"; 
+
+const STORAGE_KEY = "asah_test_progress";
 
 export default function TestPage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [questionsData, setQuestionsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState({});
+
+  const [userAnswers, setUserAnswers] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +34,7 @@ export default function TestPage() {
   const POLA_TEST_ID = import.meta.env.VITE_POLA_TEST_ID;
   const GAYA_TEST_ID = import.meta.env.VITE_GAYA_TEST_ID;
 
+  // 1. Fetch Questions
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -57,6 +67,13 @@ export default function TestPage() {
     fetchQuestions();
   }, [POLA_TEST_ID, GAYA_TEST_ID]);
 
+  // 2. Auto-Save Progress Effect
+  useEffect(() => {
+    if (Object.keys(userAnswers).length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userAnswers));
+    }
+  }, [userAnswers]);
+
   // helpers
   const currentQuestion = questionsData[currentQuestionIndex];
   const totalQuestions = questionsData.length;
@@ -87,9 +104,12 @@ export default function TestPage() {
 
   const handleSubmit = async () => {
     if (!isAllAnswered) {
-      alert(
-        `Anda baru menjawab ${totalAnswered} dari ${totalQuestions} soal. Harap lengkapi semua jawaban.`
-      );
+      toast({
+        variant: "destructive",
+        title: "Jawaban Belum Lengkap",
+        description: `Anda baru menjawab ${totalAnswered} dari ${totalQuestions} soal. Mohon lengkapi semua sebelum submit.`,
+        duration: 4000,
+      });
       return;
     }
 
@@ -115,7 +135,7 @@ export default function TestPage() {
         }
       });
 
-      console.log("Memulai submit Pola Belajar...");
+      // console.log("Memulai submit Pola Belajar...");
       const polaResponse = await testService.submitPolaResult({
         test_id: POLA_TEST_ID,
         answers: polaAnswers,
@@ -129,14 +149,17 @@ export default function TestPage() {
         );
       }
 
-      console.log(`Pola Submitted. ID Hasil (hasil_test_id): ${resultIdPola}`);
+      // console.log(`Pola Submitted. ID Hasil: ${resultIdPola}`);
 
-      console.log("Memulai submit Gaya Belajar dan menggabungkan hasilnya...");
+      // console.log("Memulai submit Gaya Belajar...");
       await testService.submitGayaResult({
         test_id: GAYA_TEST_ID,
         answers: gayaAnswers,
         hasil_test_id: resultIdPola,
       });
+
+      // 3. Clear Storage on Success
+      localStorage.removeItem(STORAGE_KEY);
 
       const fullResultResponse = await resultService.getHistoryDetail(
         resultIdPola
@@ -151,7 +174,6 @@ export default function TestPage() {
         date: finalResult.date,
         duration: "Selesai",
         status: "Selesai",
-
         patternResult: finalResult.patternResult,
         styleResult: finalResult.styleResult,
         score: finalResult.score,
@@ -161,13 +183,27 @@ export default function TestPage() {
 
       setResultData(finalResultForModal);
       setIsModalOpen(true);
+
+      // Optional: Success Toast
+      toast({
+        title: "Tes Selesai!",
+        description: "Hasil analisis belajar Anda telah siap.",
+        className: "bg-green-50 border-green-200 text-green-800", // Custom styling minimalis hijau
+      });
     } catch (err) {
       console.error("Submission error:", err);
       const errMsg =
         err.response?.data?.error ||
         err.message ||
         "Terjadi kesalahan saat memproses hasil tes.";
-      alert(`Submission Gagal: ${errMsg}`);
+
+      // --- ERROR HANDLING DENGAN TOAST ---
+      toast({
+        variant: "destructive",
+        title: "Gagal Mengirim Jawaban",
+        description: errMsg,
+        action: <AlertCircle className="h-4 w-4" />, // Icon tambahan
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -300,7 +336,7 @@ export default function TestPage() {
                       isAllAnswered
                         ? "bg-gray-100 hover:bg-gray-200 text-primary"
                         : "bg-gray-50 hover:bg-gray-100 text-gray-400"
-                    } ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                    } ${isSubmitting ? "opacity-70 cursor-not-allowed max-sm:px-4" : ""}`}
                   >
                     {isSubmitting ? (
                       <>
@@ -329,7 +365,7 @@ export default function TestPage() {
         <section className="w-full lg:w-[32%] shrink-0 flex flex-col">
           <div className="sm:border-none border-gray-200 rounded-3xl overflow-hidden shadow-sm h-fit">
             <header className="bg-transparents p-5 pb-0 text-center">
-              <h3 className="text-black font-medium text-sm sm:text-base tracking-wide bg-[#EEF2FF] p-4 rounded-[0.9rem]">
+              <h3 className="text-white font-medium text-[0.9rem] sm:text-base tracking-wide bg-primary p-4 rounded-[0.9rem]">
                 List Pertanyaan
               </h3>
             </header>

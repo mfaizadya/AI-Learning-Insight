@@ -3,45 +3,68 @@ import { useNavigate, Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, User, Mail, Lock, Loader2, Sparkles } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Loader2,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2, 
+} from "lucide-react";
 import { authService } from "@/services/auth.service";
 import { getErrorMessage } from "@/utils/errorHandler";
 import { AuthHeaderTitle } from "@/components/reusable/AuthHeaderTittle";
+import { useToast } from "@/hooks/use-toast"; 
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
-    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       await authService.register({
         email: formData.email,
-        username: formData.name,
+        username: formData.username,
         password: formData.password,
         role: "user",
       });
 
-      navigate("/", {
-        state: { message: "Registrasi berhasil! Silakan login." },
+      toast({
+        title: "Registrasi Berhasil!",
+        description: "Akun Anda telah dibuat. Silakan login untuk melanjutkan.",
+        className: "bg-green-50 border-green-200 text-green-800",
+        action: <CheckCircle2 className="h-5 w-5 text-green-600" />,
+        duration: 4000,
       });
+
+      navigate("/auth/login");
     } catch (err) {
+      console.error("Register Error:", err);
       const message = getErrorMessage(err);
-      setError(message);
+
+      // err toast
+      toast({
+        variant: "destructive",
+        title: "Gagal Mendaftar",
+        description: message,
+        action: <AlertCircle className="h-5 w-5" />,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -49,13 +72,8 @@ export default function RegisterPage() {
 
   return (
     <div className="h-full sm:min-h-screen flex w-full font-sans bg-[#F8F9FC]">
-      {/* left */}
+      {/* left - Tetap Sama */}
       <div className="hidden lg:flex w-1/2 bg-[#3b2f6e] relative overflow-hidden flex-col justify-between p-12 text-white">
-        {/* <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div> */}
-        {/* <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#5D4E98] rounded-full blur-[100px] opacity-50"></div> */}
-        {/* <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#2e2555] to-transparent opacity-80"></div> */}
-
-        {/* Content */}
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-8 opacity-80">
             <Sparkles size={20} />
@@ -76,7 +94,6 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Footer Text */}
         <div className="relative z-10 text-sm text-purple-200/60">
           © 2025 CerdasKu. All rights reserved.
         </div>
@@ -101,19 +118,11 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            {/* Error Alert */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-600 animate-in slide-in-from-top-2">
-                <AlertCircle size={20} className="shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">{error}</span>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name Input */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="name"
+                  htmlFor="username"
                   className="text-sm font-semibold text-gray-700 ml-1"
                 >
                   Username
@@ -123,9 +132,9 @@ export default function RegisterPage() {
                     <User size={18} />
                   </div>
                   <Input
-                    id="name"
+                    id="username"
                     type="text"
-                    placeholder="Contoh: budisantoso"
+                    placeholder="Contoh: john_doe"
                     value={formData.name}
                     onChange={handleChange}
                     className="pl-10 h-12 text-sm sm:text-base bg-gray-50 border-gray-200 focus:bg-white focus:border-[#3F3370] focus:ring-[#3F3370]/20 rounded-xl transition-all"

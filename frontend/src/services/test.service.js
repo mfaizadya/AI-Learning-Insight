@@ -106,7 +106,7 @@ const testService = {
    */
   getFullTestPackage: async (polaId = 1, gayaId = 1) => {
     try {
-      // Jalankan request secara paralel agar lebih cepat
+      // run async
       const [polaRes, gayaRes] = await Promise.all([
         axiosClient.get(`/tests/pola/${polaId}`),
         axiosClient.get(`/tests/gaya/${gayaId}`),

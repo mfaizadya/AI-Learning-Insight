@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  //   session refresh
+  // session refresh
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
@@ -27,6 +27,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", newToken);
   };
 
+  const updateUser = (newUserData) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+      const updatedUser = { ...prevUser, ...newUserData };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return updatedUser;
+    });
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -40,6 +51,7 @@ export const AuthProvider = ({ children }) => {
     token,
     login,
     logout,
+    updateUser,
     isAuthenticated: !!token,
   };
 

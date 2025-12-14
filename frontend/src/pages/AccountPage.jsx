@@ -10,39 +10,49 @@ import {
   LogOut,
   Loader2,
   ArrowRight,
+  CheckCircle2, 
+  AlertCircle, 
 } from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { AccountPageSkeleton } from "@/components/skeletons/AccountPageSkeleton";
+import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/services/user.service";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/utils/errorHandler";
 
-// mock data
-const USER_DATA = {
-  username: "johndoe123",
-  email: "user@gmail.com",
-  joinDate: "12 Oktober 2025",
-  location: "Jakarta, Indonesia",
-  bio: "Mahasiswa Teknik Informatika yang antusias mempelajari AI dan Web Development.",
-  role: "Student",
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 };
 
 export default function AccountPage() {
-  const { data, isLoading: isFetching, error } = useDashboardData();
+  const { data, isLoading: isFetching } = useDashboardData();
+  const { user, updateUser, logout } = useAuth(); 
+  const { toast } = useToast();
+
   const [isSaving, setIsSaving] = useState(false);
-  // form handling state
+
   const [formData, setFormData] = useState({
     fullName: "",
-    username: USER_DATA.username,
-    bio: USER_DATA.bio,
-    location: USER_DATA.location,
+    username: "",
+    email: "",
   });
 
   useEffect(() => {
-    if (data?.user) {
-      setFormData((prev) => ({
-        ...prev,
-        fullName: data.user.name || "",
-      }));
+    const userData = user || data?.user;
+
+    if (userData) {
+      setFormData({
+        username: userData.username || "",
+        email: userData.email || "",
+        fullName: userData.name || "",
+      });
     }
-  }, [data]);
+  }, [data, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,20 +61,64 @@ export default function AccountPage() {
       [name]: value,
     }));
   };
-  // const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => {
+
+    try {
+      const response = await userService.updateProfile({
+        username: formData.username,
+      });
+
+      if (response.success) {
+        updateUser(response.data);
+
+        toast({
+          title: "Profil Diperbarui",
+          description: "Perubahan profil berhasil disimpan!",
+          action: <CheckCircle2 className="h-5 w-5 text-green-600" />,
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
+      }
+    } catch (err) {
+      // Error Handling
+      toast({
+        variant: "destructive",
+        title: "Gagal Menyimpan",
+        description: getErrorMessage(err),
+        action: <AlertCircle className="h-5 w-5" />,
+      });
+    } finally {
       setIsSaving(false);
-      alert("Perubahan profil berhasil disimpan!");
-    }, 1000);
+    }
   };
 
-  if (isFetching) {
+  const handleLogout = () => {
+    logout();
+  };
+
+  // coming soon
+  const handleChangePasswordClick = () => {
+    toast({
+      title: "Info",
+      description:
+        "Fitur ganti password akan segera tersedia di modal terpisah.",
+    });
+  };
+
+  if (isFetching && !user) {
     return <AccountPageSkeleton />;
   }
+
+  const displayUser = user || data?.user || {};
+  const joinDate = displayUser.created_at
+    ? formatDate(displayUser.created_at)
+    : "Baru Bergabung";
+  const role = displayUser.role
+    ? displayUser.role.charAt(0).toUpperCase() + displayUser.role.slice(1)
+    : "Student";
+
   return (
     <ContentDrawer>
       {/* left side */}
@@ -82,17 +136,13 @@ export default function AccountPage() {
                 <div className="relative group">
                   <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-md">
                     <img
-                      src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+                      src={`https://api.dicebear.com/9.x/notionists/svg?seed=${
+                        formData.username || "User"
+                      }`}
                       alt="Avatar"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  {/* <button
-                    className="absolute bottom-[-0.5rem] right-[-0.5rem] bg-white text-primary p-2 rounded-xl shadow-sm border border-gray-100 hover:bg-gray-50 transition-colors"
-                    title="Ganti Foto Profil"
-                  >
-                    <Camera size={18} />
-                  </button> */}
                 </div>
               </div>
               {/* form */}
@@ -106,21 +156,7 @@ export default function AccountPage() {
               </header>
               <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* username */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <User size={16} className="text-primary" /> Nama Lengkap
-                  </label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400 text-sm sm:text-base"
-                    placeholder="Masukkan nama lengkap"
-                  />
-                </div>
-                {/* username */}
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                     <AtSign size={16} className="text-primary" /> Username
                   </label>
@@ -133,6 +169,7 @@ export default function AccountPage() {
                     placeholder="Username unik"
                   />
                 </div>
+
                 {/* email */}
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -141,7 +178,7 @@ export default function AccountPage() {
                   <div className="relative">
                     <input
                       type="email"
-                      value={USER_DATA.email}
+                      value={formData.email}
                       disabled
                       className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 font-medium cursor-not-allowed select-none text-sm sm:text-base"
                     />
@@ -153,52 +190,32 @@ export default function AccountPage() {
                     Hubungi administrator jika Anda perlu mengubah alamat email.
                   </p>
                 </div>
-                {/* Location */}
-                {/* <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <MapPin size={16} className="text-primary" /> Lokasi
-                  </label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400"
-                    placeholder="Kota, Negara"
-                  />
-                </div> */}
-                {/* Bio */}
-                {/* <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Info size={16} className="text-primary" /> Bio Singkat
-                  </label>
-                  <textarea
-                    name="bio"
-                    rows={4}
-                    value={formData.bio}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-[#FDFDFF] border border-gray-200 text-gray-800 font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-gray-400 resize-none"
-                    placeholder="Ceritakan sedikit tentang dirimu..."
-                  />
-                </div> */}
               </form>
 
-              {/* mobile */}
+              {/* mobile button */}
               <button
                 onClick={handleSave}
-                className="mt-8 md:hidden w-full flex justify-center items-center gap-2 bg-primary hover:bg-[#2e2555] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md transition-all active:scale-95"
+                disabled={isSaving}
+                className="mt-8 md:hidden w-full flex justify-center items-center gap-2 bg-primary hover:bg-[#2e2555] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <Save size={18} /> Simpan Perubahan
+                {isSaving ? (
+                  <Loader2 className="animate-spin w-4 h-4" />
+                ) : (
+                  <Save size={18} />
+                )}
+                {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
               </button>
 
-              {/* desktop */}
+              {/* desktop button */}
               <button
                 onClick={handleSave}
                 disabled={isSaving}
                 className="hidden w-2/5 md:flex items-center justify-center gap-2 bg-primary hover:bg-[#2e2555] text-white px-6 py-4 rounded-xl font-medium text-sm shadow-md shadow-purple-900/10 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed mt-10"
               >
                 {isSaving ? (
-                  "Menyimpan..."
+                  <>
+                    <Loader2 className="animate-spin w-4 h-4" /> Menyimpan...
+                  </>
                 ) : (
                   <>
                     <Save size={18} /> Simpan Perubahan
@@ -224,22 +241,20 @@ export default function AccountPage() {
 
             {/* account info's */}
             <div className="space-y-4">
-              {/*  */}
+              {/* Join Date */}
               <div className="flex items-center gap-4 p-3 py-4 bg-white rounded-2xl border border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary">
                   <Calendar size={18} />
                 </div>
-                {/*  */}
                 <div>
                   <p className="text-xs text-gray-400 font-medium">
                     Bergabung sejak
                   </p>
-                  <p className="text-sm font-bold text-gray-800">
-                    {USER_DATA.joinDate}
-                  </p>
+                  <p className="text-sm font-bold text-gray-800">{joinDate}</p>
                 </div>
               </div>
 
+              {/* Status */}
               <div className="flex items-center gap-4 p-3 py-4 bg-white rounded-2xl border border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary">
                   <Shield size={18} />
@@ -251,7 +266,7 @@ export default function AccountPage() {
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                     <p className="text-sm font-bold text-gray-800">
-                      Aktif - {USER_DATA.role}
+                      Aktif - {role}
                     </p>
                   </div>
                 </div>
@@ -264,19 +279,24 @@ export default function AccountPage() {
           <div className="p-6 rounded-[1.3rem] h-full flex flex-col gap-4">
             <h3 className="font-bold text-gray-800 text-lg">Keamanan</h3>
 
-            <button className="w-full text-left flex items-center justify-between p-4 rounded-2xl border border-gray-200 hover:border-primary hover:bg-secondary/30 transition-all group">
+            <button
+              onClick={handleChangePasswordClick}
+              className="w-full text-left flex items-center justify-between p-4 rounded-2xl border border-gray-200 hover:border-primary hover:bg-secondary/30 transition-all group"
+            >
               <span className="text-sm font-semibold text-gray-600 group-hover:text-primary">
                 Ganti Password
               </span>
               <span className="text-gray-400 group-hover:translate-x-1 transition-transform py-1">
-                {/* &gt; */}
                 <ArrowRight />
               </span>
             </button>
 
             <div className="h-px bg-gray-100 my-1"></div>
 
-            <button className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 transition-colors font-bold text-sm">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 transition-colors font-bold text-sm"
+            >
               <LogOut size={16} /> Keluar Akun
             </button>
           </div>

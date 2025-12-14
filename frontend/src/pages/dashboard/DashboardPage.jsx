@@ -5,18 +5,17 @@ import { QuoteCard } from "@/components/dashboard/QuoteCard";
 import { StatisticsChartCard } from "@/components/dashboard/StatisticsChartCard";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { DashboardPageSkeleton } from "@/components/skeletons/DashboardPageSkeleton";
-
-import { Loader2 } from "lucide-react";
+// import { Loader2 } from "lucide-react";
 
 // sub comps
-const LoadingState = () => (
-  <div className="flex h-[50vh] w-full items-center justify-center flex-col gap-4">
-    <Loader2 className="h-10 w-10 animate-spin text-primary" />
-    <p className="text-muted-foreground animate-pulse">
-      Menyiapkan Insight Belajarmu...
-    </p>
-  </div>
-);
+// const LoadingState = () => (
+//   <div className="flex h-[50vh] w-full items-center justify-center flex-col gap-4">
+//     <Loader2 className="h-10 w-10 animate-spin text-primary" />
+//     <p className="text-muted-foreground animate-pulse">
+//       Menyiapkan Insight Belajarmu...
+//     </p>
+//   </div>
+// );
 
 const WelcomeHeader = ({ user }) => (
   <section className="mb-8 sm:mb-8 md:mb-8 mt-5 md:mt-3 ms-1 md:ms-2 flex flex-col gap-1">
@@ -32,10 +31,14 @@ const WelcomeHeader = ({ user }) => (
 export const DashboardPage = () => {
   const { data, isLoading, error } = useDashboardData();
 
-  if (isLoading) return <DashboardPageSkeleton />;
+  if (isLoading || !data) return <DashboardPageSkeleton />;
 
   if (error)
-    return <div className="p-10 text-center text-red-500">Error...</div>;
+    return (
+      <div className="p-10 text-center text-red-500">
+        Error: Gagal memuat data dashboard.
+      </div>
+    );
 
   return (
     <>
@@ -44,18 +47,17 @@ export const DashboardPage = () => {
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-16">
           {/* row 1 */}
           <LearningStyleCard
-            // styleData={data.learningStyle}
+            styleData={data.learningStyle}
             className="max-lg:h-[10.8rem] rounded-[1.25rem]"
           />
           <LearningPatternCard
-            // patternData={data.learningPattern}
+            patternData={data.learningPattern}
             className="max-lg:h-[10.8rem] rounded-[1.25rem]"
           />
           <QuoteCard
             quote={data.user.quote}
             className="max-lg:h-[10.8rem] rounded-[1.25rem]"
           />
-
           {/* row 2 */}
           <InsightListCard
             insights={data.insights}

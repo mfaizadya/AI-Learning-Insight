@@ -1,12 +1,16 @@
 import React from "react";
 import { Link, useLocation } from "react-router";
 import { LayoutGrid, ClipboardList, User } from "lucide-react";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useAuth } from "@/context/AuthContext"; // 1. Import AuthContext
 
 export const SidebarContent = ({ onItemClick }) => {
   const location = useLocation();
   const currentPath = location.pathname;
-  const { data, isLoading } = useDashboardData();
+
+  const { user } = useAuth();
+
+  const displayName = user?.username || user?.name || "User";
+  const avatarSeed = user?.username || "Felix";
 
   const menuItems = [
     {
@@ -36,7 +40,7 @@ export const SidebarContent = ({ onItemClick }) => {
         <figure className="relative mb-3">
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-sm bg-white">
             <img
-              src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+              src={`https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}`}
               alt="Foto Profil User"
               className="w-full h-full object-cover"
             />
@@ -48,13 +52,10 @@ export const SidebarContent = ({ onItemClick }) => {
             <div className="w-2 h-2 bg-black rounded-full"></div>
           </div>
         </figure>
-        {isLoading ? (
-          <h2 className="text-primary font-bold text-lg">...</h2>
-        ) : (
-          <h2 className="text-primary font-bold text-lg">
-            {data?.user?.username || "User"}
-          </h2>
-        )}
+        {/*  */}
+        <h2 className="text-primary font-bold text-lg truncate max-w-[80%] text-center">
+          {displayName}
+        </h2>
       </section>
       {/* nav's list */}
       <div className="flex-1 bg-primary rounded-tr-3xl -mt-10 pt-8 px-4 z-10">

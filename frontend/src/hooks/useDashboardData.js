@@ -1,6 +1,5 @@
-// src/hooks/useDashboardData.js
 import { useState, useEffect } from "react";
-import { dashboardService } from "@/services/dashboard_mockup";
+import dashboardService from "@/services/dashboard.service";
 
 export const useDashboardData = () => {
   const [data, setData] = useState(null);
@@ -10,11 +9,14 @@ export const useDashboardData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true);
-        const result = await dashboardService.getDashboardData();
-        setData(result);
+        const response = await dashboardService.getDashboardAggregatedData();
+        if (response.success && response.data) {
+          setData(response.data);
+        } else {
+          setError(new Error("Data dashboard tidak ditemukan."));
+        }
       } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
+        console.error(err);
         setError(err);
       } finally {
         setIsLoading(false);

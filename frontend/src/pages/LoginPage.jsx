@@ -4,28 +4,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router";
 import {
-  AlertCircle,
   Mail,
   Lock,
   Loader2,
   Sparkles,
   LogIn,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { authService } from "@/services/auth.service";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/utils/errorHandler";
 import { AuthHeaderTitle } from "@/components/reusable/AuthHeaderTittle";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast(); 
 
   // State Management
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  // const [error, setError] = useState(""); // Hapus state error lokal (diganti toast)
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -34,15 +37,12 @@ export default function LoginPage() {
       ...prev,
       [name]: value,
     }));
-    // del err msg when user re-typing
-    if (error) setError("");
   };
 
   // Handle Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       // call service api
@@ -54,16 +54,32 @@ export default function LoginPage() {
       if (response.success && response.data) {
         // save token
         login(response.data.user, response.data.token);
+
+        toast({
+          title: "Login Berhasil",
+          description: `Selamat datang kembali, ${
+            response.data.user.name || "User"
+          }!`,
+          className: "bg-green-50 border-green-200 text-green-800",
+          action: <CheckCircle2 className="h-5 w-5 text-green-600" />,
+          duration: 3000,
+        });
+
         navigate("/dashboard", { replace: true });
       } else {
         throw new Error("Gagal login. Silakan coba lagi.");
       }
     } catch (err) {
-      // handle error from api
-      console.log("errnya: ", err);
-
+      console.log("Login Error:", err);
       const message = getErrorMessage(err);
-      setError(message);
+
+      // 4. ERROR TOAST
+      toast({
+        variant: "destructive",
+        title: "Gagal Masuk",
+        description: message,
+        action: <AlertCircle className="h-5 w-5" />,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -71,13 +87,11 @@ export default function LoginPage() {
 
   return (
     <div className="h-full sm:min-h-screen flex w-full font-sans bg-[#F8F9FC]">
-      {/* left */}
+      {/* left - Tetap Sama */}
       <div className="hidden lg:flex w-1/2 bg-[#3b2f6e] relative overflow-hidden flex-col justify-between p-12 text-white">
-        {/*  */}
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-600 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full blur-3xl opacity-10 pointer-events-none"></div>
 
-        {/* Content */}
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-8 opacity-80">
             <Sparkles size={20} />
@@ -99,7 +113,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Footer Text */}
         <div className="relative z-10 text-sm text-purple-200/60">
           © 2025 CerdasKu. All rights reserved.
         </div>
@@ -121,13 +134,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Error Alert Box */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-600 animate-in slide-in-from-top-2">
-                <AlertCircle size={20} className="shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">{error}</span>
-              </div>
-            )}
+            {/* ERROR ALERT BOX DIHAPUS (Digantikan Toast) */}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email Input */}

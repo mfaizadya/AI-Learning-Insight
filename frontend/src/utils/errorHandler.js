@@ -9,7 +9,7 @@ export const getErrorMessage = (error) => {
 
     // 409: Conflict (Register - Email Duplicate)
     if (status === 409) {
-      return "Email ini sudah terdaftar. Silakan login menggunakan akun tersebut.";
+      return "Username / Email ini sudah terdaftar. Silakan menggunakan opsi lainnya.";
     }
 
     // 401: Unauthorized (Login - Salah Password/Email)

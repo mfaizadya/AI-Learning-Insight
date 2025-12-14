@@ -38,9 +38,9 @@ export default function AppRoutes() {
           <Route path="/auth">
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
-            <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
           </Route>
         </Route>
+        <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

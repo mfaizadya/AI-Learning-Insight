@@ -2,37 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router";
 import { Settings, X, Logs, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { userService } from "@/services/user.service";
 
 const TopNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, user: authUser } = useAuth();
-  // const { data, isLoading } = useDashboardData();
-
-  const [profile, setProfile] = useState(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const { logout, user } = useAuth();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        setLoadingProfile(true);
-        const userData = await userService.getProfile();
-        setProfile(userData);
-      } catch (err) {
-        console.error("Gagal load profile header:", err);
-      } finally {
-        setLoadingProfile(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
-
+  // Scroll effect handler
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -44,7 +24,6 @@ const TopNav = () => {
   const handleLogout = () => {
     setIsDropdownOpen(false);
     logout();
-
     navigate("/auth/login", { replace: true });
   };
 
@@ -57,9 +36,10 @@ const TopNav = () => {
   };
 
   const pageTitle = getPageTitle(location.pathname);
-  // 
-  const displayName = profile?.username || authUser?.username || "User";
-  const displayEmail = profile?.email || authUser?.email || "user@email.com";
+
+  const displayName = user?.username || user?.name || "User";
+  const displayEmail = user?.email || "user@email.com";
+  const avatarSeed = user?.username || "Felix";
 
   const mobileMenuItems = [
     { label: "Dashboard", href: "/dashboard" },
@@ -151,7 +131,7 @@ const TopNav = () => {
             >
               <div className="w-8 h-8 bg-gray-100 overflow-hidden rounded-full flex items-center justify-center text-purple-700 group-hover:bg-gray-200 transition-colors">
                 <img
-                  src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+                  src={`https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}`}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -177,24 +157,18 @@ const TopNav = () => {
               <div className="flex items-center gap-3 p-3 border-b border-gray-100 mb-2 bg-gray-50/50 rounded-t-lg">
                 <div className="w-8 h-8 bg-gray-100 overflow-hidden rounded-full">
                   <img
-                    src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+                    src={`https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}`}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="overflow-hidden">
-                  {loadingProfile ? (
-                    <p className="text-sm font-bold text-gray-800">...</p>
-                  ) : (
-                    <>
-                      <p className="text-sm font-bold text-gray-800 truncate">
-                        {displayName}
-                      </p>
-                      <p className="text-xs font-medium text-gray-500 truncate">
-                        {displayEmail}
-                      </p>
-                    </>
-                  )}
+                  <p className="text-sm font-bold text-gray-800 truncate">
+                    {displayName}
+                  </p>
+                  <p className="text-xs font-medium text-gray-500 truncate">
+                    {displayEmail}
+                  </p>
                 </div>
               </div>
 
