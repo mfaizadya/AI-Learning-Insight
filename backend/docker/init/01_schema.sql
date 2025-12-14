@@ -142,7 +142,12 @@ COMMIT;
 --
 -- Indexes for dumped tables
 --
-
+-- alter
+ALTER TABLE `hasil_test`
+ADD COLUMN `label_pola` VARCHAR(50) NULL COMMENT 'Contoh: Consistent Learner',
+ADD COLUMN `label_gaya` VARCHAR(50) NULL COMMENT 'Contoh: Visual',
+ADD COLUMN `persentase_gaya` INT NULL COMMENT 'Contoh: 92';
+-- end of urgent alter
 --
 -- Indexes for table `hasil_test`
 --

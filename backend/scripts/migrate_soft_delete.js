@@ -9,7 +9,7 @@ async function runMigration() {
     console.log('Starting migration: Add soft delete support to users table...');
     
     // Get database name from connection or use default
-    const dbName = process.env.DB_NAME || 'capstone_db';
+    const dbName = process.env.DB_NAME || 'capstone-db';
     
     // Check if columns already exist
     const columns = await db.query(`
@@ -111,7 +111,7 @@ async function runMigration() {
  */
 async function checkSoftDeleteSchema() {
   try {
-    const dbName = process.env.DB_NAME || 'capstone_db';
+    const dbName = process.env.DB_NAME || 'capstone-db';
     
     // Check required columns
     const columns = await db.query(`

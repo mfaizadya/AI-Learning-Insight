@@ -60,7 +60,7 @@ cd backend
 ```bash
 docker-compose up -d
 ```
-*Perintah ini akan membuat container MySQL, database capstone_db, dan otomatis mengisi data awal (seeding) dari folder docker/init.*
+*Perintah ini akan membuat container MySQL, database capstone-db, dan otomatis mengisi data awal (seeding) dari folder docker/init.*
 
 ### 3. Setup Backend (Server)
 

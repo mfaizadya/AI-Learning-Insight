@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ailearninginsight  
-      MYSQL_DATABASE: capstone_db
+      MYSQL_DATABASE: capstone-db
       MYSQL_USER: asah_user                   
       MYSQL_PASSWORD: ailearninginsight    
     ports:

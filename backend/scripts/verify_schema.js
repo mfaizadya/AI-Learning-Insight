@@ -10,7 +10,7 @@ async function verifyUsersTableSchema() {
   try {
     console.log('Verifying users table schema...');
     
-    const dbName = process.env.DB_NAME || 'capstone_db';
+    const dbName = process.env.DB_NAME || 'capstone-db';
     
     // Get table structure
     const columns = await db.query(`
