@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ClipboardCheck,
   BookOpen,
@@ -11,12 +11,54 @@ import { Separator } from "@/components/ui/separator";
 import { HistoryDetailModal } from "@/components/modals/HistoryDetailModal";
 import { LearningPatternModal } from "@/components/modals/LearningPatternModal";
 import { TestHistory } from "./pretest/TestHistory";
-
-// import { HistoryDetailModal } from "@/components/pretest/HistoryDetailModal";
+import { resultService } from "@/services/result.service";
 
 const Pretest = () => {
   const [isPatternModalOpen, setIsPatternModalOpen] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState(null);
+  const [historyList, setHistoryList] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  const handleSelectHistory = async (historySnapshot) => {
+    try {
+      setSelectedHistory({ ...historySnapshot, isLoading: true });
+
+      const res = await resultService.getHistoryDetail(historySnapshot.id);
+
+      setSelectedHistory({
+        ...res.data,
+        isLoading: false,
+        summary:
+          res.data.summary || "Laporan gabungan Pola Belajar dan Gaya Belajar.",
+      });
+    } catch (error) {
+      console.error("Gagal mengambil detail riwayat:", error);
+      setSelectedHistory(null);
+    }
+  };
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await resultService.getHistory();
+        const formattedData = res.data.map((item) => ({
+          ...item,
+          date: new Date(item.timestamp).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+        }));
+        setHistoryList(formattedData);
+      } catch (error) {
+        console.error("Gagal mengambil daftar riwayat:", error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   return (
     <ContentDrawer>
@@ -27,7 +69,7 @@ const Pretest = () => {
         />
       )}
       <HistoryDetailModal
-        isOpen={!!selectedHistory}
+        isOpen={!!selectedHistory && !selectedHistory.isLoading}
         data={selectedHistory}
         onClose={() => setSelectedHistory(null)}
       />
@@ -47,7 +89,7 @@ const Pretest = () => {
                   belajar yang akurat!
                 </p>
               </header>
-              {/*  */}
+              {/* */}
               <div className="flex flex-col gap-5 sm:gap-6 flex-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <button
@@ -66,7 +108,7 @@ const Pretest = () => {
                       </div>
                     </div>
                   </button>
-                  {/*  */}
+                  {/* */}
                   <Link
                     to="#"
                     className="border sm:border-[1.5px] border-primary/15 bg-[#FDFDFF] hover:bg-purple-50/60 hover:border-primary/40 rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300 group shadow-sm  h-full"
@@ -122,7 +164,11 @@ const Pretest = () => {
 
         {/* right */}
         {/* tests history */}
-        <TestHistory onSelectHistory={setSelectedHistory} />
+        <TestHistory
+          historyData={historyList}
+          isLoading={isLoadingHistory}
+          onSelectHistory={handleSelectHistory}
+        />
       </div>
     </ContentDrawer>
   );

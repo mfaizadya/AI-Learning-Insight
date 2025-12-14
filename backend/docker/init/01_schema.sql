@@ -14,10 +14,10 @@ SET time_zone = "+07:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `capstone_db`
+-- Database: `capstone-db`
 --
-CREATE DATABASE IF NOT EXISTS `capstone_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `capstone_db`;
+CREATE DATABASE IF NOT EXISTS `capstone-db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `capstone-db`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -142,7 +142,12 @@ COMMIT;
 --
 -- Indexes for dumped tables
 --
-
+-- alter
+ALTER TABLE `hasil_test`
+ADD COLUMN `label_pola` VARCHAR(50) NULL COMMENT 'Contoh: Consistent Learner',
+ADD COLUMN `label_gaya` VARCHAR(50) NULL COMMENT 'Contoh: Visual',
+ADD COLUMN `persentase_gaya` INT NULL COMMENT 'Contoh: 92';
+-- end of urgent alter
 --
 -- Indexes for table `hasil_test`
 --

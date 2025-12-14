@@ -102,9 +102,7 @@ const testService = {
   },
 
   /**
-   * [HELPER] Mengambil kedua jenis soal sekaligus.
-   * Ini mempermudah QuizPage.jsx agar tidak perlu panggil satu-satu secara manual.
-   * Asumsi: ID Pola = 1 dan ID Gaya = 1 (Default)
+   * helper, merging 2 in 1
    */
   getFullTestPackage: async (polaId = 1, gayaId = 1) => {
     try {

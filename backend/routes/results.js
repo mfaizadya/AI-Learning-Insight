@@ -21,9 +21,18 @@ router.post("/gaya", verifyToken, resultsController.submitGayaResult);
 
 /**
  * @route   GET /api/results/history
- * @desc    Retrieve the authenticated user's test history.
+ * @desc    Retrieve the authenticated user's test history list (Snapshot).
+ * optimized for list views (lightweight query).
  * @access  Private
  */
-router.get("/history", verifyToken, resultsController.getHistory);
+router.get("/history", verifyToken, resultsController.getHistoryList);
+
+/**
+ * @route   GET /api/results/history/:id
+ * @desc    Retrieve detailed report of a specific test result.
+ * Includes comprehensive scoring breakdowns for popups/charts.
+ * @access  Private
+ */
+router.get("/history/:id", verifyToken, resultsController.getHistoryDetail);
 
 module.exports = router;
