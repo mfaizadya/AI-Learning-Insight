@@ -44,9 +44,9 @@ const WelcomeHeader = ({ user, hasTested }) => (
       <h1 className="max-sm:text-gray-400 max-sm:font-normal sm:font-semibold text-[1.2rem] sm:text-[1.65rem]">
         Hi, {user.name}!
       </h1>
-      <p className="text-[1.65rem] sm:text-[1.1rem] font-normal text-black sm:text-muted-foreground leading-normal max-sm:w-[95%]">
+      <p className="text-[1.68rem] sm:text-[1.1rem] font-normal text-black sm:text-muted-foreground leading-normal max-sm:w-[95%]">
         {hasTested
-          ? "Berikut Ringkasan perkembangan belajarmu, untuk membantu memahami potensi diri lebih dalam."
+          ? "Berikut Ringkasan perkembangan belajarmu, untuk memahami potensi diri lebih dalam."
           : "Yuk, cari tahu bagaimana sih, pola dan gaya belajarmu sekarang!"}
       </p>
     </div>
