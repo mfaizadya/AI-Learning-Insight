@@ -67,7 +67,7 @@ export default function TestPage() {
     fetchQuestions();
   }, [POLA_TEST_ID, GAYA_TEST_ID]);
 
-  // 2. Auto-Save Progress Effect
+  // autosave progres
   useEffect(() => {
     if (Object.keys(userAnswers).length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userAnswers));
@@ -150,7 +150,6 @@ export default function TestPage() {
       }
 
       // console.log(`Pola Submitted. ID Hasil: ${resultIdPola}`);
-
       // console.log("Memulai submit Gaya Belajar...");
       await testService.submitGayaResult({
         test_id: GAYA_TEST_ID,
@@ -158,7 +157,7 @@ export default function TestPage() {
         hasil_test_id: resultIdPola,
       });
 
-      // 3. Clear Storage on Success
+      // clear localstorage onsuccess
       localStorage.removeItem(STORAGE_KEY);
 
       const fullResultResponse = await resultService.getHistoryDetail(
@@ -188,7 +187,7 @@ export default function TestPage() {
       toast({
         title: "Tes Selesai!",
         description: "Hasil analisis belajar Anda telah siap.",
-        className: "bg-green-50 border-green-200 text-green-800", // Custom styling minimalis hijau
+        className: "bg-green-50 border-green-200 text-green-800", 
       });
     } catch (err) {
       console.error("Submission error:", err);
@@ -197,12 +196,11 @@ export default function TestPage() {
         err.message ||
         "Terjadi kesalahan saat memproses hasil tes.";
 
-      // --- ERROR HANDLING DENGAN TOAST ---
       toast({
         variant: "destructive",
         title: "Gagal Mengirim Jawaban",
         description: errMsg,
-        action: <AlertCircle className="h-4 w-4" />, // Icon tambahan
+        action: <AlertCircle className="h-4 w-4" />, 
       });
     } finally {
       setIsSubmitting(false);
@@ -383,7 +381,7 @@ export default function TestPage() {
                     <div
                       key={idx}
                       onClick={() => handleJumpToQuestion(idx)}
-                      className={`aspect-square p-0 rounded-[0.8rem] sm:rounded-[0.6rem] flex items-center justify-center text-base sm:text-base md:text-base xl:text-base 2xl:text-lg transition-all cursor-pointer select-none ${boxClass}`}
+                      className={`aspect-square p-0 rounded-[0.55rem] sm:rounded-[0.6rem] flex items-center justify-center text-base sm:text-base md:text-base xl:text-base 2xl:text-lg transition-all cursor-pointer select-none ${boxClass}`}
                     >
                       {idx + 1}
                     </div>

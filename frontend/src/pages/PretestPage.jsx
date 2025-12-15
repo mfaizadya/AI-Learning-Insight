@@ -92,8 +92,8 @@ const Pretest = () => {
                   Ketahui Pola Belajarmu!
                 </h2>
                 <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
-                  Isi 15 pertanyaan (9 Pola + 6 Gaya) untuk mendapatkan profil
-                  belajar yang akurat!
+                  Isi 15 pertanyaan (9 Pola + 6 Gaya) untuk mendapatkan wawasan
+                  profil belajar berbasis prediksi AI yang akurat!
                 </p>
               </header>
               {/* */}
