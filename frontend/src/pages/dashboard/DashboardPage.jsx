@@ -10,12 +10,12 @@ import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 
 const PretestActionBtn = ({ hasTested }) => {
-  if (!hasTested) {
+  if (hasTested) {
     return (
       <Link to="/dashboard/pretest">
         <Button
           size="lg"
-          className="bg-primary hover:bg-[#2e2555] text-white font-semibold rounded-full shadow-sm shadow-purple-900/20 hover:shadow-purple-900/30 transition-all active:scale-95 group h-12 px-5 sm:px-6"
+          className="bg-primary hover:bg-[#2e2555] text-white font-semibold rounded-full shadow-none hover:shadow-purple-900/30 transition-all active:scale-95 group h-12 px-5 sm:px-6"
         >
           <Sparkles className="mr-1 h-5 w-5 animate-pulse text-white" />
           <span>Mulai Pretest Sekarang</span>
@@ -29,7 +29,7 @@ const PretestActionBtn = ({ hasTested }) => {
     <Link to="/dashboard/pretest">
       <Button
         variant="outline"
-        className="bg-white border-primary/30 text-primary hover:bg-purple-50 hover:text-primary hover:border-purple-200 font-semibold rounded-full transition-all active:scale-95 h-12 px-6 shadow-sm"
+        className="bg-white border-primary/30 text-primary hover:bg-purple-50 hover:text-primary hover:border-purple-200 font-semibold rounded-full transition-all active:scale-95 h-12 px-6 shadow-none"
       >
         <ClipboardCheck className="mr-1 h-4 w-4" />
         <span>Menu Pretest</span>
@@ -46,7 +46,7 @@ const WelcomeHeader = ({ user, hasTested }) => (
       </h1>
       <p className="text-[1.65rem] sm:text-[1.1rem] font-normal text-black sm:text-muted-foreground leading-normal max-sm:w-[95%]">
         {hasTested
-          ? "Ringkasan perkembangan belajarmu untuk membantu memahami potensi diri lebih dalam."
+          ? "Berikut Ringkasan perkembangan belajarmu, untuk membantu memahami potensi diri lebih dalam."
           : "Yuk, cari tahu bagaimana sih, pola dan gaya belajarmu sekarang!"}
       </p>
     </div>
