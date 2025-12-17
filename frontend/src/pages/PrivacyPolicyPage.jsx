@@ -11,8 +11,8 @@ const PrivacyPolicyPage = () => {
     <>
       <div className="w-full max-w-4xl mx-auto pb-12 px-4 sm:px-6">
         {/* header */}
-        <div className="mb-6 mt-4 md:mt-8 flex items-center gap-2">
-          <Link
+        <div className="mb-3 mt-4 md:mt-8 flex items-center gap-2">
+          {/* <Link
             to="/dashboard"
             className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
           >
@@ -20,7 +20,7 @@ const PrivacyPolicyPage = () => {
               <ArrowLeft size={14} />
             </div>
             Kembali ke halaman utama
-          </Link>
+          </Link> */}
         </div>
 
         {/* main docs card */}
@@ -32,7 +32,7 @@ const PrivacyPolicyPage = () => {
             <div className="relative z-10">
               <div className="flex items-center gap-2.5 mb-4 opacity-90">
                 <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
-                <span className="text-xs sm:text-sm font-semibold tracking-widest bg-white/10 px-2 py-1 rounded-md">
+                <span className="text-xs sm:text-sm font-semibold tracking-widest bg-white/10 flex justify-center px-3 sm:px-4 py-1 rounded-md">
                   Legal & Keamanan
                 </span>
               </div>
@@ -136,7 +136,7 @@ const PrivacyPolicyPage = () => {
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-4 list-disc text-sm text-gray-600 marker:text-gray-400">
                     <li>Gaya Belajar Dominan.</li>
                     <li>Konsistensi Belajar.</li>
-                    <li>Rekomendasi/Tips Perilaku Belajar.</li>
+                    <li>Rekomendasi/Tips Belajar yang lebih efisien/efektif.</li>
                   </ul>
                   <p className="mt-4 pt-3 border-t border-primary/10 text-[11px] sm:text-xs text-gray-400 italic">
                     *Kami tidak menggunakan data profil pribadi Anda untuk
