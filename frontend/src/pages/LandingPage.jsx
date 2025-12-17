@@ -1,4 +1,5 @@
 import Footer from "@/layouts/Footer";
+import { BrainCircuit, Sparkles } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 
@@ -21,20 +22,6 @@ const ArrowRight = () => (
   </svg>
 );
 
-const Sparkles = () => (
-  <svg
-    className="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-  </svg>
-);
-
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,17 +41,16 @@ const LandingPage = () => {
 
     const animate = () => {
       const scrollY = window.scrollY;
-
-      if (blob1Ref.current) {
-        blob1Ref.current.style.transform = `translate3d(0, ${
-          scrollY * 0.15
-        }px, 0)`;
-      }
-      if (blob2Ref.current) {
-        blob2Ref.current.style.transform = `translate3d(0, -${
-          scrollY * 0.1
-        }px, 0)`;
-      }
+      //   if (blob1Ref.current) {
+      //     blob1Ref.current.style.transform = `translate3d(0, ${
+      //       scrollY * 0.15
+      //     }px, 0)`;
+      //   }
+      //   if (blob2Ref.current) {
+      //     blob2Ref.current.style.transform = `translate3d(0, -${
+      //       scrollY * 0.1
+      //     }px, 0)`;
+      //   }
       if (textRef.current) {
         textRef.current.style.transform = `translate3d(-${
           scrollY * 0.2
@@ -84,12 +70,12 @@ const LandingPage = () => {
     isLoggedIn ? navigate("/dashboard") : navigate("/auth/register");
 
   return (
-    <div className="relative w-full overflow-hidden bg-background text-foreground font-sans selection:bg-accent selection:text-white">
+    <div className="relative w-full overflow-hidden bg-background text-foreground font-sans">
       {/* noise */}
-      <div
+      {/* <div
         className="fixed inset-0 z-50 pointer-events-none opacity-40 mix-blend-overlay"
         style={{ backgroundImage: NOISE_BG }}
-      ></div>
+      ></div> */}
 
       {/* bg parallax. blob */}
       {/* <div className="fixed inset-0 z-0 w-full h-full pointer-events-none">
@@ -118,12 +104,12 @@ const LandingPage = () => {
         {/* nav */}
         <nav className="fixed top-6 left-0 right-0 z-50 px-6">
           <div className="max-w-7xl mx-auto sm:bg-background/70 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full px-6 h-16 sm:h-20 flex items-center justify-between sm:shadow-sm">
-            <span className="text-sm sm:text-xl font-semibold tracking-tight flex items-center gap-2 sm:ml-4">
+            <span className="text-base sm:text-xl font-semibold tracking-tight flex items-center gap-2 sm:ml-4">
               {/* <span className="w-3 h-3 rounded-full bg-primary animate-pulse"></span> */}
               <Sparkles size={20} />
               CerdasKu.
             </span>
-            <div className="flex items-center gap-6 text-sm font-medium">
+            <div className="flex items-center gap-6 text-sm md:text-base font-medium">
               {!isLoggedIn && (
                 <Link
                   to="/auth/login"
@@ -154,7 +140,7 @@ const LandingPage = () => {
                 </span>
               </div>
 
-              <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9]">
+              <h1 className="text-6xl md:text-8xl font-semibold tracking-tighter leading-[0.9]">
                 Unlock your <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient">
                   Learning DNA.
@@ -171,9 +157,9 @@ const LandingPage = () => {
               <div className="flex flex-wrap gap-4 mt-4">
                 <button
                   onClick={handleAuth}
-                  className="group relative px-8 py-4 bg-foreground text-background rounded-full font-semibold overflow-hidden hover:bg-primary/90 transition-all active:scale-95"
+                  className="group relative px-8 py-4 bg-gradient-to-b from-primary to-primary/90 text-background rounded-full font-semibold overflow-hidden hover:bg-primary/90 transition-all active:scale-95"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 flex items-center gap-2 md:text-lg">
                     Mulai Eksplorasi <ArrowRight />
                   </span>
                   {/* <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div> */}
@@ -181,7 +167,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Visual Area (Right - Span 5) - Anti-Design "Broken" Card */}
+            {/* cards / code mockup component */}
             <div className="lg:col-span-5 relative hidden lg:block">
               {/* Abstract Code Card */}
               <div className="relative z-20 bg-card/50 backdrop-blur-md border border-white/20 p-8 rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
@@ -265,43 +251,88 @@ const LandingPage = () => {
             </div>
 
             {/* Asymmetrical Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* card 1 */}
-              <div className="group relative p-10 bg-white/50 rounded-[2rem] hover:bg-white/35 transition-colors border-dashed border-4 border-primary/15 hover:border-primary/50">
-                <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">
-                  Deep Profiling
-                </h3>
-                <p className="text-muted-foreground">
-                  Analisis mendalam terhadap gaya belajar kognitif Anda
-                  menggunakan machine learning.
-                </p>
-                <div className="mt-8 w-full h-[1px] bg-border group-hover:bg-primary transition-colors"></div>
+            {/* Asymmetrical Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              {/* CARD 1 */}
+              <div className="group relative p-8 sm:p-10 bg-white/70 backdrop-blur-sm rounded-[2rem] border border-dashed border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-[0_0_30px_-10px_rgba(var(--primary),0.3)] overflow-hidden">
+                {/* Background Number Decoration */}
+                <div className="absolute -right-4 -top-4 text-[15rem] font-black text-primary/5 select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:text-primary/10">
+                  *
+                </div>
+
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <BrainCircuit />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 tracking-tight">
+                    Deep Profiling
+                  </h3>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                    Analisis mendalam terhadap gaya belajar kognitif Anda
+                    menggunakan machine learning.
+                  </p>
+                </div>
               </div>
 
-              {/* card 2 */}
-              <div className="group relative p-10 bg-white/50 rounded-[2rem] hover:bg-white/35 transition-colors border-dashed border-4 border-primary/15 hover:border-primary/50 md:mt-16">
-                <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">
-                  Actionable Insight
-                </h3>
-                <p className="text-muted-foreground">
-                  Bukan sekadar grafik data. Kami menyajikan wawasan yang mudah
-                  dipahami dan relevan agar Anda tahu persis area mana yang
-                  perlu diperbaiki.
-                </p>
-                <div className="mt-8 w-full h-[1px] bg-border group-hover:bg-primary transition-colors"></div>
+              {/* CARD 2 - Offset Top on Desktop */}
+              <div className="group relative p-8 sm:p-10 bg-white/70 backdrop-blur-sm rounded-[2rem] border border-dashed border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-[0_0_30px_-10px_rgba(var(--primary),0.3)] overflow-hidden md:mt-16">
+                {/* Background Number Decoration */}
+                <div className="absolute -right-4 -top-4 text-[15rem] font-black text-primary/5 select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:text-primary/10">
+                  @
+                </div>
+
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <svg
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 tracking-tight">
+                    Actionable Insight
+                  </h3>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                    Bukan sekadar grafik data. Kami menyajikan wawasan yang
+                    mudah dipahami dan relevan agar Anda tahu persis area mana
+                    yang perlu diperbaiki.
+                  </p>
+                </div>
               </div>
 
-              {/* card 3 */}
-              <div className="group relative p-10 bg-white/50 rounded-[2rem] hover:bg-white/35 transition-colors border-dashed border-4 border-primary/15 hover:border-primary/50 md:mt-32">
-                <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">
-                  Impact & Strategy
-                </h3>
-                <p className="text-muted-foreground">
-                  Pahami diri Anda sebagai pembelajar. Adopsi strategi yang
-                  dipersonalisasi untuk meningkatkan pemahaman dan efektivitas
-                  belajar jangka panjang.
-                </p>
-                <div className="mt-8 w-full h-[1px] bg-border group-hover:bg-primary transition-colors"></div>
+              {/* CARD 3 - Offset More on Desktop */}
+              <div className="group relative p-8 sm:p-10 bg-white/70 backdrop-blur-sm rounded-[2rem] border border-dashed border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-[0_0_30px_-10px_rgba(var(--primary),0.3)] overflow-hidden md:mt-32">
+                {/* Background Number Decoration */}
+                <div className="absolute -right-4 -top-4 text-[15rem] font-black text-primary/5 select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:text-primary/10">
+                  #
+                </div>
+
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <svg
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <path d="M22 4 12 14.01l-3-3" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 tracking-tight">
+                    Impact & Strategy
+                  </h3>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                    Pahami diri Anda sebagai pembelajar. Adopsi strategi yang
+                    dipersonalisasi untuk meningkatkan pemahaman dan efektivitas
+                    belajar jangka panjang.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
