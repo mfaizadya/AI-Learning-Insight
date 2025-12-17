@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast(); 
+  const { toast } = useToast();
 
   // State Management
   const [formData, setFormData] = useState({
@@ -153,7 +153,7 @@ export default function LoginPage() {
                     id="email"
                     type="email"
                     name="email"
-                    placeholder="nama@email.com"
+                    placeholder="exammple@email.com"
                     value={formData.email}
                     onChange={handleChange}
                     className="pl-10 h-12 text-sm sm:text-base bg-gray-50 border-gray-200 focus:bg-white focus:border-[#3b2f6e] focus:ring-[#3b2f6e]/20 rounded-xl transition-all"
@@ -172,12 +172,7 @@ export default function LoginPage() {
                   >
                     Password
                   </Label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs text-[#3b2f6e] hover:underline font-medium opacity-80 hover:opacity-100"
-                  >
-                    Lupa Password?
-                  </Link>
+                  {/*  */}
                 </div>
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3b2f6e] transition-colors">
@@ -194,6 +189,14 @@ export default function LoginPage() {
                     required
                     disabled={isLoading}
                   />
+                </div>
+                <div className="flex justify-end">
+                  <Link
+                    to="#"
+                    className="text-xs mt-1 right-0 text-[#3b2f6e] hover:underline font-medium opacity-80 hover:opacity-100"
+                  >
+                    Lupa Password?
+                  </Link>
                 </div>
               </div>
 

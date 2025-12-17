@@ -159,7 +159,7 @@ export default function RegisterPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="nama@email.com"
+                    placeholder="example@email.com"
                     value={formData.email}
                     onChange={handleChange}
                     className="pl-10 h-12 text-sm sm:text-base bg-gray-50 border-gray-200 focus:bg-white focus:border-[#3F3370] focus:ring-[#3F3370]/20 rounded-xl transition-all"

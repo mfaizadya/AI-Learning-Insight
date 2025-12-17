@@ -12,16 +12,15 @@ export default function Footer({ className = "" }) {
         <div className="flex flex-col max-sm:items-start md:flex-row items-center gap-2 md:gap-4 text-xs text-gray-500 font-medium md:text-base">
           <p>
             <span className="text-gray-700 font-semibold">
-            &copy; {currentYear}{" "}
-              CerdasKu.
+              &copy; {currentYear} CerdasKu.
             </span>
           </p>
           <span className="hidden md:block w-1 h-1 bg-gray-300 rounded-full"></span>
-          <p className="flex items-center gap-1">Tim ID: A25-CS225</p>
+          <p className="flex items-center gap-1">Team ID: A25-CS225</p>
         </div>
 
         {/* right */}
-        <div className="flex max-sm:flex-col max-sm:gap-2 sm:flex items-center gap-6 text-xs text-gray-500 font-medium md:text-base">
+        <div className="flex max-sm:flex-col-reverse max-sm:gap-2 sm:flex items-center gap-6 text-xs text-gray-500 font-medium md:text-base">
           <a
             href="/privacy-policy"
             className="hover:text-[#5d4b85] transition-colors duration-200"

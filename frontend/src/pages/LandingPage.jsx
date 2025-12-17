@@ -104,7 +104,7 @@ const LandingPage = () => {
       <div className="relative z-10">
         {/* nav */}
         <nav className="fixed top-6 left-0 right-0 z-50 px-6">
-          <div className="max-w-7xl mx-auto sm:bg-background/70 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full px-6 h-16 sm:h-20 flex items-center justify-between sm:shadow-sm">
+          <div className="max-w-7xl mx-auto sm:bg-background/70 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full px-6 h-16 sm:h-20 md:h-[5.3rem] flex items-center justify-between sm:shadow-sm">
             <span className="text-base sm:text-xl font-semibold tracking-tight flex items-center gap-2 sm:ml-4">
               {/* <span className="w-3 h-3 rounded-full bg-primary animate-pulse"></span> */}
               <Sparkles size={20} />
@@ -244,7 +244,7 @@ const LandingPage = () => {
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight max-w-lg">
                 Kenali diri, <br /> Optimalkan Potensi.
               </h2>
-              <p className="text-muted-foreground mt-4 md:mt-0 max-w-xs text-right">
+              <p className="text-muted-foreground mt-4 md:mt-0 max-w-xs lg:max-w-sm text-right xl:text-lg">
                 Menerjemahkan hasil analisis{" "}
                 <strong>Gaya & Pola Belajar</strong> menjadi insight yang
                 dipersonalisasi.

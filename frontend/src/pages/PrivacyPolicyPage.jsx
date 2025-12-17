@@ -83,7 +83,7 @@ const PrivacyPolicyPage = () => {
                     <strong className="text-gray-800 font-semibold">
                       Data Identitas:
                     </strong>{" "}
-                    Nama, alamat email, dan informasi profil dasar untuk
+                    Nama/Username, alamat email, dan informasi profil dasar untuk
                     personalisasi sapaan.
                   </li>
                   <li>
@@ -136,8 +136,7 @@ const PrivacyPolicyPage = () => {
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-4 list-disc text-sm text-gray-600 marker:text-gray-400">
                     <li>Gaya Belajar Dominan.</li>
                     <li>Konsistensi Belajar.</li>
-                    <li>Rekomendasi Waktu.</li>
-                    <li>Prediksi Kejenuhan.</li>
+                    <li>Rekomendasi/Tips Perilaku Belajar.</li>
                   </ul>
                   <p className="mt-4 pt-3 border-t border-primary/10 text-[11px] sm:text-xs text-gray-400 italic">
                     *Kami tidak menggunakan data profil pribadi Anda untuk
