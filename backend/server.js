@@ -56,6 +56,9 @@ app.use("/api/dashboard", dashboardRoutes);
 // Error handler middleware (must be last)
 app.use(errorHandler);
 
+// hiding header
+app.disable("x-powered-by");
+
 // Start server
 if (require.main === module) {
   app.listen(PORT, () => {

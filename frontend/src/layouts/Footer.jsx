@@ -12,7 +12,9 @@ export default function Footer({ className = "" }) {
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-xs text-gray-500 font-medium">
           <p>
             &copy; {currentYear}{" "}
-            <span className="text-gray-700 font-bold">CerdasKu</span>
+            <span className="text-gray-700 font-bold">
+              CerdasKu - AI Learning Insight
+            </span>
             .
           </p>
           <span className="hidden md:block w-1 h-1 bg-gray-300 rounded-full"></span>

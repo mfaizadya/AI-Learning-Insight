@@ -1,8 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 // routes middleware (will be activated once the auth service/utils has been implemented)
-// import ProtectedRoutes from "./ProtectedRoutes";
-// import PublicRoutes from "./PublicRoutes";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Pretest from "@/pages/PretestPage";
 import LoginPage from "@/pages/LoginPage";
@@ -14,28 +12,29 @@ import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import ProtectedRoutes from "./ProtectedRoutes";
 import PublicRoutes from "./PublicRoutes";
 import TestPage from "@/pages/TestPage";
+import LandingPage from "@/pages/LandingPage";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* landing page */}
+        <Route path="/" element={<LandingPage />} />
         {/* uncomment when the auth logic/service has been implement */}
         <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<DashboardLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardPage />} />
-            <Route path="dashboard/pretest" element={<Pretest />} />
-            {/* (!) for the next, a parameter or slug will be added for a unique test ID for each session. (maybe)*/}
-            <Route path="dashboard/pretest/test" element={<TestPage />} />
-            <Route path="dashboard/account" element={<AccountPage />} />
-            {/* other/next */}
-            {/* <Route path="dashboard/account" element={<AccountPage />} /> */}
+
+            {/* sub-routes */}
+            <Route path="pretest" element={<Pretest />} />
+            <Route path="pretest/test" element={<TestPage />} />
+            <Route path="account" element={<AccountPage />} />
           </Route>
         </Route>
         {/* uncomment when the auth logic/service has been implement */}
         <Route element={<PublicRoutes />}>
           <Route path="/auth">
+            <Route index element={<Navigate to="/auth/login" replace />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
           </Route>
