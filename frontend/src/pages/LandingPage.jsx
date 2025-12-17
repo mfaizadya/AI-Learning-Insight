@@ -1,3 +1,4 @@
+import { CookieConsent } from "@/components/common/CookieConsent";
 import Footer from "@/layouts/Footer";
 import { BrainCircuit, Sparkles } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
@@ -346,6 +347,7 @@ const LandingPage = () => {
             </p>
           </div>
         </footer> */}
+        <CookieConsent />
         <Footer />
       </div>
 

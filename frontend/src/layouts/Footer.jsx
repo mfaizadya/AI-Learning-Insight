@@ -9,7 +9,7 @@ export default function Footer({ className = "" }) {
     >
       <div className="px-8 flex sm:flex-col md:flex-row justify-between items-center gap-4">
         {/* left */}
-        <div className="flex flex-col max-sm:items-start md:flex-row items-center gap-2 md:gap-4 text-xs text-gray-500 font-medium">
+        <div className="flex flex-col max-sm:items-start md:flex-row items-center gap-2 md:gap-4 text-xs text-gray-500 font-medium md:text-base">
           <p>
             <span className="text-gray-700 font-semibold">
             &copy; {currentYear}{" "}
@@ -21,7 +21,7 @@ export default function Footer({ className = "" }) {
         </div>
 
         {/* right */}
-        <div className="flex flex-col max-sm:gap-2 sm:flex items-center gap-6 text-xs text-gray-500 font-medium">
+        <div className="flex max-sm:flex-col max-sm:gap-2 sm:flex items-center gap-6 text-xs text-gray-500 font-medium md:text-base">
           <a
             href="/privacy-policy"
             className="hover:text-[#5d4b85] transition-colors duration-200"
