@@ -26,6 +26,10 @@ export const getErrorMessage = (error) => {
       return data.details[0];
     }
 
+    if (status === 429) {
+      return data.message;
+    }
+
     if (data.error) {
       if (data.error === "Password weak") {
         return "Password terlalu lemah (minimal 8 karakter).";
