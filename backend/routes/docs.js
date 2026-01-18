@@ -21,7 +21,7 @@ const router = express.Router();
  * Custom Swagger UI options with CerdasKu branding
  */
 const SWAGGER_OPTIONS = Object.freeze({
-    customCss: `
+  customCss: `
     .swagger-ui .topbar { display: none; }
     .swagger-ui .info .title { color: #5B4B9E; }
     .swagger-ui .opblock-tag { 
@@ -60,39 +60,46 @@ const SWAGGER_OPTIONS = Object.freeze({
       color: #5B4B9E;
     }
   `,
-    customSiteTitle: 'CerdasKu AI - API Documentation',
-    customfavIcon: '/favicon.ico',
-    swaggerOptions: {
-        persistAuthorization: true,
-        docExpansion: 'list',
-        filter: true,
-        tagsSorter: 'alpha',
-        operationsSorter: 'alpha',
-    },
+  customSiteTitle: 'CerdasKu AI - API Documentation',
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    persistAuthorization: true,
+    docExpansion: 'list',
+    filter: true,
+    tagsSorter: 'alpha',
+    operationsSorter: 'alpha',
+  },
 });
 
 // ============================================================================
 // LOAD OPENAPI SPEC
 // ============================================================================
 
-let swaggerDocument;
+// ============================================================================
+// LOAD OPENAPI SPEC
+// ============================================================================
 
-try {
+const loadSwaggerSpec = () => {
+  try {
     const specPath = path.join(__dirname, '../docs/openapi.yaml');
-    swaggerDocument = YAML.load(specPath);
-    console.log('[Docs] OpenAPI specification loaded successfully');
-} catch (error) {
+    const doc = YAML.load(specPath);
+    return doc;
+  } catch (error) {
     console.error('[Docs] Failed to load OpenAPI spec:', error.message);
-    swaggerDocument = {
-        openapi: '3.0.3',
-        info: {
-            title: 'CerdasKu AI API',
-            description: 'API documentation is currently unavailable.',
-            version: '0.0.0',
-        },
-        paths: {},
+    return {
+      openapi: '3.0.3',
+      info: {
+        title: 'CerdasKu API',
+        description: 'API documentation is currently unavailable.',
+        version: '0.0.0',
+      },
+      paths: {},
     };
-}
+  }
+};
+
+// Initial load for Swagger UI middleware (static)
+const swaggerDocument = loadSwaggerSpec();
 
 // ============================================================================
 // ROUTES
@@ -100,13 +107,15 @@ try {
 
 /**
  * @route GET /api/docs/openapi.json
- * @description Get OpenAPI specification as JSON
+ * @description Get OpenAPI specification as JSON (Hot-Reloaded)
  * @access Public
  */
 router.get('/openapi.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.json(swaggerDocument);
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Reload spec on every request to support development updates
+  const currentSpec = loadSwaggerSpec();
+  res.json(currentSpec);
 });
 
 /**
@@ -115,10 +124,10 @@ router.get('/openapi.json', (req, res) => {
  * @access Public
  */
 router.get('/openapi.yaml', (req, res) => {
-    const specPath = path.join(__dirname, '../docs/openapi.yaml');
-    res.setHeader('Content-Type', 'text/yaml');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.sendFile(specPath);
+  const specPath = path.join(__dirname, '../docs/openapi.yaml');
+  res.setHeader('Content-Type', 'text/yaml');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.sendFile(specPath);
 });
 
 /**

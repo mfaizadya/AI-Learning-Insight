@@ -11,12 +11,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Key, Send, CheckCircle, Loader2, Building2, Mail, BarChart } from 'lucide-react';
+import { Key, Send, CheckCircle, Loader2, Building2, Mail, BarChart, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 
 /**
  * @fileoverview Request API Access Form
  * @description Form for users to request B2B API access from admin
  */
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 const USE_CASES = [
     { value: 'lms_integration', label: 'LMS Integration' },
@@ -44,23 +47,52 @@ const RequestAccessForm = () => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+        setError(null); // Clear error on change
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setError(null);
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        try {
+            // Get auth token from localStorage
+            const token = localStorage.getItem('token');
 
-        // In production, this would POST to /api/api-access/request
-        console.log('API Access Request:', formData);
+            if (!token) {
+                throw new Error('Anda harus login terlebih dahulu');
+            }
 
-        setIsSubmitting(false);
-        setIsSubmitted(true);
+            const response = await axios.post(
+                `${API_BASE_URL}/api-access/request`,
+                {
+                    organizationName: formData.organizationName,
+                    contactEmail: formData.contactEmail,
+                    useCase: formData.useCase,
+                    expectedRequests: formData.expectedRequests,
+                    description: formData.description || null
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                setIsSubmitted(true);
+            }
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || err.message || 'Terjadi kesalahan. Silakan coba lagi.';
+            setError(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const isFormValid =
@@ -109,6 +141,17 @@ const RequestAccessForm = () => {
             </CardHeader>
 
             <CardContent>
+                {/* Error Alert */}
+                {error && (
+                    <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-start gap-3">
+                        <AlertCircle size={18} className="text-destructive mt-0.5 flex-shrink-0" />
+                        <div>
+                            <p className="text-sm font-medium text-destructive">Gagal mengirim request</p>
+                            <p className="text-sm text-destructive/80">{error}</p>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Organization Name */}
                     <div className="space-y-2">

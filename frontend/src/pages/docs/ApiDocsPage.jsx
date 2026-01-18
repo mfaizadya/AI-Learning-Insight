@@ -786,30 +786,30 @@ const ApiDocsPage = () => {
           <section
             id="rate-limits"
             ref={el => sectionRefs.current['rate-limits'] = el}
-            className="mb-14"
+            className="mb-16"
           >
-            <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-              <Clock size={18} className="text-primary" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Clock size={22} className="text-primary" />
               Rate Limits
             </h2>
-            <p className="text-[14px] text-muted-foreground mb-5">
+            <p className="text-muted-foreground mb-6">
               Rate limit diterapkan berdasarkan tier subscription Anda.
             </p>
 
-            <div className="overflow-x-auto rounded-lg border border-border/40">
-              <table className="w-full text-[13px]">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-muted/30 border-b border-border/40">
-                    <th className="text-left py-2.5 px-3.5 font-semibold">Tier</th>
-                    <th className="text-left py-2.5 px-3.5 font-semibold">Requests/Min</th>
-                    <th className="text-left py-2.5 px-3.5 font-semibold">Monthly</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-3 px-4 font-semibold">Tier</th>
+                    <th className="text-left py-3 px-4 font-semibold">Requests/Minute</th>
+                    <th className="text-left py-3 px-4 font-semibold">Monthly Quota</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/30">
-                  <tr><td className="py-2.5 px-3.5">Sandbox</td><td className="py-2.5 px-3.5">100</td><td className="py-2.5 px-3.5">10K</td></tr>
-                  <tr><td className="py-2.5 px-3.5">Starter</td><td className="py-2.5 px-3.5">500</td><td className="py-2.5 px-3.5">100K</td></tr>
-                  <tr><td className="py-2.5 px-3.5">Professional</td><td className="py-2.5 px-3.5">2,000</td><td className="py-2.5 px-3.5">500K</td></tr>
-                  <tr><td className="py-2.5 px-3.5">Enterprise</td><td className="py-2.5 px-3.5">Custom</td><td className="py-2.5 px-3.5">Unlimited</td></tr>
+                <tbody className="divide-y divide-border/50">
+                  <tr><td className="py-3 px-4">Sandbox</td><td className="py-3 px-4">100</td><td className="py-3 px-4">10,000</td></tr>
+                  <tr><td className="py-3 px-4">Starter</td><td className="py-3 px-4">500</td><td className="py-3 px-4">100,000</td></tr>
+                  <tr><td className="py-3 px-4">Professional</td><td className="py-3 px-4">2,000</td><td className="py-3 px-4">500,000</td></tr>
+                  <tr><td className="py-3 px-4">Enterprise</td><td className="py-3 px-4">Custom</td><td className="py-3 px-4">Unlimited</td></tr>
                 </tbody>
               </table>
             </div>
@@ -819,17 +819,17 @@ const ApiDocsPage = () => {
           <section
             id="endpoints"
             ref={el => sectionRefs.current['endpoints'] = el}
-            className="mb-10"
+            className="mb-16"
           >
-            <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-              <GitBranch size={18} className="text-primary" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <GitBranch size={22} className="text-primary" />
               API Endpoints
             </h2>
-            <p className="text-[14px] text-muted-foreground mb-5">
+            <p className="text-muted-foreground mb-6">
               Dokumentasi lengkap untuk semua endpoint yang tersedia.
             </p>
 
-            <div className="rounded-lg border border-border/40 overflow-hidden">
+            <div className="rounded-xl border border-border/50 overflow-hidden">
               <SwaggerUI
                 url={`${apiBaseUrl}/docs/openapi.json`}
                 docExpansion="list"
@@ -843,17 +843,17 @@ const ApiDocsPage = () => {
 
         </div>
 
-        {/* Footer - Compact & balanced */}
-        <footer className="border-t border-border/40 bg-muted/10">
-          <div className="max-w-3xl mx-auto px-5 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-                <Sparkles size={14} className="text-primary" />
+        {/* Footer */}
+        <footer className="border-t border-border/50 bg-muted/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Sparkles size={16} className="text-primary" />
                 <span>CerdasKu AI</span>
-                <span className="mx-1">•</span>
+                <span>•</span>
                 <span>B2B API v2.0</span>
               </div>
-              <div className="flex items-center gap-4 text-[13px]">
+              <div className="flex items-center gap-4 text-sm">
                 <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</Link>
                 <Link to="/privacy-policy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
                 <a href="mailto:api-support@cerdasku.ai" className="text-muted-foreground hover:text-foreground transition-colors">Support</a>

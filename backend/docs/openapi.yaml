@@ -1,19 +1,17 @@
 openapi: 3.0.3
 info:
-  title: CerdasKu AI - B2B API
+  title: CerdasKu - B2B API
   description: |
-    # 🚀 B2B Integration API
-    
     API untuk integrasi CerdasKu AI Learning Insight dengan platform eksternal seperti LMS, EdTech, dan Corporate Training systems.
     
-    ## Getting Started
+    # Getting Started
     
     1. **Request API Access** - Hubungi tim kami atau ajukan melalui dashboard
     2. **Receive API Key** - Dapatkan key dalam format `ck_live_xxx` atau `ck_sandbox_xxx`
     3. **Authenticate** - Sertakan key di header `X-API-Key`
     4. **Start Integrating** - Gunakan endpoints di bawah
     
-    ## Rate Limits
+    # Rate Limits
     
     | Tier | Requests/Minute | Monthly Quota |
     |------|-----------------|---------------|
@@ -22,7 +20,7 @@ info:
     | Professional | 2,000 | 500,000 |
     | Enterprise | Custom | Unlimited |
     
-    ## Support
+    # Support
     
     - 📧 Email: api-support@cerdasku.ai
     - 📚 Documentation: https://docs.cerdasku.ai

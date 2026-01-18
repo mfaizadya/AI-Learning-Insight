@@ -4,6 +4,9 @@ import {
   BrainCircuit,
   Sparkles,
   Lightbulb,
+  Code2,
+  CheckCircle2,
+  Server
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
@@ -74,7 +77,7 @@ const LandingPage = () => {
           ref={textRef}
           className="text-[20rem] font-black leading-none tracking-tighter will-change-transform"
         >
-          INSIGHT INTELLIGENCE
+          MAAS PLATFORM
         </h1>
       </div>
 
@@ -131,10 +134,8 @@ const LandingPage = () => {
               </h1>
 
               <p className="text-[1.07rem] sm:text-xl text-muted-foreground max-w-xl leading-relaxed border-l-2 border-accent/50 pl-6">
-                Lebih dari sekadar nilai. Kami menganalisis aktivitas,
-                kecepatan, dan waktu belajar Anda untuk mengungkap{" "}
-                <strong>Pola & Gaya Belajar Unik</strong> dan memberikan insight
-                yang reflektif.
+                <strong>Metacognition-as-a-Service (MaaS)</strong> pertama yang mengungkap gaya belajar siswa,
+                sekaligus memberdayakan <strong>LMS & Institusi Pendidikan</strong> melalui API kecerdasan kognitif.
               </p>
 
               <div className="flex flex-wrap gap-4 mt-4">
@@ -145,70 +146,77 @@ const LandingPage = () => {
                   <span className="relative z-10 flex items-center gap-2 md:text-lg">
                     Mulai Eksplorasi <ArrowRight />
                   </span>
-                  {/* <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div> */}
                 </button>
+                <Link
+                  to="/docs"
+                  className="px-8 py-4 bg-white/50 backdrop-blur-sm text-foreground rounded-full font-semibold hover:bg-white/80 transition-all border border-primary/20 flex items-center gap-2"
+                >
+                  <Code2 size={18} className="text-primary" />
+                  Integration Docs
+                </Link>
               </div>
             </div>
 
             {/* cards / code mockup component */}
             <div className="lg:col-span-5 relative hidden lg:block">
-              {/* Abstract Code Card */}
+              {/* Glassmorphic API Card (Reverted Style with New Content) */}
               <div className="relative z-20 bg-card/50 backdrop-blur-md border border-white/20 p-8 rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+
+                {/* Window Controls */}
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 rounded-full bg-primary"></div>
+                  <div className="w-3 h-3 rounded-full bg-primary/80"></div>
                   <div className="w-3 h-3 rounded-full bg-primary/50"></div>
                   <div className="w-3 h-3 rounded-full bg-primary/20"></div>
+                  <span className="ml-auto text-xs font-mono text-muted-foreground/50">api/v1/predict</span>
                 </div>
+
+                {/* API Content Structured Like Code */}
                 <div className="space-y-3 font-mono text-xs md:text-sm text-muted-foreground">
                   <p className="text-muted-foreground/50">
-                    # AI Analysis Logic
+                    # Integrate Intelligence into your LMS
                   </p>
                   <p>
-                    <span className="text-primary">if</span> (avg_time &gt;
-                    threshold <span className="text-accent">&&</span> reviews
-                    &gt; 5) &#123;
+                    <span className="text-primary">POST</span> /predict
+                  </p>
+
+                  <p className="pl-0 text-foreground/80">
+                    Headers: <span className="text-accent">{'{'}</span>
                   </p>
                   <p className="pl-4">
-                    pattern ={" "}
-                    <span className="text-green-500">"Reflective Learner"</span>
-                    ;
+                    "Authorization": <span className="text-primary">"Bearer ck_live_..."</span>
+                  </p>
+                  <p className="text-accent">{'}'}</p>
+
+                  <p className="pl-0 text-foreground/80 mt-2">
+                    Body: <span className="text-accent">{'{'}</span>
                   </p>
                   <p className="pl-4">
-                    advice ={" "}
-                    <span className="text-yellow-500">
-                      "Optimize review sessions..."
-                    </span>
-                    ;
-                  </p>
-                  <p>
-                    &#125; <span className="text-primary">else if</span>{" "}
-                    (consistency_score &gt; 0.9) &#123;
+                    "student_id": <span className="text-green-600 dark:text-green-400">"STU-2024"</span>,
                   </p>
                   <p className="pl-4">
-                    pattern ={" "}
-                    <span className="text-green-500">"Consistent Learner"</span>
-                    ;
+                    "features": [<span className="text-primary">0.85</span>, <span className="text-primary">0.92</span>, ...]
                   </p>
-                  <p>&#125;</p>
+                  <p className="text-accent">{'}'}</p>
+
                   <p className="mt-4 text-muted-foreground/50">
-                    # Output to Student Dashboard
+                    # Response (Realtime)
                   </p>
                   <p>
-                    return <span className="text-primary">generateInsight</span>
-                    (pattern);
+                    return <span className="text-primary">Insight</span>
+                    (<span className="text-green-600 dark:text-green-400">"Reflective Learner"</span>);
                   </p>
                 </div>
 
                 {/* floating badge */}
                 <div className="absolute -bottom-6 -left-6 bg-background border border-border px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce-slow">
                   <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 font-bold">
-                    R
+                    <CheckCircle2 size={20} />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">
-                      Pattern Detected
+                      Status
                     </p>
-                    <p className="font-bold">Reflective Learner</p>
+                    <p className="font-bold text-primary">200 OK</p>
                   </div>
                 </div>
               </div>
@@ -247,14 +255,13 @@ const LandingPage = () => {
 
                 <div className="relative z-10">
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                    <BrainCircuit />
+                    <Server />
                   </div>
                   <h3 className="text-2xl font-bold mb-3 tracking-tight">
-                    Deep Profiling
+                    API-First Infrastructure
                   </h3>
                   <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                    Analisis mendalam terhadap gaya belajar kognitif Anda
-                    menggunakan machine learning.
+                    Integrasikan kecerdasan metakognitif ke dalam LMS atau platform edukasi Anda dengan satu REST API call.
                   </p>
                 </div>
               </div>
@@ -268,23 +275,14 @@ const LandingPage = () => {
 
                 <div className="relative z-10">
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                    <svg
-                      className="w-6 h-6"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                    </svg>
+                    <BrainCircuit />
                   </div>
                   <h3 className="text-2xl font-bold mb-3 tracking-tight">
-                    Actionable Insight
+                    Deep Profiling
                   </h3>
                   <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                    Bukan sekadar grafik data. Kami menyajikan wawasan yang
-                    mudah dipahami dan relevan agar Anda tahu persis area mana
-                    yang perlu diperbaiki.
+                    Analisis mendalam terhadap gaya belajar kognitif user
+                    menggunakan machine learning & pattern recognition.
                   </p>
                 </div>
               </div>
