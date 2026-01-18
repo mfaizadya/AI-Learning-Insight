@@ -176,11 +176,11 @@ const DeveloperPage = () => {
           </TabsContent>
 
           {/* Usage Tab */}
-          <TabsContent value="usage" className="mt-6">
+          <TabsContent value="usage" className="mt-8">
             {hasApiAccess ? (
               <UsageStats />
             ) : (
-              <Card className="border-border/50 shadow-lg">
+              <Card className="border-border/50 shadow-lg pt-10">
                 <CardContent className="py-20 text-center">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
                     <Lock size={32} className="text-muted-foreground" />
