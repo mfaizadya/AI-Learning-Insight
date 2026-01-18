@@ -134,7 +134,7 @@ const LandingPage = () => {
               </h1>
 
               <p className="text-[1.07rem] sm:text-xl text-muted-foreground max-w-xl leading-relaxed border-l-2 border-accent/50 pl-6">
-                <strong>Metacognition-as-a-Service (MaaS)</strong> pertama yang mengungkap gaya belajar siswa,
+                <strong>Metacognition-as-a-Service (MaaS)</strong> yang mengungkap gaya belajar siswa,
                 sekaligus memberdayakan <strong>LMS & Institusi Pendidikan</strong> melalui API kecerdasan kognitif.
               </p>
 
