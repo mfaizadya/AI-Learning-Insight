@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "db:setup": "node scripts/setup_db.js",
+    "db:migrate": "node scripts/run_migrations.js",
     "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },

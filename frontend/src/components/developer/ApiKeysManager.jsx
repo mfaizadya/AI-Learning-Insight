@@ -5,73 +5,84 @@ import { Badge } from '@/components/ui/badge';
 import {
     Key,
     Copy,
-    Eye,
-    EyeOff,
     Calendar,
     Clock,
     AlertCircle,
     CheckCircle,
     Shield,
-    Sparkles
+    Sparkles,
+    RefreshCw
 } from 'lucide-react';
-
-/**
- * @fileoverview Premium API Keys Manager Component
- * @description Displays and manages user's API keys with premium design
- */
-
-const MOCK_API_KEYS = [
-    {
-        id: 1,
-        name: 'Production Key',
-        prefix: 'ck_live_',
-        maskedKey: 'ck_live_••••••••••••••••abc123',
-        fullKey: 'ck_live_a1b2c3d4e5f6g7h8abc123',
-        scopes: ['predict', 'usage:read'],
-        createdAt: '2026-01-15T10:30:00Z',
-        lastUsedAt: '2026-01-18T02:15:00Z',
-        isActive: true,
-        tier: 'professional',
-    },
-    {
-        id: 2,
-        name: 'Sandbox Key',
-        prefix: 'ck_sandbox_',
-        maskedKey: 'ck_sandbox_••••••••••••def456',
-        fullKey: 'ck_sandbox_x9y8z7w6v5u4def456',
-        scopes: ['predict', 'usage:read'],
-        createdAt: '2026-01-10T08:00:00Z',
-        lastUsedAt: '2026-01-17T14:30:00Z',
-        isActive: true,
-        tier: 'sandbox',
-    },
-];
+import axios from 'axios';
+import { toast } from 'sonner';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 const ApiKeysManager = () => {
     const [apiKeys, setApiKeys] = useState([]);
-    const [revealedKeys, setRevealedKeys] = useState({});
-    const [copiedKey, setCopiedKey] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [newKey, setNewKey] = useState(null); // For displaying newly generated key
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [regenerating, setRegenerating] = useState(false);
+
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+
+    const fetchKeys = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`${apiBaseUrl}/api-access/keys`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data.success) {
+                setApiKeys(res.data.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch keys:', error);
+            // toast.error('Gagal memuat API Keys');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchKeys = async () => {
-            setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setApiKeys(MOCK_API_KEYS);
-            setLoading(false);
-        };
         fetchKeys();
     }, []);
 
-    const toggleReveal = (keyId) => {
-        setRevealedKeys(prev => ({ ...prev, [keyId]: !prev[keyId] }));
+    const handleRegenerate = async () => {
+        if (!confirm('Apakah Anda yakin ingin mengganti API Key? Key lama hangus.')) return;
+
+        try {
+            setRegenerating(true);
+            const token = localStorage.getItem('token');
+            const res = await axios.post(`${apiBaseUrl}/api-access/keys/regenerate`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (res.data.success) {
+                setNewKey(res.data.data.apiKey);
+                setIsModalOpen(true);
+                toast.success('API Key berhasil diperbarui!');
+                fetchKeys();
+            }
+        } catch (error) {
+            toast.error('Gagal regenerate key: ' + (error.response?.data?.message || 'Error'));
+        } finally {
+            setRegenerating(false);
+        }
     };
 
-    const copyToClipboard = async (key, keyId) => {
+    const copyToClipboard = async (text) => {
         try {
-            await navigator.clipboard.writeText(key.fullKey);
-            setCopiedKey(keyId);
-            setTimeout(() => setCopiedKey(null), 2000);
+            await navigator.clipboard.writeText(text);
+            toast.success('Key disalin ke clipboard');
         } catch (err) {
             console.error('Failed to copy:', err);
         }
@@ -86,6 +97,7 @@ const ApiKeysManager = () => {
     };
 
     const formatTimeAgo = (dateString) => {
+        if (!dateString) return 'Never';
         const now = new Date();
         const date = new Date(dateString);
         const diffMs = now - date;
@@ -129,9 +141,9 @@ const ApiKeysManager = () => {
                     <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
                         <Key size={32} className="text-muted-foreground" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">No API Keys</h3>
+                    <h3 className="text-xl font-semibold mb-2">No API Keys Found</h3>
                     <p className="text-muted-foreground max-w-md mx-auto">
-                        Anda belum memiliki API key. Hubungi admin untuk mendapatkan API key.
+                        Anda belum memiliki active API key. Pastikan request Anda sudah disetujui.
                     </p>
                 </CardContent>
             </Card>
@@ -147,8 +159,8 @@ const ApiKeysManager = () => {
                             <Key size={20} className="text-primary" />
                         </div>
                         <div>
-                            <CardTitle className="text-lg">API Keys</CardTitle>
-                            <CardDescription>Kelola API keys untuk akses B2B API</CardDescription>
+                            <CardTitle className="text-lg">My API Keys</CardTitle>
+                            <CardDescription>Kelola kredensial akses Anda</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
@@ -159,87 +171,55 @@ const ApiKeysManager = () => {
                             key={key.id}
                             className="relative p-5 bg-gradient-to-br from-background to-secondary/10 rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-md transition-all group"
                         >
-                            {/* Tier badge */}
+                            {/* Tier Badge */}
                             <div className="absolute top-4 right-4">
                                 <Badge className={`${getTierColor(key.tier)} text-white text-[10px] px-2 py-0.5 capitalize`}>
-                                    {key.tier}
+                                    {key.tier || 'Standard'}
                                 </Badge>
                             </div>
 
                             <div className="flex items-start gap-4">
                                 <div className="p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/5 group-hover:scale-105 transition-transform">
-                                    {key.prefix.includes('live') ? (
-                                        <Sparkles size={20} className="text-primary" />
-                                    ) : (
-                                        <Shield size={20} className="text-gray-500" />
-                                    )}
+                                    <Sparkles size={20} className="text-primary" />
                                 </div>
 
                                 <div className="flex-1 min-w-0 space-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <h4 className="font-semibold text-foreground">{key.name}</h4>
-                                        {key.isActive ? (
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="font-semibold text-foreground">{key.name}</h4>
                                             <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] px-2">
-                                                <CheckCircle size={10} className="mr-1" />
                                                 Active
                                             </Badge>
-                                        ) : (
-                                            <Badge variant="destructive" className="text-[10px] px-2">Revoked</Badge>
-                                        )}
+                                        </div>
                                     </div>
 
-                                    {/* Key display */}
+                                    {/* Key display (Masked) */}
                                     <div className="flex items-center gap-2 p-3 bg-gray-900 rounded-lg font-mono text-sm overflow-x-auto">
                                         <code className="text-gray-300 whitespace-nowrap flex-1">
-                                            {revealedKeys[key.id] ? key.fullKey : key.maskedKey}
+                                            {key.maskedKey}
                                         </code>
 
-                                        <div className="flex items-center gap-1 shrink-0">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-7 w-7 hover:bg-gray-700"
-                                                onClick={() => toggleReveal(key.id)}
-                                            >
-                                                {revealedKeys[key.id] ? (
-                                                    <EyeOff size={14} className="text-gray-400" />
-                                                ) : (
-                                                    <Eye size={14} className="text-gray-400" />
-                                                )}
-                                            </Button>
-
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-7 w-7 hover:bg-gray-700"
-                                                onClick={() => copyToClipboard(key, key.id)}
-                                            >
-                                                {copiedKey === key.id ? (
-                                                    <CheckCircle size={14} className="text-green-400" />
-                                                ) : (
-                                                    <Copy size={14} className="text-gray-400" />
-                                                )}
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            className="h-7 px-3 text-xs gap-1 hover:bg-white/10 hover:text-white transition-colors"
+                                            onClick={handleRegenerate}
+                                            disabled={regenerating}
+                                        >
+                                            <RefreshCw size={12} className={regenerating ? "animate-spin" : ""} />
+                                            Roll Key
+                                        </Button>
                                     </div>
 
                                     {/* Metadata */}
                                     <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                                         <div className="flex items-center gap-1.5">
                                             <Calendar size={12} />
-                                            <span>Created {formatDate(key.createdAt)}</span>
+                                            <span>Created {formatDate(key.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
                                             <Clock size={12} />
-                                            <span>Last used {formatTimeAgo(key.lastUsedAt)}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <span>Scopes:</span>
-                                            {key.scopes.map(scope => (
-                                                <Badge key={scope} variant="outline" className="text-[10px] px-1.5 py-0">
-                                                    {scope}
-                                                </Badge>
-                                            ))}
+                                            <span>Last used {formatTimeAgo(key.last_used_at)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -258,15 +238,46 @@ const ApiKeysManager = () => {
                         </div>
                         <div className="text-sm">
                             <p className="font-semibold text-amber-800 dark:text-amber-200">
-                                Keep your API keys secure
+                                Perhatian
                             </p>
                             <p className="text-amber-700 dark:text-amber-300 mt-1">
-                                Jangan pernah commit API key ke repository publik. Gunakan environment variables.
+                                Jika Anda melakukan "Roll Key", key lama akan langsung hangus. Pastikan Anda update aplikasi yang menggunakan key lama.
                             </p>
                         </div>
                     </div>
                 </CardContent>
             </Card>
+
+            {/* New Key Modal */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>API Key Baru Anda</DialogTitle>
+                        <DialogDescription>
+                            Simpan key ini sekarang. Anda tidak akan bisa melihatnya lagi setelah ini.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center space-x-2 py-4">
+                        <div className="grid flex-1 gap-2">
+                            <Input
+                                id="link"
+                                value={newKey || ''}
+                                readOnly
+                                className="font-mono bg-muted"
+                            />
+                        </div>
+                        <Button size="sm" className="px-3" onClick={() => copyToClipboard(newKey)}>
+                            <span className="sr-only">Copy</span>
+                            <Copy className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <DialogFooter className="sm:justify-start">
+                        <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
+                            Tutup
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

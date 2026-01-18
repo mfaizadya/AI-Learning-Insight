@@ -50,7 +50,7 @@ const createRequest = async (data, userId) => {
     const { organizationName, contactEmail, useCase, expectedRequests, description } = data;
 
     // Check if user already has a pending request
-    const [existing] = await db.execute(
+    const existing = await db.execute(
         `SELECT id FROM api_access_requests 
          WHERE user_id = ? AND status = 'pending'`,
         [userId]
@@ -63,7 +63,7 @@ const createRequest = async (data, userId) => {
     }
 
     // Check if user already has approved access
-    const [approved] = await db.execute(
+    const approved = await db.execute(
         `SELECT id FROM api_access_requests 
          WHERE user_id = ? AND status = 'approved'`,
         [userId]
@@ -75,7 +75,7 @@ const createRequest = async (data, userId) => {
         throw error;
     }
 
-    const [result] = await db.execute(
+    const result = await db.execute(
         `INSERT INTO api_access_requests 
          (user_id, organization_name, contact_email, use_case, expected_requests, description)
          VALUES (?, ?, ?, ?, ?, ?)`,
@@ -95,7 +95,9 @@ const createRequest = async (data, userId) => {
  * @returns {Promise<array>} List of requests
  */
 const getAllRequests = async (options = {}) => {
-    const { status, page = 1, limit = 20 } = options;
+    const { status } = options;
+    const page = parseInt(options.page) || 1;
+    const limit = parseInt(options.limit) || 20;
     const offset = (page - 1) * limit;
 
     let query = `
@@ -113,7 +115,7 @@ const getAllRequests = async (options = {}) => {
             r.rejection_reason,
             r.tenant_id,
             r.created_at,
-            u.name as requester_name,
+            u.username as requester_name,
             u.email as requester_email
         FROM api_access_requests r
         JOIN users u ON r.user_id = u.id
@@ -129,14 +131,14 @@ const getAllRequests = async (options = {}) => {
     query += ' ORDER BY r.created_at DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
-    const [requests] = await db.execute(query, params);
+    const requests = await db.query(query, params);
 
     // Get total count
     let countQuery = 'SELECT COUNT(*) as total FROM api_access_requests';
     if (status) {
         countQuery += ' WHERE status = ?';
     }
-    const [countResult] = await db.execute(countQuery, status ? [status] : []);
+    const countResult = await db.query(countQuery, status ? [status] : []);
 
     return {
         data: requests,
@@ -155,10 +157,10 @@ const getAllRequests = async (options = {}) => {
  * @returns {Promise<object>} Request details
  */
 const getRequestById = async (requestId) => {
-    const [requests] = await db.execute(
+    const requests = await db.execute(
         `SELECT 
             r.*,
-            u.name as requester_name,
+            u.username as requester_name,
             u.email as requester_email
          FROM api_access_requests r
          JOIN users u ON r.user_id = u.id
@@ -276,7 +278,7 @@ const approveRequest = async (requestId, adminId) => {
  * @returns {Promise<object>} Rejection result
  */
 const rejectRequest = async (requestId, adminId, reason) => {
-    const [result] = await db.execute(
+    const result = await db.execute(
         `UPDATE api_access_requests 
          SET status = 'rejected', 
              reviewed_by = ?, 
@@ -299,12 +301,191 @@ const rejectRequest = async (requestId, adminId, reason) => {
 };
 
 /**
+ * Regenerate API key for an approved request
+ * @param {number} requestId - Request ID
+ * @param {string} adminId - Admin user ID performing the action
+ * @returns {Promise<object>} New API key data
+ */
+const regenerateKey = async (requestId, adminId) => {
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // Get request details (must be approved)
+        const [requests] = await connection.execute(
+            'SELECT * FROM api_access_requests WHERE id = ? AND status = ?',
+            [requestId, 'approved']
+        );
+
+        if (requests.length === 0) {
+            const error = new Error('Request tidak ditemukan atau belum disetujui');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const request = requests[0];
+        const tenantId = request.tenant_id;
+
+        if (!tenantId) {
+            const error = new Error('Data tenant tidak valid');
+            error.statusCode = 500;
+            throw error;
+        }
+
+        // Generate NEW API key
+        const apiKeyData = generateApiKey('sandbox');
+
+        // Deactivate OLD keys for this tenant (optional: or just add new one? usually replace primary)
+        // Strat: Deactivate all existing keys, insert new one.
+        await connection.execute(
+            'UPDATE api_keys SET is_active = 0 WHERE tenant_id = ?',
+            [tenantId]
+        );
+
+        // Insert NEW API key
+        await connection.execute(
+            `INSERT INTO api_keys (tenant_id, key_hash, key_prefix, name, scopes, rate_limit)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+                tenantId,
+                apiKeyData.hash,
+                apiKeyData.prefix,
+                `${request.organization_name} - Regenerated Key`,
+                JSON.stringify(['predict', 'usage:read']),
+                100 // Default or fetch existing tier limit
+            ]
+        );
+
+        await connection.commit();
+
+        return {
+            success: true,
+            message: 'API Key berhasil diperbarui.',
+            data: {
+                apiKey: apiKeyData.key
+            }
+        };
+
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
+/**
+ * Get user's own API access request status
+ * @param {string} userId - User ID
+ * @returns {Promise<object|null>} Request status or null
+ */
+/**
+ * Get user's active API keys (masked)
+ * @param {string} userId - User ID
+ * @returns {Promise<array>} List of keys
+ */
+const getMyKeys = async (userId) => {
+    const keys = await db.execute(
+        `SELECT 
+            k.id,
+            k.name,
+            k.key_prefix,
+            k.created_at,
+            k.last_used_at,
+            k.is_active,
+            k.scopes,
+            t.tier
+         FROM api_keys k
+         JOIN tenants t ON k.tenant_id = t.id
+         JOIN api_access_requests r ON r.tenant_id = t.id
+         WHERE r.user_id = ? AND k.is_active = 1
+         ORDER BY k.created_at DESC`,
+        [userId]
+    );
+
+    return keys.map(k => ({
+        ...k,
+        maskedKey: `${k.key_prefix}••••••••••••••••`,
+        fullKey: null // Never return full key
+    }));
+};
+
+/**
+ * Regenerate My API Key (User Action)
+ * @param {string} userId - User ID
+ * @returns {Promise<object>} New Key
+ */
+const regenerateMyKey = async (userId) => {
+    // 1. Find tenant for user
+    const requests = await db.execute(
+        `SELECT tenant_id, organization_name FROM api_access_requests 
+         WHERE user_id = ? AND status = 'approved'`,
+        [userId]
+    );
+
+    if (requests.length === 0) {
+        const error = new Error('No active API access found');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    const { tenant_id, organization_name } = requests[0];
+
+    // 2. Perform regeneration (same logic as admin)
+    // Reuse the internal logic via DB transaction manually to avoid code duplication issues with admin ID params
+
+    const connection = await db.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        // Generate NEW API key
+        const apiKeyData = generateApiKey('sandbox');
+
+        // Deactivate OLD keys
+        await connection.execute(
+            'UPDATE api_keys SET is_active = 0 WHERE tenant_id = ?',
+            [tenant_id]
+        );
+
+        // Insert NEW API key
+        await connection.execute(
+            `INSERT INTO api_keys (tenant_id, key_hash, key_prefix, name, scopes, rate_limit)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+                tenant_id,
+                apiKeyData.hash,
+                apiKeyData.prefix,
+                `${organization_name} - Regenerated Key`,
+                JSON.stringify(['predict', 'usage:read']),
+                100
+            ]
+        );
+
+        await connection.commit();
+
+        return {
+            success: true,
+            message: 'API Key regenerated successfully',
+            data: {
+                apiKey: apiKeyData.key
+            }
+        };
+    } catch (err) {
+        await connection.rollback();
+        throw err;
+    } finally {
+        connection.release();
+    }
+};
+
+/**
  * Get user's own API access request status
  * @param {string} userId - User ID
  * @returns {Promise<object|null>} Request status or null
  */
 const getUserRequestStatus = async (userId) => {
-    const [requests] = await db.execute(
+    const requests = await db.execute(
         `SELECT 
             r.id,
             r.organization_name,
@@ -330,5 +511,8 @@ module.exports = {
     getRequestById,
     approveRequest,
     rejectRequest,
-    getUserRequestStatus
+    regenerateKey,
+    getUserRequestStatus,
+    getMyKeys,
+    regenerateMyKey
 };

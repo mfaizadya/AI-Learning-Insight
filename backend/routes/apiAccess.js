@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const apiAccessService = require('../services/apiAccessService');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, verifyAdmin } = require('../middleware/auth');
 
 /**
  * POST /api/api-access/request
@@ -81,6 +81,85 @@ router.get('/status', verifyToken, async (req, res, next) => {
             data: status
         });
 
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * GET /api/api-access/requests
+ * Get all API access requests (Admin only)
+ */
+router.get('/requests', verifyToken, verifyAdmin, async (req, res, next) => {
+    try {
+        const { status, page, limit } = req.query;
+        const result = await apiAccessService.getAllRequests({ status, page, limit });
+        res.json({ success: true, ...result });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /api/api-access/requests/:id/approve
+ * Approve an API access request
+ */
+router.post('/requests/:id/approve', verifyToken, verifyAdmin, async (req, res, next) => {
+    try {
+        const result = await apiAccessService.approveRequest(req.params.id, req.user.id);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /api/api-access/requests/:id/reject
+ * Reject an API access request
+ */
+router.post('/requests/:id/reject', verifyToken, verifyAdmin, async (req, res, next) => {
+    try {
+        const { reason } = req.body;
+        const result = await apiAccessService.rejectRequest(req.params.id, req.user.id, reason);
+        res.json(result);
+    } catch (error) {
+    }
+});
+
+/**
+ * POST /api/api-access/requests/:id/regenerate
+ * Regenerate API Key for a tenant
+ */
+router.post('/requests/:id/regenerate', verifyToken, verifyAdmin, async (req, res, next) => {
+    try {
+        const result = await apiAccessService.regenerateKey(req.params.id, req.user.id);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * GET /api/api-access/keys
+ * Get user's own API keys
+ */
+router.get('/keys', verifyToken, async (req, res, next) => {
+    try {
+        const keys = await apiAccessService.getMyKeys(req.user.id);
+        res.json({ success: true, data: keys });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /api/api-access/keys/regenerate
+ * User regenerates own key
+ */
+router.post('/keys/regenerate', verifyToken, async (req, res, next) => {
+    try {
+        const result = await apiAccessService.regenerateMyKey(req.user.id);
+        res.json(result);
     } catch (error) {
         next(error);
     }

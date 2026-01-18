@@ -15,6 +15,8 @@ import TestPage from "@/pages/TestPage";
 import LandingPage from "@/pages/LandingPage";
 import ApiDocsPage from "@/pages/docs/ApiDocsPage";
 import DeveloperPage from "@/pages/dashboard/developer/DeveloperPage";
+import PlaceholderPage from "@/pages/dashboard/admin/PlaceholderPage";
+import AdminRoute from "./AdminRoute";
 
 export default function AppRoutes() {
   return (
@@ -36,6 +38,12 @@ export default function AppRoutes() {
             <Route path="pretest/test" element={<TestPage />} />
             <Route path="developer" element={<DeveloperPage />} />
             <Route path="account" element={<AccountPage />} />
+
+            {/* Admin Exclusive Routes */}
+            <Route element={<AdminRoute />}>
+              <Route path="tenants" element={<PlaceholderPage title="Tenants Management" />} />
+              <Route path="users" element={<PlaceholderPage title="User Management" />} />
+            </Route>
           </Route>
         </Route>
 

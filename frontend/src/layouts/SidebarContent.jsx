@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router";
-import { LayoutGrid, ClipboardList, User, Code } from "lucide-react";
+import { LayoutGrid, ClipboardList, User, Code, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/context/AuthContext"; // 1. Import AuthContext
 
 export const SidebarContent = ({ onItemClick }) => {
@@ -11,33 +11,61 @@ export const SidebarContent = ({ onItemClick }) => {
 
   const displayName = user?.username || user?.name || "User";
   const avatarSeed = user?.username || "Felix";
+  const isAdmin = user?.role === 'admin';
 
-  const menuItems = [
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-      icon: <LayoutGrid size={20} />,
-      exact: true,
-    },
-    {
-      label: "Pretest",
-      href: "/dashboard/pretest",
-      icon: <ClipboardList size={20} />,
-      exact: false,
-    },
-    {
-      label: "Developer",
-      href: "/dashboard/developer",
-      icon: <Code size={20} />,
-      exact: false,
-    },
-    {
-      label: "Akun",
-      href: "/dashboard/account",
-      icon: <User size={20} />,
-      exact: false,
-    },
-  ];
+  let menuItems = [];
+
+  if (isAdmin) {
+    // ADMIN MENU
+    menuItems = [
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: <LayoutGrid size={20} />,
+        exact: true,
+      },
+      {
+        label: "Tenants",
+        href: "/dashboard/tenants",
+        icon: <ShieldAlert size={20} />, // Using ShieldAlert temporarily as icon
+        exact: false,
+      },
+      {
+        label: "Users",
+        href: "/dashboard/users",
+        icon: <User size={20} />,
+        exact: false,
+      },
+    ];
+  } else {
+    // STUDENT MENU
+    menuItems = [
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: <LayoutGrid size={20} />,
+        exact: true,
+      },
+      {
+        label: "Pretest",
+        href: "/dashboard/pretest",
+        icon: <ClipboardList size={20} />,
+        exact: false,
+      },
+      {
+        label: "Developer",
+        href: "/dashboard/developer",
+        icon: <Code size={20} />,
+        exact: false,
+      },
+      {
+        label: "Akun",
+        href: "/dashboard/account",
+        icon: <User size={20} />,
+        exact: false,
+      },
+    ];
+  }
 
   return (
     <div className="flex flex-col h-full bg-primary text-white">
