@@ -89,6 +89,12 @@ const LandingPage = () => {
               CerdasKu.
             </span>
             <div className="flex items-center gap-6 text-sm md:text-base font-medium">
+              <Link
+                to="/docs"
+                className="hidden md:block hover:text-primary transition-colors"
+              >
+                API Docs
+              </Link>
               {!isLoggedIn && (
                 <Link
                   to="/auth/login"

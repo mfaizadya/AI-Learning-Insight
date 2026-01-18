@@ -25,36 +25,35 @@ export const Faqs = () => {
     ];
 
     return (
-        <>
-            <section className="py-24 px-6 bg-background">
-                <div className="max-w-3xl md:max-w-4xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
-                            Frequently Asked Questions
-                        </h2>
-                        <p className="text-muted-foreground md:text-xl">
-                            Pertanyaan umum seputar CerdasKu dan analisis gaya belajar.
-                        </p>
-                    </div>
-
-                    <Accordion type="single" collapsible className="w-full space-y-4">
-                        {faqs.map((faq, index) => (
-                            <AccordionItem
-                                key={index}
-                                value={`item-${index}`}
-                                className="border border-border/50 rounded-2xl bg-white shadow-xs px-6 md:px-7 md:py-2 lg:px-8 overflow-hidden transition-all duration-300 hover:border-primary/30 data-[state=open]:border-primary/30 data-[state=open]:bg-card/50"
-                            >
-                                <AccordionTrigger className="text-base md:text-lg lg:text-xl font-medium hover:text-primary hover:no-underline py-5 text-left [&[data-state=open]]:text-primary">
-                                    {faq.question}
-                                </AccordionTrigger>
-                                <AccordionContent className="text-sm md:text-base lg:text-lg text-muted-foreground leading-relaxed pb-6 border-t border-border/50 pt-4">
-                                    {faq.answer}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
+        <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8 bg-background">
+            <div className="max-w-2xl md:max-w-3xl mx-auto">
+                {/* Section header */}
+                <div className="text-center mb-10 sm:mb-12 md:mb-14">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mb-2 sm:mb-3">
+                        Frequently Asked Questions
+                    </h2>
+                    <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
+                        Pertanyaan umum seputar CerdasKu dan analisis gaya belajar.
+                    </p>
                 </div>
-            </section>
-        </>
-    )
-}
+
+                <Accordion type="single" collapsible className="w-full space-y-3 sm:space-y-4">
+                    {faqs.map((faq, index) => (
+                        <AccordionItem
+                            key={index}
+                            value={`item-${index}`}
+                            className="border border-border/50 rounded-xl sm:rounded-2xl bg-card/50 shadow-sm px-4 sm:px-5 md:px-6 overflow-hidden transition-all duration-300 hover:border-primary/30 data-[state=open]:border-primary/30 data-[state=open]:bg-card"
+                        >
+                            <AccordionTrigger className="text-sm sm:text-base md:text-lg font-medium hover:text-primary hover:no-underline py-4 sm:py-5 text-left [&[data-state=open]]:text-primary">
+                                {faq.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed pb-4 sm:pb-5 border-t border-border/50 pt-3 sm:pt-4">
+                                {faq.answer}
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
+        </section>
+    );
+};

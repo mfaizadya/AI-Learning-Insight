@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router";
-import { LayoutGrid, ClipboardList, User } from "lucide-react";
+import { LayoutGrid, ClipboardList, User, Code } from "lucide-react";
 import { useAuth } from "@/context/AuthContext"; // 1. Import AuthContext
 
 export const SidebarContent = ({ onItemClick }) => {
@@ -23,6 +23,12 @@ export const SidebarContent = ({ onItemClick }) => {
       label: "Pretest",
       href: "/dashboard/pretest",
       icon: <ClipboardList size={20} />,
+      exact: false,
+    },
+    {
+      label: "Developer",
+      href: "/dashboard/developer",
+      icon: <Code size={20} />,
       exact: false,
     },
     {
@@ -73,10 +79,9 @@ export const SidebarContent = ({ onItemClick }) => {
                     onClick={onItemClick}
                     className={`
                       flex items-center gap-5 px-4 py-3 rounded-xl transition-all duration-200 w-full group
-                      ${
-                        isActive
-                          ? "bg-[#6D5DA6] bg-opacity-50 text-white shadow-inner"
-                          : "text-gray-300 hover:bg-white/10 hover:text-white"
+                      ${isActive
+                        ? "bg-[#6D5DA6] bg-opacity-50 text-white shadow-inner"
+                        : "text-gray-300 hover:bg-white/10 hover:text-white"
                       }
                     `}
                     aria-current={isActive ? "page" : undefined}

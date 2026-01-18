@@ -13,6 +13,8 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import PublicRoutes from "./PublicRoutes";
 import TestPage from "@/pages/TestPage";
 import LandingPage from "@/pages/LandingPage";
+import ApiDocsPage from "@/pages/docs/ApiDocsPage";
+import DeveloperPage from "@/pages/dashboard/developer/DeveloperPage";
 
 export default function AppRoutes() {
   return (
@@ -20,7 +22,11 @@ export default function AppRoutes() {
       <Routes>
         {/* landing page */}
         <Route path="/" element={<LandingPage />} />
-        {/* uncomment when the auth logic/service has been implement */}
+
+        {/* public API docs */}
+        <Route path="/docs" element={<ApiDocsPage />} />
+
+        {/* protected dashboard routes */}
         <Route element={<ProtectedRoutes />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardPage />} />
@@ -28,10 +34,12 @@ export default function AppRoutes() {
             {/* sub-routes */}
             <Route path="pretest" element={<Pretest />} />
             <Route path="pretest/test" element={<TestPage />} />
+            <Route path="developer" element={<DeveloperPage />} />
             <Route path="account" element={<AccountPage />} />
           </Route>
         </Route>
-        {/* uncomment when the auth logic/service has been implement */}
+
+        {/* public auth routes */}
         <Route element={<PublicRoutes />}>
           <Route path="/auth">
             <Route index element={<Navigate to="/auth/login" replace />} />
@@ -39,9 +47,11 @@ export default function AppRoutes() {
             <Route path="register" element={<RegisterPage />} />
           </Route>
         </Route>
-        <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
