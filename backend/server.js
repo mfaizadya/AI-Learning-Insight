@@ -44,6 +44,9 @@ const insightRoutes = require("./routes/insights");
 const adminRoutes = require("./routes/admin");
 const motdRoutes = require("./routes/motd");
 const dashboardRoutes = require("./routes/dashboard");
+const b2bRoutes = require("./routes/b2b");
+const docsRoutes = require("./routes/docs");
+const apiAccessRoutes = require("./routes/apiAccess");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -53,6 +56,10 @@ app.use("/api/insights", insightRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/motd", motdRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/v1", b2bRoutes);
+app.use("/api/docs", docsRoutes);
+app.use("/api/api-access", apiAccessRoutes);
+
 // Error handler middleware (must be last)
 app.use(errorHandler);
 

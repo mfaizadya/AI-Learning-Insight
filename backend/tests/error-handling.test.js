@@ -1,21 +1,91 @@
+/**
+ * Error Handling Integration Tests
+ * 
+ * Tests error handling across all application layers:
+ * - Database layer
+ * - Service layer
+ * - Controller layer
+ * - Middleware layer
+ * - Route layer
+ * 
+ * @module tests/error-handling.test
+ */
+
+'use strict';
+
 const request = require('supertest');
 const app = require('../server');
+const db = require('../db/connection');
+const { hashPassword } = require('../utils/auth');
 const { generateToken } = require('../utils/auth');
 
 describe('Error Handling Across All Layers', () => {
+  // Test user data
+  let adminUser;
+  let regularUser;
   let adminToken;
   let userToken;
 
-  beforeAll(() => {
-    adminToken = generateToken({ id: 1, email: 'admin@test.com', role: 'admin' });
-    userToken = generateToken({ id: 2, email: 'user@test.com', role: 'user' });
+  // Setup: Create real users for authentication tests
+  beforeAll(async () => {
+    const timestamp = Date.now();
+
+    try {
+      // Create admin user
+      const adminPassword = await hashPassword('AdminPass123!');
+      const adminResult = await db.execute(
+        `INSERT INTO users (email, username, password, role, learning_style, learning_pattern, deleted_at) 
+                 VALUES (?, ?, ?, 'admin', 'visual', 'consistent', NULL)`,
+        [`error-test-admin-${timestamp}@example.com`, `erroradmin${timestamp}`, adminPassword]
+      );
+      adminUser = {
+        id: adminResult.insertId,
+        email: `error-test-admin-${timestamp}@example.com`,
+        role: 'admin'
+      };
+      adminToken = generateToken({ id: adminUser.id, email: adminUser.email, role: 'admin' });
+
+      // Create regular user
+      const userPassword = await hashPassword('UserPass123!');
+      const userResult = await db.execute(
+        `INSERT INTO users (email, username, password, role, learning_style, learning_pattern, deleted_at) 
+                 VALUES (?, ?, ?, 'user', 'auditori', 'fast', NULL)`,
+        [`error-test-user-${timestamp}@example.com`, `erroruser${timestamp}`, userPassword]
+      );
+      regularUser = {
+        id: userResult.insertId,
+        email: `error-test-user-${timestamp}@example.com`,
+        role: 'user'
+      };
+      userToken = generateToken({ id: regularUser.id, email: regularUser.email, role: 'user' });
+
+    } catch (error) {
+      console.error('Test setup failed:', error.message);
+      throw error;
+    }
   });
 
+  // Cleanup: Remove test users
+  afterAll(async () => {
+    try {
+      if (adminUser?.id) {
+        await db.execute('DELETE FROM users WHERE id = ?', [adminUser.id]);
+      }
+      if (regularUser?.id) {
+        await db.execute('DELETE FROM users WHERE id = ?', [regularUser.id]);
+      }
+      await db.close();
+    } catch (error) {
+      console.error('Test cleanup failed:', error.message);
+    }
+  });
 
+  // ========================================================================
+  // DATABASE LAYER ERROR HANDLING
+  // ========================================================================
 
   describe('Database Layer Error Handling', () => {
     test('should handle duplicate email creation attempts', async () => {
-      // First create a user
       const timestamp = Date.now();
       const userData = {
         email: `duplicate-test-${timestamp}@example.com`,
@@ -26,6 +96,7 @@ describe('Error Handling Across All Layers', () => {
         learning_pattern: 'consistent'
       };
 
+      // First create a user
       const firstResponse = await request(app)
         .post('/api/admin/users')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -42,7 +113,7 @@ describe('Error Handling Across All Layers', () => {
       expect(duplicateResponse.body.error).toBe('Email address already exists');
 
       // Clean up
-      if (firstResponse.status === 201) {
+      if (firstResponse.status === 201 && firstResponse.body.data?.id) {
         await request(app)
           .delete(`/api/admin/users/${firstResponse.body.data.id}`)
           .set('Authorization', `Bearer ${adminToken}`);
@@ -59,6 +130,10 @@ describe('Error Handling Across All Layers', () => {
       expect(response.body.error).toBe('User not found');
     });
   });
+
+  // ========================================================================
+  // SERVICE LAYER ERROR HANDLING
+  // ========================================================================
 
   describe('Service Layer Error Handling', () => {
     test('should handle weak password validation', async () => {
@@ -102,6 +177,10 @@ describe('Error Handling Across All Layers', () => {
     });
   });
 
+  // ========================================================================
+  // CONTROLLER LAYER ERROR HANDLING
+  // ========================================================================
+
   describe('Controller Layer Error Handling', () => {
     test('should handle malformed JSON in request body', async () => {
       const response = await request(app)
@@ -114,9 +193,9 @@ describe('Error Handling Across All Layers', () => {
       expect(response.body.success).toBe(false);
     });
 
-    test('should handle extremely large request payloads', async () => {
+    test('should handle extremely large username', async () => {
       const largeData = {
-        email: 'test@example.com',
+        email: 'test-large@example.com',
         username: 'a'.repeat(1000), // Very long username
         password: 'StrongPass123!',
         role: 'user',
@@ -143,6 +222,10 @@ describe('Error Handling Across All Layers', () => {
       expect(response.body.success).toBe(false);
     });
   });
+
+  // ========================================================================
+  // MIDDLEWARE ERROR HANDLING
+  // ========================================================================
 
   describe('Middleware Error Handling', () => {
     test('should handle corrupted JWT tokens', async () => {
@@ -178,7 +261,19 @@ describe('Error Handling Across All Layers', () => {
       expect(response.body.success).toBe(false);
       expect(response.body.error).toBe('Authorization header must be in format: Bearer <token>');
     });
+
+    test('should handle missing authorization header', async () => {
+      const response = await request(app)
+        .get('/api/admin/users');
+
+      expect(response.status).toBe(401);
+      expect(response.body.success).toBe(false);
+    });
   });
+
+  // ========================================================================
+  // ROUTE LAYER ERROR HANDLING
+  // ========================================================================
 
   describe('Route Layer Error Handling', () => {
     test('should handle non-existent routes', async () => {
@@ -208,15 +303,18 @@ describe('Error Handling Across All Layers', () => {
     });
   });
 
+  // ========================================================================
+  // CROSS-LAYER ERROR PROPAGATION
+  // ========================================================================
+
   describe('Cross-Layer Error Propagation', () => {
-    test('should handle validation errors consistently across endpoints', async () => {
+    test('should handle validation errors for admin user creation', async () => {
       const invalidData = {
         email: '', // Empty email
         username: '', // Empty username
         password: '' // Empty password
       };
 
-      // Test admin user creation
       const adminResponse = await request(app)
         .post('/api/admin/users')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -225,19 +323,21 @@ describe('Error Handling Across All Layers', () => {
       expect(adminResponse.status).toBe(400);
       expect(adminResponse.body.success).toBe(false);
       expect(adminResponse.body.error).toBe('Validation failed');
+    });
 
-      // Test profile update
+    test('should reject profile update for restricted fields', async () => {
       const profileResponse = await request(app)
         .put('/api/users/profile')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ email: '' }); // Invalid email
+        .send({ email: 'new-email@example.com' }); // Email is restricted field
 
-      expect(profileResponse.status).toBe(400);
+      // Email is a restricted field - should return 403
+      expect(profileResponse.status).toBe(403);
       expect(profileResponse.body.success).toBe(false);
+      expect(profileResponse.body.error).toContain('restricted fields');
     });
 
-    test('should handle authorization errors consistently', async () => {
-      // Test admin endpoint with user token
+    test('should handle authorization errors for admin endpoints', async () => {
       const adminResponse = await request(app)
         .get('/api/admin/users')
         .set('Authorization', `Bearer ${userToken}`);
@@ -245,8 +345,9 @@ describe('Error Handling Across All Layers', () => {
       expect(adminResponse.status).toBe(403);
       expect(adminResponse.body.success).toBe(false);
       expect(adminResponse.body.error).toBe('Admin access required');
+    });
 
-      // Test user trying to access another user's data
+    test('should handle user accessing another user data', async () => {
       const userResponse = await request(app)
         .get('/api/users/999')
         .set('Authorization', `Bearer ${userToken}`);
@@ -256,11 +357,15 @@ describe('Error Handling Across All Layers', () => {
     });
   });
 
+  // ========================================================================
+  // INPUT VALIDATION ERROR HANDLING
+  // ========================================================================
+
   describe('Input Validation Error Handling', () => {
     test('should handle invalid enum values', async () => {
       const invalidEnumData = {
-        email: 'test@example.com',
-        username: 'testuser',
+        email: 'enum-test@example.com',
+        username: 'enumtestuser',
         password: 'StrongPass123!',
         role: 'invalid_role', // Invalid enum
         learning_style: 'invalid_style', // Invalid enum
@@ -279,7 +384,7 @@ describe('Error Handling Across All Layers', () => {
 
     test('should handle missing required fields', async () => {
       const incompleteData = {
-        email: 'test@example.com'
+        email: 'incomplete-test@example.com'
         // Missing other required fields
       };
 
@@ -314,6 +419,10 @@ describe('Error Handling Across All Layers', () => {
     });
   });
 
+  // ========================================================================
+  // CONCURRENT OPERATION ERROR HANDLING
+  // ========================================================================
+
   describe('Concurrent Operation Error Handling', () => {
     test('should handle multiple simultaneous requests', async () => {
       const timestamp = Date.now();
@@ -335,7 +444,6 @@ describe('Error Handling Across All Layers', () => {
         learning_pattern: 'fast'
       };
 
-      // Send multiple requests simultaneously
       const promises = [
         request(app)
           .post('/api/admin/users')
@@ -349,15 +457,14 @@ describe('Error Handling Across All Layers', () => {
 
       const results = await Promise.all(promises);
 
-      // Both should succeed since they have different emails
       results.forEach(result => {
         expect([201, 400, 409]).toContain(result.status);
         expect(result.body.success).toBeDefined();
       });
 
-      // Clean up created users
+      // Clean up
       for (const result of results) {
-        if (result.status === 201) {
+        if (result.status === 201 && result.body.data?.id) {
           await request(app)
             .delete(`/api/admin/users/${result.body.data.id}`)
             .set('Authorization', `Bearer ${adminToken}`);
@@ -366,7 +473,6 @@ describe('Error Handling Across All Layers', () => {
     });
 
     test('should handle operations on recently deleted users', async () => {
-      // Create a user first
       const timestamp = Date.now();
       const userData = {
         email: `delete-test-${timestamp}@example.com`,
@@ -382,7 +488,7 @@ describe('Error Handling Across All Layers', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send(userData);
 
-      if (createResponse.status === 201) {
+      if (createResponse.status === 201 && createResponse.body.data?.id) {
         const userId = createResponse.body.data.id;
 
         // Delete the user
@@ -402,23 +508,26 @@ describe('Error Handling Across All Layers', () => {
     });
   });
 
+  // ========================================================================
+  // RESOURCE/PAGINATION ERROR HANDLING
+  // ========================================================================
+
   describe('Resource Exhaustion Error Handling', () => {
     test('should handle large pagination requests', async () => {
       const response = await request(app)
-        .get('/api/admin/users?limit=1000') // Large but reasonable limit
+        .get('/api/admin/users?limit=1000')
         .set('Authorization', `Bearer ${adminToken}`);
 
-      // Should either succeed or return appropriate error
       expect([200, 400, 500]).toContain(response.status);
       expect(response.body.success).toBeDefined();
     });
 
-    test('should handle invalid pagination parameters', async () => {
+    test('should handle invalid pagination parameters gracefully', async () => {
       const response = await request(app)
-        .get('/api/admin/users?limit=-1&offset=-5') // Invalid pagination
+        .get('/api/admin/users?limit=-1&offset=-5')
         .set('Authorization', `Bearer ${adminToken}`);
 
-      expect(response.status).toBe(200); // Should handle gracefully with defaults
+      expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
     });
   });

@@ -28,30 +28,30 @@ export const CookieConsent = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-[90%] sm:max-w-[400px] animate-in slide-in-from-bottom-10 fade-in duration-500">
-      <div className="bg-white/95 backdrop-blur-md border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-3xl p-5 sm:p-6 relative overflow-hidden">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-[85%] sm:max-w-[360px] animate-in slide-in-from-bottom-10 fade-in duration-500">
+      <div className="bg-card/95 backdrop-blur-md border border-border shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         {/* bg decoration */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-full -mr-10 -mt-10 blur-2xl pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -mr-10 -mt-10 blur-2xl pointer-events-none"></div>
 
         <div className="relative z-10">
           {/* header */}
           <div className="flex flex-col sm:flex items-start gap-3 mb-3">
             <div className="flex w-full items-center justify-between">
-              <div className="p-2.5 bg-[#EEF2FF] rounded-xl text-primary shrink-0">
-                <Cookie size={24} />
+              <div className="p-2 bg-primary/10 rounded-lg text-primary shrink-0">
+                <Cookie size={20} />
               </div>
               <button
                 onClick={handleDecline}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
             <div className="flex-1">
-              <h4 className="font-bold text-gray-900 text-base">
+              <h4 className="font-bold text-foreground text-sm sm:text-base">
                 Kami menghargai privasi Anda
               </h4>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1 leading-relaxed">
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                 Kami menggunakan cookie untuk meningkatkan pengalaman belajar
                 Anda, mempersonalisasi konten, dan menganalisis lalu lintas
                 situs.
@@ -60,7 +60,7 @@ export const CookieConsent = () => {
           </div>
 
           {/* links */}
-          <div className="mb-5 text-xs text-gray-400">
+          <div className="mb-4 text-xs text-muted-foreground">
             Baca selengkapnya di{" "}
             <Link
               to="/privacy-policy"
@@ -72,18 +72,18 @@ export const CookieConsent = () => {
           </div>
 
           {/* action */}
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-2.5">
             <button
               onClick={handleDecline}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all"
+              className="flex-1 px-3 py-2 rounded-lg border border-border text-xs sm:text-sm font-semibold text-muted-foreground hover:bg-secondary transition-all"
             >
               Tolak Semua
             </button>
             <button
               onClick={handleAccept}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-[#3F3370] text-white text-sm font-semibold hover:bg-[#2e2555] shadow-lg shadow-purple-900/20 hover:shadow-purple-900/30 transition-all flex items-center justify-center gap-2"
+              className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center justify-center gap-2"
             >
-              <ShieldCheck size={16} />
+              <ShieldCheck size={14} />
               Terima Semua
             </button>
           </div>

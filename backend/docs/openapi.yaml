@@ -1,0 +1,511 @@
+openapi: 3.0.3
+info:
+  title: CerdasKu - B2B API
+  description: |
+    API untuk integrasi CerdasKu AI Learning Insight dengan platform eksternal seperti LMS, EdTech, dan Corporate Training systems.
+    
+    # Getting Started
+    
+    1. **Request API Access** - Hubungi tim kami atau ajukan melalui dashboard
+    2. **Receive API Key** - Dapatkan key dalam format `ck_live_xxx` atau `ck_sandbox_xxx`
+    3. **Authenticate** - Sertakan key di header `X-API-Key`
+    4. **Start Integrating** - Gunakan endpoints di bawah
+    
+    # Rate Limits
+    
+    | Tier | Requests/Minute | Monthly Quota |
+    |------|-----------------|---------------|
+    | Sandbox | 100 | 10,000 |
+    | Starter | 500 | 100,000 |
+    | Professional | 2,000 | 500,000 |
+    | Enterprise | Custom | Unlimited |
+    
+    # Support
+    
+    - 📧 Email: api-support@cerdasku.ai
+    - 📚 Documentation: https://docs.cerdasku.ai
+    - 💬 Discord: https://discord.gg/cerdasku
+    
+  version: 2.0.0
+  contact:
+    name: CerdasKu AI Developer Relations
+    email: api-support@cerdasku.ai
+    url: https://cerdasku.ai/developers
+  license:
+    name: Commercial License
+    url: https://cerdasku.ai/terms
+  x-logo:
+    url: https://cerdasku.ai/logo.png
+    altText: CerdasKu AI Logo
+
+servers:
+  - url: https://cerdasku-api.my.id/api/v1
+    description: Production Server
+  - url: http://localhost:3000/api/v1
+    description: Development Server
+
+tags:
+  - name: Health
+    description: API status dan health check
+  - name: Predict
+    description: Learning pattern prediction menggunakan AI/ML model
+  - name: Usage
+    description: Monitoring penggunaan API dan statistik
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Check API Health
+      description: |
+        Verifikasi status API dan validasi API key Anda.
+        
+        Gunakan endpoint ini untuk:
+        - Memverifikasi API key masih valid
+        - Mengecek status layanan sebelum request lain
+        - Monitoring uptime dari sistem Anda
+      operationId: healthCheck
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                success: true
+                data:
+                  status: healthy
+                  tenant: acme-university
+                  tier: professional
+                  timestamp: "2026-01-18T04:30:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /predict:
+    post:
+      tags:
+        - Predict
+      summary: Predict Learning Pattern
+      description: |
+        Analisis data pembelajaran dan prediksi pola belajar menggunakan model Machine Learning.
+        
+        ## Feature Array
+        
+        Kirim array dengan **9 nilai** (skala 1-4) yang merepresentasikan:
+        
+        | Index | Feature | Deskripsi |
+        |-------|---------|-----------|
+        | 0 | Materi/Sesi | Jumlah materi per sesi belajar |
+        | 1 | Materi/Jam | Kecepatan menguasai materi |
+        | 2 | Frekuensi/Minggu | Seberapa sering belajar dalam seminggu |
+        | 3 | Durasi | Lama setiap sesi belajar |
+        | 4 | Pengulangan | Frekuensi review materi |
+        | 5 | Waktu Submission | Waktu yang dibutuhkan untuk submission |
+        | 6 | Rating Submission | Rata-rata bintang yang diperoleh |
+        | 7 | Nilai Kuis | Persentase nilai kuis |
+        | 8 | Waktu Kuis | Waktu menyelesaikan kuis |
+        
+        ## Learning Patterns
+        
+        Model akan memprediksi salah satu dari 4 pola:
+        - **Consistent Learner** - Belajar teratur dan stabil
+        - **Fast Learner** - Cepat menguasai materi baru
+        - **Reflective Learner** - Mendalam dan detail-oriented
+        - **Balanced Learner** - Kombinasi seimbang
+        
+      operationId: predictLearningPattern
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PredictRequest'
+            examples:
+              basic:
+                summary: Basic prediction
+                value:
+                  features: [2, 3, 4, 2, 3, 2, 3, 4, 2]
+              with_student:
+                summary: With student ID
+                value:
+                  features: [3, 2, 5, 3, 2, 3, 4, 3, 2]
+                  student_external_id: "STU-2026-001"
+              batch_ready:
+                summary: Ready for batch processing
+                value:
+                  features: [4, 4, 6, 2, 4, 2, 4, 4, 1]
+                  student_external_id: "STU-2026-002"
+                  metadata:
+                    course_id: "CS101"
+                    semester: "2026-1"
+      responses:
+        '200':
+          description: Prediction successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictResponse'
+              example:
+                success: true
+                data:
+                  student_id: "STU-2026-001"
+                  learning_pattern: balanced
+                  confidence: 0.87
+                  pattern_scores:
+                    consistent: 0.15
+                    fast: 0.23
+                    reflective: 0.12
+                    balanced: 0.87
+                  recommendations:
+                    - "Pertahankan pola belajar seimbang Anda"
+                    - "Coba variasikan durasi sesi belajar"
+                    - "Tambahkan sesi review singkat di akhir minggu"
+                  processed_at: "2026-01-18T04:30:00.000Z"
+                  request_id: "req_abc123xyz"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /usage:
+    get:
+      tags:
+        - Usage
+      summary: Get Usage Statistics
+      description: |
+        Dapatkan statistik penggunaan API untuk tenant Anda.
+        
+        Gunakan untuk:
+        - Monitoring penggunaan API
+        - Analisis traffic patterns
+        - Perencanaan kapasitas
+        - Audit dan compliance
+      operationId: getUsageStatistics
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Periode waktu untuk statistik
+          required: false
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: month
+        - name: start_date
+          in: query
+          description: Tanggal awal (format YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Tanggal akhir (format YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Usage statistics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageResponse'
+              example:
+                success: true
+                data:
+                  tenant: acme-university
+                  tier: professional
+                  period:
+                    type: month
+                    start: "2026-01-01"
+                    end: "2026-01-31"
+                  summary:
+                    total_requests: 12450
+                    successful_requests: 12380
+                    failed_requests: 70
+                    success_rate: 99.4
+                  endpoints:
+                    - path: /v1/predict
+                      requests: 11200
+                      avg_latency_ms: 45
+                    - path: /v1/health
+                      requests: 1180
+                      avg_latency_ms: 12
+                    - path: /v1/usage
+                      requests: 70
+                      avg_latency_ms: 28
+                  rate_limit:
+                    limit_per_minute: 2000
+                    current_usage: 85
+                    remaining: 1915
+                    reset_at: "2026-01-18T04:31:00.000Z"
+                  quota:
+                    monthly_limit: 500000
+                    used: 12450
+                    remaining: 487550
+                    reset_at: "2026-02-01T00:00:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        API key untuk autentikasi B2B.
+        
+        **Format:** `ck_live_xxxxxxxxxxxx` (production) atau `ck_sandbox_xxxxxxxxxxxx` (testing)
+        
+        **Header:** `X-API-Key: ck_live_your_api_key_here`
+
+  responses:
+    Unauthorized:
+      description: API key tidak valid atau missing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: Invalid or missing API key
+            code: UNAUTHORIZED
+            
+    Forbidden:
+      description: API key tidak memiliki permission untuk resource ini
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: Insufficient permissions for this resource
+            code: FORBIDDEN
+            
+    BadRequest:
+      description: Request tidak valid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: Invalid features array. Expected 9 values.
+            code: BAD_REQUEST
+            
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: Rate limit exceeded. Retry after 45 seconds.
+            code: RATE_LIMITED
+            retry_after: 45
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [healthy, degraded, maintenance]
+              example: healthy
+            tenant:
+              type: string
+              description: Nama tenant
+              example: acme-university
+            tier:
+              type: string
+              enum: [sandbox, starter, professional, enterprise]
+              example: professional
+            timestamp:
+              type: string
+              format: date-time
+              example: "2026-01-18T04:30:00.000Z"
+
+    PredictRequest:
+      type: object
+      required:
+        - features
+      properties:
+        features:
+          type: array
+          items:
+            type: number
+            minimum: 1
+            maximum: 7
+          minItems: 9
+          maxItems: 9
+          description: Array of 9 learning behavior features
+          example: [2, 3, 4, 2, 3, 2, 3, 4, 2]
+        student_external_id:
+          type: string
+          maxLength: 100
+          description: ID siswa dari sistem external Anda
+          example: "STU-2026-001"
+        metadata:
+          type: object
+          description: Additional metadata (optional)
+          additionalProperties: true
+          example:
+            course_id: "CS101"
+            semester: "2026-1"
+
+    PredictResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            student_id:
+              type: string
+              description: Student ID yang dikirim atau auto-generated
+            learning_pattern:
+              type: string
+              enum: [consistent, fast, reflective, balanced]
+              description: Pola belajar yang diprediksi
+            confidence:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 1
+              description: Confidence score prediksi
+            pattern_scores:
+              type: object
+              description: Skor untuk setiap pola
+              properties:
+                consistent:
+                  type: number
+                fast:
+                  type: number
+                reflective:
+                  type: number
+                balanced:
+                  type: number
+            recommendations:
+              type: array
+              items:
+                type: string
+              description: Rekomendasi pembelajaran
+            processed_at:
+              type: string
+              format: date-time
+            request_id:
+              type: string
+              description: Unique request ID untuk tracking
+
+    UsageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            tenant:
+              type: string
+            tier:
+              type: string
+            period:
+              type: object
+              properties:
+                type:
+                  type: string
+                start:
+                  type: string
+                  format: date
+                end:
+                  type: string
+                  format: date
+            summary:
+              type: object
+              properties:
+                total_requests:
+                  type: integer
+                successful_requests:
+                  type: integer
+                failed_requests:
+                  type: integer
+                success_rate:
+                  type: number
+            endpoints:
+              type: array
+              items:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  requests:
+                    type: integer
+                  avg_latency_ms:
+                    type: number
+            rate_limit:
+              type: object
+              properties:
+                limit_per_minute:
+                  type: integer
+                current_usage:
+                  type: integer
+                remaining:
+                  type: integer
+                reset_at:
+                  type: string
+                  format: date-time
+            quota:
+              type: object
+              properties:
+                monthly_limit:
+                  type: integer
+                used:
+                  type: integer
+                remaining:
+                  type: integer
+                reset_at:
+                  type: string
+                  format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code for programmatic handling
+        retry_after:
+          type: integer
+          description: Seconds until retry (for rate limiting)

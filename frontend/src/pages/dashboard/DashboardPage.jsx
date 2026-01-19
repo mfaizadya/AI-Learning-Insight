@@ -8,6 +8,8 @@ import { DashboardPageSkeleton } from "@/components/skeletons/DashboardPageSkele
 import { ArrowRight, ClipboardCheck, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import ApiRequestsPage from "./admin/ApiRequestsPage";
 
 const PretestActionBtn = ({ hasTested }) => {
   if (!hasTested) {
@@ -57,7 +59,13 @@ const WelcomeHeader = ({ user, hasTested }) => (
 );
 
 export const DashboardPage = () => {
+  const { user } = useAuth();
   const { data, isLoading, error } = useDashboardData();
+
+  // Render Admin Dashboard View if Admin
+  if (user?.role === 'admin') {
+    return <ApiRequestsPage />;
+  }
 
   if (isLoading || !data) return <DashboardPageSkeleton />;
 
