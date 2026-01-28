@@ -22,7 +22,7 @@ const DashboardLayout = () => {
         </section>
       </main>
       <CookieConsent />
-      <Footer className="ml-64 w-[calc(100%-16rem)]" />
+      <Footer className="w-full lg:ml-64 lg:w-[calc(100%-16rem)]" />
     </>
   );
 };

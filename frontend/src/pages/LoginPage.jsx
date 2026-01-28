@@ -11,6 +11,7 @@ import {
   LogIn,
   AlertCircle,
   CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 import { authService } from "@/services/auth.service";
 import { useAuth } from "@/context/AuthContext";
@@ -228,6 +229,54 @@ export default function LoginPage() {
               Daftar disini
             </Link>
           </p>
+
+          {/* Demo Admin Card - Jury/Reviewer Access */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+            <div className="mx-auto w-full rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/50 p-4 sm:p-5 hover:bg-indigo-50 transition-colors">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="flex-shrink-0 rounded-xl bg-white p-2.5 text-indigo-600 shadow-sm border border-indigo-100">
+                  <ShieldCheck size={20} />
+                </div>
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-indigo-950 flex items-center gap-2">
+                      Akses Demo Juri / Penilai
+                      <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-extrabold uppercase tracking-wider">
+                        Admin Mode
+                      </span>
+                    </h3>
+                    <p className="text-xs text-indigo-900/70 leading-relaxed mt-1.5">
+                      Gunakan kredensial pengujian berikut untuk mengakses dashboard administratif dan fitur manajemen penuh.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-2 text-xs sm:text-sm bg-white rounded-xl p-3 border border-indigo-100/80 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                      <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Email
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono text-indigo-700 font-bold bg-indigo-50/80 px-2 py-1 rounded-md select-all cursor-pointer hover:bg-indigo-100 transition-colors">
+                          admin@cerdasku.id
+                        </code>
+                      </div>
+                    </div>
+                    <div className="h-px bg-gray-100 w-full"></div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                      <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Password
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono text-indigo-700 font-bold bg-indigo-50/80 px-2 py-1 rounded-md select-all cursor-pointer hover:bg-indigo-100 transition-colors">
+                          admin123
+                        </code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
